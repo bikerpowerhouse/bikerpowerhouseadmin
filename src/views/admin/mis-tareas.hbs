@@ -1,0 +1,43 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Mis tareas</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a href="/nueva-tarea-personal" class="btn btn-info">Nueva tarea</a>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h5>Tareas pendientes</h5>
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-hover ">
+            <thead>
+                <tr>
+                    <th class="text-center">Fecha creación</th>
+                    <th class="text-center">Fecha estimada</th>
+                    <th class="text-center">Fecha pospuesta</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Descripción</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                {{#each tareas}}
+                <tr>
+                    <td class="text-center">{{Fecha}}</td>
+                    <td class="text-center">{{FechaEntrega}}</td>
+                    <td class="text-center">{{FechaPospuesta}}</td>
+                    <td class="text-center">{{Estado}}</td>
+                    <td class="text-center">{{Descripcion}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</section>

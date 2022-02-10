@@ -1,0 +1,219 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Realizar compra</h1>
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-sm-8">
+        <label for="">Tipo de producto</label>
+        <select id="TipoProducto" class="form-control js-exam ">
+            <option value="0">--Seleccione un tipo de producto--</option>
+            {{#each tiposProductos}}
+                <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="col-sm-2 mt-4">
+        <button class="btn btn-success mt-2" id="btnBuscar" disabled>Buscar</button>
+    </div>
+    <div class="col-sm-2 text-right mt-4">
+        <a href="/ver-lista-compra-cliente" class="btn btn-outline-info mt-2">Ver lista de compra</a>
+    </div>
+</div>
+</div>
+<section class="content mt-2">
+     <div class="row">
+        <div class="col-sm-12" id="insertErrores">
+            {{>errors}}
+            {{>success}}
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">
+            <h4>Productos</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tabla" class="table table-bordered table-striped">
+                    <thead id="thead"> 
+                    <tr>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Tipo producto</th>
+                        <th class="text-center">Descripción</th>
+                        <th class="text-center">Precio</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Cantidad agregar</th>
+                        <th class="text-center">Agregar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d= document,
+    $insertErrores = d.getElementById("insertErrores"),
+    $btnBuscar = d.getElementById("btnBuscar"),
+    $Cliente = d.getElementById("Cliente"),
+    $TipoProducto = d.getElementById("TipoProducto");
+    let Productos 
+    const table = d.getElementById("tabla").tBodies[0];
+
+     buscaTabla = function () {
+            texto =  d.getElementById('buscar').value.toLowerCase();
+            let r = 0;
+            while (row = table.rows[r++]) {
+                if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                    row.style.display = null;
+                else
+                    row.style.display = 'none';
+            }
+        }
+    d.getElementById('buscar').addEventListener("keydown", e => {
+            if(e.keyCode == 13){
+                e.preventDefault()
+            }
+        })
+    d.getElementById('buscar').addEventListener('keyup', buscaTabla);
+
+
+    const enviarProductoAOrden = async (data) => {
+        return await fetch(`/enviar-productos-orden-compra-client`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            if(response.length == 2){
+                $insertErrores.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Producto agregado correctamento a la lista de compra.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }else{
+                $insertErrores.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${response}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+
+            }
+        });
+    }
+      const solicitarProductos = async (data) => {
+        return await fetch(`/solicitar-productos-realizar-compra`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            let tr = ""
+     for(i=0; i< response.length; i++){
+                if(response[i].Cantidad == 0){
+                Productos = response
+                let linea = `
+                    <tr>
+                        <td><p>${response[i].Codigo}</p></td>
+                        <td><p>${response[i].TipoProducto}</p></td>
+                        <td><p>${response[i].Descripcion}</p></td>
+                        <td><p>${response[i].PrecioVenta}</p></td>
+                        <td class="text-center"> <i class="fas fa-circle text-danger"></td>
+                        <td><input type="number" class="form-control" value="0" min="1"></td>
+                        <td class="text-center"><a href="#" class="btnAgregar"><i class="fas fa-arrow-circle-up text-success btnAgregar" style="font-size:25px"></i></a></td>
+                        
+                    </tr>
+                `
+                tr += linea
+                }else{
+                Productos = response
+                let linea = `
+                    <tr>
+                        <td><p>${response[i].Codigo}</p></td>
+                        <td><p>${response[i].TipoProducto}</p></td>
+                        <td><p>${response[i].Descripcion}</p></td>
+                        <td><p>${response[i].PrecioVenta}</p></td>
+                        <td class="text-center"><i class="fas fa-circle text-success"></td>
+                        <td><input type="number" class="form-control" value="0" min="1"></td>
+                        <td class="text-center"><a href="#" class="btnAgregar"><i class="fas fa-arrow-circle-up text-success btnAgregar" style="font-size:25px"></i></a></td>
+                        
+                    </tr>
+                `
+                tr += linea
+                }
+            }
+               d.getElementById("thead").innerHTML = `
+                    <tr>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Tipo producto</th>
+                        <th class="text-center">Descripción</th>
+                        <th class="text-center">Precio</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Cantidad agregar</th>
+                        <th class="text-center">Agregar</th>
+                    </tr>
+                    <td colspan="7">
+                        <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                    </td>
+               `
+               d.getElementById("tbody").innerHTML = tr
+         
+        });
+    }
+    
+    $TipoProducto.onchange = () => {
+        if($TipoProducto.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }else{
+            $btnBuscar.setAttribute("disabled","")
+        }
+    }
+    d.addEventListener("click", e=> {
+        if(e.target.classList.contains("btnAgregar")){
+            linea = e.target.parentElement.parentElement.parentElement
+            if(linea.children[5].firstElementChild.value > 0){
+                let datos = Productos.find((data) => data.Codigo == linea.children[0].textContent)
+                let data = {
+                    Codigo: linea.children[0].firstElementChild.textContent,
+                    TipoProducto: linea.children[1].firstElementChild.textContent,
+                    PrecioFOBUnitario: linea.children[3].firstElementChild.textContent,
+                    Cantidad: linea.children[5].firstElementChild.value,
+                    PrecioFOBTotal: (+linea.children[5].firstElementChild.value * +linea.children[3].firstElementChild.textContent).toFixed(2),
+                    MetrosCubicosUnidad:  0,
+                    MetrosCubicosTotal:  0,
+                    PesoUnidad:  0,
+                    PesoTotal:  0,
+                    Descripcion:  datos.Descripcion,
+                }
+                linea.children[5].firstElementChild.value = 0
+                enviarProductoAOrden(data)
+
+            }else{
+                alert("La cantidad debe ser mayor a 0")
+            }         
+        }
+        if(e.target == $btnBuscar){
+            data= {
+                TipoProducto: $TipoProducto.value
+            }
+            solicitarProductos(data)
+            d.getElementById("tbody").innerHTML = ""
+            d.querySelector(".table").removeAttribute("id")
+        }
+    })
+</script>

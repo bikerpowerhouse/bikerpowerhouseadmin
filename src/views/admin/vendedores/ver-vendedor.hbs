@@ -1,0 +1,161 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">{{cliente.Empresa}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+        <div class="row">
+            <div class="col-sm-12">
+                {{#each errors}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{text}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {{/each}}
+                {{>success}}
+            </div>
+        </div>
+    <div class="card card-orange">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6 text-start">
+                    <h3 class="card-title">Todos los datos</h3>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <button class="btn"><i class="fas fa-user-edit text-light"  id="btnEditar"></i></button>
+                </div>
+            </div>
+        </div>
+            <!-- /.card-header -->
+        <div class="card-body">
+            <form action="/actualizar-vendedor/{{vendedor._id}}" method="POST">
+                <div class="row">
+                     <div class="col-sm-4">
+                        <!-- text input -->
+                        <div class="form-group">
+                        <label>Nombres</label>
+                        <input type="text" class="form-control"  readonly name="Nombres" value="{{vendedor.Nombres}}"  placeholder="Introduzca los nombres">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                        <label>Apellidos</label>
+                        <input type="text" class="form-control" readonly name="Apellidos" value="{{vendedor.Apellidos}}" placeholder="Introduzca los apellidos">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                        <label>Cédula</label>
+                        <input type="number" class="form-control" readonly name="Cedula" value="{{vendedor.Cedula}}" placeholder="Introduzca la cedula">
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <label>Dirección</label>
+                            <input type="text" class="form-control" readonly name="Direccion" value="{{vendedor.Direccion}}" placeholder="Introduzca la dirección fiscal de la empresa o negocio">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Porcentaje de ganancia</label>
+                            <input type="number" class="form-control" readonly name="Porcentaje" value="{{vendedor.Porcentaje}}" placeholder="Introduzca el procentaje de ganancia" step="any" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Número celular</label>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <select disabled name="CodigoCeular" id="CodigoCeular" class="form-control js-exam">
+                                    {{#if vendedor.CodigoCeular}}
+                                        <option value="{{vendedor.CodigoCeular}}" selected>{{vendedor.CodigoCeular}}</option>
+                                        {{else}}
+                                        <option value="0" selected>--Código--</option>
+                                    {{/if}}
+                                    <option value="0414">0414</option>
+                                    <option value="0416">0416</option>
+                                    <option value="0424">0424</option>
+                                    <option value="0426">0426</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" name="Celular" readonly value="{{vendedor.Celular}}" placeholder="Introduzca el celular del cliente">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Correo electronico</label>
+                        <input type="text" class="form-control" readonly name="email" value="{{vendedor.email}}" placeholder="Introduzca el correo electronico del cliente">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Zona</label>
+                        <input type="text" class="form-control" readonly name="Zona" value="{{vendedor.Zona}}" placeholder="Introduzca la zona del cliente">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Código postal</label>
+                        <input type="text" class="form-control" readonly name="CodigoPostal" value="{{vendedor.CodigoPostal}}" placeholder="Introduzca el código postal de la ubicación del cliente">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 text-right" id="InsertarBtn">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal12" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">¿Estas seguro que quiere eliminar al vendedor?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/eliminar-vendedor/{{vendedor._id}}">
+                    <div class="row">
+                        <div class="col-sm-12 text-right">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $btnEditar = d.getElementById("btnEditar"),
+    $inputs = d.getElementsByTagName("input"),
+    $CodigoCeular = d.getElementById("CodigoCeular"),
+    $Vendedor = d.getElementById("Vendedor"),
+    $InsertarBtn = d.getElementById("InsertarBtn")
+    let validacion = 0
+    d.addEventListener("click", e => {
+        if(e.target == $btnEditar){
+            for(i=0; i< $inputs.length; i++){
+                if($inputs[i].hasAttribute("readonly")){
+                    $inputs[i].removeAttribute("readonly")
+                }
+            }
+            if(validacion == 0){
+                let buton = `<button type="submit" class="btn btn-success">Actualizar</button>
+                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal12">Eliminar</button>`
+                $InsertarBtn.innerHTML += buton 
+                validacion++
+            }
+            $CodigoCeular.removeAttribute("disabled")
+        }
+    })
+</script>

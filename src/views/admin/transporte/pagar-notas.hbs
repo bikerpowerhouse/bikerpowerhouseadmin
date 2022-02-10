@@ -1,0 +1,73 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Pago de notas transporte</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+     <div class="row">
+        <div class="col-sm-12">
+            {{>errors}}
+            {{>success}}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+              <form action="/pagar-nota-transporte" method="POST">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label for="">Número factura/nota de entrega</label>
+                        <select name="Factura" id="Factura" class="form-control js-exam">
+                            <option value="0">--Seleccione una factura o nota--</option>
+                            {{#each notasTransporte}}
+                            <option value="{{NumeroFactura}}">{{NumeroFactura}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-sm-5">
+                        <label for="">Monto</label>
+                        <input type="text" id="montoPagar" class="form-control" readonly placeholder="" required> 
+                    </div>
+                    <div class="col-sm-2 mt-4">
+                        <button class="btn btn-success mt-1 w-100" id="btnGenerar" type="submit">Pagar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Factura = d.getElementById("Factura"),
+    $montoPagar = d.getElementById("montoPagar");
+    const solicitarMontoTransporte = async (data) => {
+        return await fetch(`/solicitar-monto-transporte`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                $montoPagar.value = response
+            });
+    };
+
+    $Factura.onchange = () => {
+        if($Factura.value !=0){
+            let data= {
+                Factura: $Factura.value
+            }
+            solicitarMontoTransporte(data)
+        }
+    }
+</script>

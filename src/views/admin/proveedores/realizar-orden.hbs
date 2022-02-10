@@ -1,0 +1,188 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Realizar orden de compra al proveedor</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-8">
+            <label for="">Proveedor</label>
+            <select id="Proveedor" class="form-control js-exam"> 
+                {{#each proveedores}}
+                <option value="{{Empresa}}">{{Empresa}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="col-sm-4 mt-4">
+            <a href="/ver-lista-compra-proveedor" class="btn btn-outline-info mt-2">Ver lista de compra</a>
+        </div>
+    </div>
+</div>
+<section class="content mt-2">
+     <div class="row">
+        <div class="col-sm-12" id="insertErrores">
+            {{>errors}}
+            {{>success}}
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">
+            <h4>Productos</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Referencia</th>
+                        <th>Tipo producto</th>
+                        <th>Precio FOB</th>
+                        <th>Cantidad actual</th>
+                        <th>Cantidad por bultos</th>
+                        <th>Cantidad agregar</th>
+                        <th>Agregar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d= document,
+    $insertErrores = d.getElementById("insertErrores"),
+    $Proveedor = d.getElementById("Proveedor");
+    let Productos
+      const enviarProductoAOrden = async (data) => {
+        return await fetch(`/enviar-productos-orden`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            if(response.length == 2){
+                $insertErrores.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Producto agregado correctamento a la lista de compra.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }else{
+                $insertErrores.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${response}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+
+            }
+        });
+    }
+      const solicitarInfoProveedor = async (data) => {
+        return await fetch(`/solicitar-info-proveedor`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            Productos = response
+            let tr = ""
+            for(i=0; i< response.length; i++){
+                let linea = `
+                    <tr>
+                        <td><p>${response[i].Codigo}</p></td>
+                        <td><input type="text" class="form-control"></td>
+                        <td><p>${response[i].TipoProducto}</p></td>
+                        <td><p>${response[i].PrecioFOB}</p></td>
+                        <td><p>${response[i].Cantidad}</p></td>
+                        <td><p>${response[i].Bulto}</p></td>
+                        <td><input type="number" class="form-control" value="0" min="1"></td>
+                        <td class="text-center"><a href="#" class="btnAgregar"><i class="fas fa-arrow-circle-up text-success btnAgregar" style="font-size:25px"></i></a></td>
+                        
+                    </tr>
+                `
+                tr += linea
+            }
+            d.getElementById("tbody").innerHTML = tr
+            d.querySelector(".table").setAttribute("id","example1")
+            $(function () {
+                $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "ordering": false,
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            });
+        });
+    }
+   
+    $Proveedor.onchange = () => {
+
+        if($Proveedor.value != 0){
+            data= {
+                Proveedor: $Proveedor.value
+            }
+            solicitarInfoProveedor(data)
+            d.getElementById("tbody").innerHTML = ""
+            d.querySelector(".table").removeAttribute("id")
+        }else{
+            d.querySelector(".card-body").innerHTML = `
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Tipo producto</th>
+                    <th>Precio FOB</th>
+                    <th>Cantidad actual</th>
+                    <th>Cantidad agregar</th>
+                    <th>Agregar</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+            
+            `
+        }
+    }
+    d.addEventListener("click", e=> {
+        if(e.target.classList.contains("btnAgregar")){
+            linea = e.target.parentElement.parentElement.parentElement
+            if(linea.children[6].firstElementChild.value > 0){
+                let datos = Productos.find((data) => data.Codigo == linea.children[0].textContent)
+                let data = {
+                    Proveedor: $Proveedor.value,
+                    Codigo: linea.children[0].firstElementChild.textContent,
+                    Referencia: linea.children[1].firstElementChild.value,
+                    TipoProducto: linea.children[2].firstElementChild.textContent,
+                    PrecioFOBUnitario: linea.children[3].firstElementChild.textContent,
+                    Cantidad: linea.children[6].firstElementChild.value,
+                    PrecioFOBTotal: (+linea.children[6].firstElementChild.value * +linea.children[3].firstElementChild.textContent).toFixed(2),
+                    MetrosCubicosUnidad:  (+datos.Alto * +datos.Largo * +datos.Alto/ 100000).toFixed(10),
+                    MetrosCubicosTotal:  (+datos.Alto * +datos.Largo * +datos.Alto * +linea.children[6].firstElementChild.value/ 100000).toFixed(10),
+                    PesoUnidad:  datos.Peso,
+                    PesoTotal:  (+datos.Peso * +linea.children[6].firstElementChild.value).toFixed(2),
+                    Descripcion:  datos.Descripcion,
+                }
+                linea.children[6].firstElementChild.value = 0
+                enviarProductoAOrden(data)
+
+            }else{
+                alert("La cantidad debe ser mayor a 0")
+            }         
+        }
+    })
+</script>

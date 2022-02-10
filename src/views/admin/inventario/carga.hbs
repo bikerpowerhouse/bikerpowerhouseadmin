@@ -1,0 +1,82 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Carga de inventario</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+     <div class="row">
+        <div class="col-sm-12">
+            {{>errors}}
+            {{>success}}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+              <form action="/carga-inventario" method="POST">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label for="">Código</label>
+                        <select name="Codigo" id="Codigo" class="form-control js-exam">
+                            <option value="0">--Seleccione un código--</option>
+                            {{#each productos}}
+                            <option value="{{Codigo}}">{{Codigo}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="">Cantidad actual</label>
+                        <input type="number" id="CantidadActual" class="form-control" readonly placeholder="">
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="">Cantidad a cargar</label>
+                        <input type="number" class="form-control" min="0" id="Cantidad" name="Cantidad" placeholder="Cantidad a cargar">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="">Comentario</label>
+                        <input type="text" name="Comentario" class="form-control" placeholder="Introduzca comentario">
+                    </div>
+                    <div class="col-sm-2 mt-4">
+                        <button class="btn btn-success mt-1 w-100" id="btnGenerar" type="submit">Cargar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Codigo = d.getElementById("Codigo"),
+    $CantidadActual = d.getElementById("CantidadActual"),
+    $Cantidad = d.getElementById("Cantidad")
+    const solicitarCantidad = async (data) => {
+        return await fetch(`/solicitar-cantidad`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                $CantidadActual.value = response
+            });
+    };
+
+    $Codigo.onchange = () => {
+        if($Codigo.value !=0){
+            let data= {
+                Codigo: $Codigo.value
+            }
+            solicitarCantidad(data)
+        }
+    }
+</script>

@@ -1,0 +1,125 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Calculos de comisión</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a class="btn btn-success" href="/generar-nueva-calculo">Generar un nuevo calculo</a>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="text-dark">Todos los calculos</h4>
+                </div>
+                <div class="col-sm-5">
+                    <label>Estado</label>
+                    <select class="form-control js-exam" id="Estado">
+                        <option value="0">--Seleccione un estado--</option>
+                        <option value="Cerrada">Cerrado</option>
+                        <option value="Por pagar">Por pagar</option>
+                    </select>
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-2 w-100" id="btnBuscar" disabled>Buscar</button>
+                </div>
+            </div> 
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center">Fecha</th>
+                        <th scope="col" class="text-center">Número</th>
+                        <th scope="col" class="text-center">Estado</th>
+                        <th scope="col" class="text-center">Vendedor</th>
+                        <th scope="col" class="text-center">Cantidad de notas</th>
+                        <th scope="col" class="text-center">Neto</th>
+                        <th scope="col" class="text-center">Saldo</th>
+                        <th scope="col" class="text-center">Historial</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody">
+                    {{#each comisiones}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>       
+                            <td class="text-center"><a class="text-info" target="_blank" href="/ver-calculo-comision/{{Numero}}">{{Numero}}</a></td>       
+                            <td class="text-center">{{Estado}}</td>       
+                            <td class="text-center">{{Vendedor}}</td>       
+                            <td class="text-center">{{CantidadNotas}}</td>       
+                            <td class="text-center">{{Neto}}</td>       
+                            <td class="text-center">{{Saldo}}</td>       
+                            <td class="text-center"><a href="/ver-historial-calculo-comision/{{Numero}}" class="text-success"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>       
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Estado = d.getElementById("Estado"),
+    $tBody = d.getElementById("tBody"),
+    $btnBuscar = d.getElementById("btnBuscar");
+
+    const solicitarCalculosComision = async (data) => {
+            return await fetch(`/solicitar-calculos-comision-vendedor`, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                "Content-type": "application/json; charset=utf-8",
+                },
+            })
+            .then((response) => {
+                return response.json();
+            })
+            .then((response) => {
+                let tr = ""
+                for(i=0; i< response.length; i++){
+                    linea = `
+                        <tr>
+                            <td class="text-center">${response[i].Fecha}</td>       
+                            <td class="text-center"><a class="text-info" target="_blank" href="/ver-calculo-comision/${response[i].Numero}">${response[i].Numero}</a></td>       
+                            <td class="text-center">${response[i].Estado}</td>       
+                            <td class="text-center">${response[i].Vendedor}</td>       
+                            <td class="text-center">${response[i].CantidadNotas}</td>       
+                            <td class="text-center">${response[i].Neto}</td>       
+                            <td class="text-center">${response[i].Saldo}</td>       
+                        </tr>
+                    `
+                    tr += linea
+                }
+                $tBody.innerHTML = tr
+                d.querySelector(".table").setAttribute("id","example1")
+                $(function () {
+                    $("#example1").DataTable({
+                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                    "ordering": false,
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                });
+            });
+        };
+
+    $Estado.onchange = () => {
+        if($Estado.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }else{
+            $btnBuscar.setAttribute("disabled","")
+        }
+    }
+     d.addEventListener("click", e => {
+         if(e.target == $btnBuscar){
+             let data = {
+                 Estado: $Estado.value
+             }
+             solicitarCalculosComision(data)
+         }
+     })
+
+</script>

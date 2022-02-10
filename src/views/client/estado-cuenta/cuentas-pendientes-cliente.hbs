@@ -1,0 +1,78 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Cuentas por cobrar</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h5>Documentos pendientes:  <span id="documentosPendientes">{{documentosPendientes}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5>Documentos vencidos: <span id="documentosVencidos">{{documentosVencidos}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5>Solicitudes de devolución: <span id="solicitudesDevoluciones">{{solicitudes}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5>Monto por pagar general: <span id="montoDocumentosPendientes">{{montoDocumentosPendientes}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5>Monto por pagar vencido: <span id="montoDocumentosVencidos">{{montoDocumentosVencidos}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5 class="text-danger">Monto por pagar: <span id="montoPorPagar">{{montoPorPagar}}</span></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5>Todas las facturas</h5>
+                </div>
+            </div>
+        </div>
+         <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Fecha de emisión</th>
+                    <th class="text-center">Fecha vencimiento</th>
+                    <th class="text-center">Número</th>
+                    <th class="text-center">Tipo</th>
+                    <th class="text-center">Cliente</th>
+                    <th class="text-center">Cantidad total</th>
+                    <th class="text-center">Neto</th>
+                    <th class="text-center">Saldo</th>
+                    <th class="text-center">Historial pagos</th>
+                    <th class="text-center">Ver documento</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each facturasGeneral}}
+                        <tr>
+                            <td class="text-center"><p class="{{clase}}">{{Fecha}}</p></td>
+                            <td class="text-center"><p class="{{clase}}">{{Vencimiento}}</p></td>
+                            <td class="text-center"><p class="{{clase}}">{{Numero}}</p></td>
+                            <td class="text-center"><p class="{{clase}}">{{Tipo}}</p></td>
+                            <td class="text-center"><p class="{{clase}}">{{Cliente}}</p></td>
+                            <td class="text-center"><p class="{{clase}}">{{CantidadTotal}}</p></td>
+                            <td class="text-center"><p class="{{clase}}">{{Neto}}</p></td>
+                            <td class="text-center"><p class="{{clase}}">{{Saldo}}</p></td>
+                            <td class="text-center"><a href="/ver-historial-pagos-client/{{Numero}}" class="text-success"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>
+                            <td class="text-center"><a href="{{link}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

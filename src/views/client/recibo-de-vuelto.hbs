@@ -1,0 +1,44 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Recibos de vuelto</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+      <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h5>Todos los recibos</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Número</th>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Monto</th>
+                        <th class="text-center">Ver detalle</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each recibosVueltos}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>
+                            <td class="text-center">{{Numero}}</td>
+                            <td class="text-center">{{Cliente}}</td>
+                            <td class="text-center">{{Monto}}</td>
+                            <td class="text-center"><a class="text-success h5 procesar" target="_blank" href="/ver-recibo-de-vuelto/{{Numero}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

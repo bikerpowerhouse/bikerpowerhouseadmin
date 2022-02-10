@@ -1,0 +1,45 @@
+<div class="container-fluid mt-2">
+    <section class="content">
+        <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h3 class="card-title">Directorio de inventario</h3>
+                        </div>
+                        <div class="col-sm-12">
+                            {{>success}}
+                            {{>errors}}
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Tipo de producto</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Precio FOB</th>
+                        <th class="text-center">Precio venta</th>
+                        <th class="text-center">Movimientos</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{#each productos}}
+                        <tr>
+                            <td class="text-center"><a href='{{link}}' class="text-info">{{Codigo}}</a></td>
+                            <td class="text-center">{{TipoProducto}}</td>
+                            <td class="text-center">{{Cantidad}}</td>
+                            <td class="text-center">{{PrecioFOB}}</td>
+                            <td class="text-center">{{PrecioVenta}}</td>
+                            <td class="text-center"><a href="/ver-historial-movimientos/{{_id}}"><i class="fas fa-history" style="font-size: 22px;"></i></a></a></td>
+                        </tr>
+                        {{/each}}
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                </div>
+    </section>
+</div>
+

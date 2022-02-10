@@ -1,0 +1,440 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">{{producto.Codigo}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+        <div class="row">
+            <div class="col-sm-12" id="insertErrors">
+                {{#each errors}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{text}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {{/each}}
+                {{>success}}
+            </div>
+        </div>
+    <div class="card card-orange">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6 text-start">
+                    <h3 class="card-title">Todos los datos</h3>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <button class="btn" id="removeDisabled"><i class="fas fa-user-edit text-light" id="btnEditar"></i></button>
+                </div>
+            </div>
+        </div>
+            <!-- /.card-header -->
+       <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Código</label>
+                            <input readonly type="text" value="{{producto.Codigo}}" class="form-control" id="Codigo" placeholder="Introduzca el código">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Marca</label>
+                            <input readonly type="text" value="{{producto.MarcaProducto}}" class="form-control" id="MarcaProducto" placeholder="Introduzca la marca del producto" value="Thomson">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input readonly type="text" value="{{producto.Nombre}}" class="form-control" id="NombreProducto"  placeholder="Introduzca el nombre del producto">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Modelo del producto</label>
+                            <input readonly type="text" value="{{producto.ModeloProducto}}" class="form-control" id="ModeloProducto" placeholder="Introduzca el modelo del producto">
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <label>Proveedor</label>
+                            <select disabled id="Proveedor" class="form-control js-exam">.
+                                <option value="{{producto.Proveedor}}" selected>{{producto.Proveedor}}</option>
+                                {{#each proveedores}}
+                                    <option value="{{Empresa}}">{{Empresa}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                     <div class="col-sm-4">
+                        <label>Posición</label>
+                        <div class="form-group">
+                            <select id="Posicion" disabled class="form-control js-exam">.
+                                <option value="{{producto.Posicion}}" selected>{{producto.Posicion}}</option>
+                                <option value="Delantero">Delantero</option>
+                                <option value="Delantero derecho">Delantero derecho</option>
+                                <option value="Delantero izquierdo">Delantero izquierdo</option>
+                                <option value="Trasero">Trasero </option>
+                                <option value="Traseros derecho">Traseros derecho</option>
+                                <option value="Traseros izquierdo">Traseros izquierdo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Alto <span class="text-muted">(cm)</span></label>
+                        <input readonly value="{{producto.Alto}}" type="number" class="form-control" min="0" id="Alto" placeholder="Introduzca el alto">
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Largo <span class="text-muted">(cm)</span></label>
+                        <input readonly type="number" value="{{producto.Largo}}" class="form-control" min="0" id="Largo" placeholder="Introduzca el largo">
+
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Ancho <span class="text-muted">(cm)</span></label>
+                        <input readonly type="number" class="form-control"  value="{{producto.Ancho}}" min="0"id="Ancho" placeholder="Introduzca el ancho">
+
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Peso <span class="text-muted">(kg)</span></label>
+                        <input readonly type="number" class="form-control" min="0" id="Peso" value="{{producto.Peso}}" placeholder="Introduzca el peso">
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="">Cantidad por bultos</label>
+                        <input readonly type="number" class="form-control" min="0" id="Bulto" value="{{producto.Bulto}}" placeholder="Introduzca la cantidad por bultos">
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="">Precio FOB</label>
+                        <input readonly type="number" class="form-control" min="0" id="PrecioFOB" value="{{producto.PrecioFOB}}" placeholder="Introduzca el precio FOB">
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="">Precio venta</label>
+                        <input readonly type="number" class="form-control" min="0" id="PrecioVenta" value="{{producto.PrecioVenta}}" placeholder="Introduzca el precio de venta">
+                    </div>
+                </div>
+        </div>
+    </div>
+     <div class="card card-secondary">
+        <div class="card-header">
+            <h5 class="card-title">Aplicación</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <label for="">Marca</label>
+                            <select id="Marca" disabled class="form-control js-exam">
+                                <option value="0">-Seleccione una marca-</option>
+                                <option value="Empire Keeway">Empire Keeway</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 mt-4">
+                            <button class="btn btn-outline-info mt-2" disabled>+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <label for="">Modelo</label>
+                            <select id="Modelo" disabled class="form-control js-exam">
+                                <option value="0">-Seleccione un modelo-</option>
+                                <option value="Modelo 1">Modelo 1</option>
+                                <option value="Modelo 1">Modelo 2</option>
+                                <option value="Modelo 1">Modelo 3</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 mt-4">
+                            <button class="btn btn-outline-info mt-2" disabled>+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <label for="">Desde <span>(Año)</span></label>
+                    <input type="number" readonly id="Desde" class="form-control" min="1950" max="2100" placeholder="2010">
+                </div>
+                <div class="col-sm-2">
+                    <label for="">Hasta <span>(Año)</span></label>
+                    <input type="number" readonly class="form-control" id="Hasta" min="1950" max="2100" placeholder="2015">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn mt-1 btn-outline-warning text-dark w-100" disabled id="btnAgregar">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-secondary table-hover">
+        <thead>
+            <tr>
+            <th scope="col" class="text-center">Marca</th>
+            <th scope="col" class="text-center">Modelo</th>
+            <th scope="col" class="text-center">Año</th>
+            <th scope="col" class="text-center">Eliminar</th>
+            </tr>
+        </thead>
+        <tbody id="tBody">
+            {{#each producto.Vehiculo}}
+                <tr>
+                    <td class="text-center">{{Marca}}</td>
+                    <td class="text-center">{{Modelo}}</td>
+                    <td class="text-center">{{Anio}}</td>
+                    <td class="text-center"><button class="btn btn-danger" disabled>-</button></td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <div class="text-right mt-2 mb-2" id="InsertarBtn" data-id={{producto._id}}>
+    </div>
+     <div class="modal fade" id="exampleModal12" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">¿Estas seguro que quiere eliminar el producto?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/eliminar-producto/{{_idProducto}}">
+                    <div class="row">
+                        <div class="col-sm-12 text-right">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $btnEditar = d.getElementById("btnEditar"),
+    $inputs = d.getElementsByTagName("input"),
+    $buttons = d.getElementsByTagName("button"),
+    $selects = d.getElementsByTagName("select"),
+    $Vendedor = d.getElementById("Vendedor"),
+    $InsertarBtn = d.getElementById("InsertarBtn"),
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $btnEnviar = d.getElementById("btnEnviar"),
+    $Codigo = d.getElementById("Codigo"),
+    $NombreProducto = d.getElementById("NombreProducto"),
+    $MarcaProducto = d.getElementById("MarcaProducto"),
+    $ModeloProducto = d.getElementById("ModeloProducto"),
+    $Proveedor = d.getElementById("Proveedor"),
+    $Posicion = d.getElementById("Posicion"),
+    $Alto = d.getElementById("Alto"),
+    $Largo = d.getElementById("Largo"),
+    $Ancho = d.getElementById("Ancho"),
+    $Peso = d.getElementById("Peso"),
+    $PrecioVenta = d.getElementById("PrecioVenta"),
+    $PrecioFOB = d.getElementById("PrecioFOB"),
+    $Marca = d.getElementById("Marca"),
+    $Modelo = d.getElementById("Modelo"),
+    $Desde = d.getElementById("Desde"),
+    $Hasta = d.getElementById("Hasta"),
+    $tBody = d.getElementById("tBody"),
+    $removeDisabled = d.getElementById("removeDisabled"),
+    $insertErrors = d.getElementById("insertErrors")
+    let _id = $InsertarBtn.getAttribute("data-id")
+    let validacionBtn = 0
+
+    const enviarProducto = async (data) => {
+        return await fetch(`/actualizar-base/${_id}`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                if(response.length == 2){
+                    for(i=0; i< $inputs.length; i++){
+                        $inputs[i].setAttribute("readonly","")
+                    }
+                    for(r=0; r< $buttons.length; r++){
+                        $buttons[r].setAttribute("disabled","")
+                    }
+                    for(t=0; t< $selects.length; t++){
+                        $selects[t].setAttribute("disabled","")
+                    }
+                    $removeDisabled.removeAttribute("disabled")
+
+                    $insertErrors.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Producto actualizado correctamente.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    $InsertarBtn.innerHTML =""
+                    window.scrollTo(0,0)
+                }else{
+                     $insertErrors.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El código ${$Codigo.value} ya se encuentra registrado.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                       window.scrollTo(0,0)
+                }
+            });
+    };
+
+    d.addEventListener("click", e => {
+        if(e.target == $btnEditar){
+            for(i=0; i< $inputs.length; i++){
+                if($inputs[i].hasAttribute("readonly")){
+                    $inputs[i].removeAttribute("readonly")
+                }
+            }
+            for(r=0; r< $buttons.length; r++){
+                if($buttons[r].hasAttribute("disabled")){
+                    $buttons[r].removeAttribute("disabled")
+                }
+            }
+            for(t=0; t< $selects.length; t++){
+                if($selects[t].hasAttribute("disabled")){
+                    $selects[t].removeAttribute("disabled")
+                }
+            }
+            if(validacionBtn == 0){
+                let buton = `<button class="btn btn-success">Actualizar</button>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal12">Eliminar</button>`
+                $InsertarBtn.innerHTML += buton 
+                validacionBtn++
+            }
+        }
+         if(e.target == $btnAgregar){
+            let errors = []
+            validacion = 0
+          
+            if($PrecioVenta.value == 0 || !$PrecioVenta.value || $PrecioVenta.value ==""){
+                validacion++
+            }
+            if($PrecioFOB.value == 0 || !$PrecioFOB.value || $PrecioFOB.value ==""){
+                validacion++
+            }
+            if($Codigo.value == 0 || !$Codigo.value || $Codigo.value ==""){
+                validacion++
+            }
+            if($MarcaProducto.value == 0 || !$MarcaProducto.value || $MarcaProducto.value ==""){
+                validacion++
+            }
+            if($NombreProducto.value == 0 || !$NombreProducto.value || $NombreProducto.value ==""){
+                validacion++
+            }
+            if($ModeloProducto.value == 0 || !$ModeloProducto.value || $ModeloProducto.value ==""){
+                validacion++
+            }
+            if($Proveedor.value == 0 || !$Proveedor.value || $Proveedor.value ==""){
+                validacion++
+            }
+            if($Posicion.value == 0 || !$Posicion.value || $Posicion.value ==""){
+                validacion++
+            }
+            if($Alto.value == 0 || !$Alto.value || $Alto.value ==""){
+                validacion++
+            }
+            if($Largo.value == 0 || !$Largo.value || $Largo.value ==""){
+                validacion++
+            }
+            if($Ancho.value == 0 || !$Ancho.value || $Ancho.value ==""){
+                validacion++
+            }
+            if($Peso.value == 0 || !$Peso.value || $Peso.value ==""){
+                validacion++
+            }
+            if($Marca.value == 0 || !$Marca.value || $Marca.value ==""){
+                validacion++
+            }
+            if($Modelo.value == 0 || !$Modelo.value || $Modelo.value ==""){
+                validacion++
+            }
+            if($Desde.value == 0 || !$Desde.value || $Desde.value ==""){
+                validacion++
+            }
+            if($Hasta.value == 0 || !$Hasta.value || $Hasta.value ==""){
+                validacion++
+            }
+            if(validacion > 0){
+                $insertErrors.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Para poder agregar un modelo debe llenar todos los datos del formulario.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+            }else{
+                let tr = `
+                    <tr>
+                        <td class="text-center">${$Marca.value}</td>
+                        <td class="text-center">${$Modelo.value}</td>
+                        <td class="text-center">${$Desde.value}-${$Hasta.value}</td>
+                        <td class="text-center"><button class="btn btn-danger">-</button></td>
+                    </tr>
+                `
+                $tBody.innerHTML += tr
+                $Desde.value = ""
+                $Hasta.value = ""
+                $("#Modelo").select2("val", "0");
+                $("#Marca").select2("val", "0");
+
+            }
+        }
+        if(e.target.textContent == "-"){
+            let fila = e.target.parentElement.parentElement
+            $tBody.removeChild(fila)
+        }
+        if(e.target.textContent == "Actualizar"){
+            let Vehiculo = []
+            let tabla = $tBody.children
+            if(tabla.length < 0){
+                  $insertErrors.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe ingresar una aplicación como minimo para poder registrar un código
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+            }else{
+                let Descripcion = ""
+                for(i=0; i< tabla.length; i++ ){
+                    let data = {
+                        Marca: tabla[i].children[0].textContent,
+                        Modelo: tabla[i].children[1].textContent,
+                        Anio: tabla[i].children[2].textContent
+                    }
+                    if(i == (+tabla.length - 1)){
+                        Descripcion += `${tabla[i].children[0].textContent} ${tabla[i].children[1].textContent} ${tabla[i].children[2].textContent}`
+                    }else{
+                        Descripcion += `${tabla[i].children[0].textContent} ${tabla[i].children[1].textContent} ${tabla[i].children[2].textContent},`
+                    }
+                    Vehiculo.push(data)
+                }
+                let dataEnvio = {
+                    ModeloProducto: $ModeloProducto.value,
+                    Nombre:$NombreProducto.value,
+                    Proveedor: $Proveedor.value,
+                    Posicion:$Posicion.value,
+                    Alto: $Alto.value,
+                    Largo: $Largo.value,
+                    Codigo: $Codigo.value,
+                    MarcaProducto: $MarcaProducto.value,
+                    ModeloProducto: $ModeloProducto.value,
+                    Ancho:$Ancho.value,
+                    Peso:$Peso.value,
+                    PrecioFOB: $PrecioFOB.value,
+                    PrecioVenta: $PrecioVenta.value,
+                    Descripcion:Descripcion, 
+                    Vehiculo: Vehiculo, 
+                }
+                enviarProducto(dataEnvio)
+            }
+        }
+    })
+</script>

@@ -1,0 +1,37 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Ventas por productos</h2>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-body">
+                  <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Tipo producto</th>
+                        <th class="text-center">Descripción</th>
+                        <th class="text-center">Cantidad vendida</th>
+                        <th class="text-center">Valor vendido</th>
+                        <th class="text-center">Ver detalles</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each data}}
+                    <tr>
+                        <td class="text-center">{{Codigo}}</td>
+                        <td class="text-center">{{TipoProducto}}</td>
+                        <td class="text-center">{{Descripcion}}</td>
+                        <td class="text-center">{{CantidadVendida}}</td>
+                        <td class="text-center">{{ValorVendido}}</td>
+                        <td class="text-center"><a target="_blank" href="/ver-detalles-ventas-producto-admin/{{_id}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,43 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Solicitudes de devolución</h1>
+            </div>
+            <div class="col-sm-6 text-right mt-1">
+                <a class="btn btn-info" href="/realizar-solicitud-devolucion">Realizar solicitud devolución</a>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h5>Todas las devoluciones</h5>
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Fecha de solicitud</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-center">Precio total</th>
+                    <th class="text-center">Ver detalles</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each solicitudesDevoluciones}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>
+                            <td class="text-center">{{Estado}}</td>
+                            <td class="text-center">{{CantidadTotal}}</td>
+                            <td class="text-center">{{PrecioTotal}}</td>
+                            <td class="text-center"><a href="/ver-detalles-solicitud-devolucion/{{_id}}" target="_blank"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

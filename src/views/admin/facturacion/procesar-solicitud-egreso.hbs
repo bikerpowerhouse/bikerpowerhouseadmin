@@ -1,0 +1,176 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0" id="Titulo" data-id="{{data._id}}">Procesar solicitud de egreso</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6 h4">Vendedor: <span>{{solicitudEgreso.Vendedor}}</span></div>
+                <div class="col-sm-6 h4">Monto total: <span>{{solicitudEgreso.MontoTotal}}</span></div>
+                <div class="col-sm-6">
+                    <label for="">Modalidad de pago</label>
+                    <select class="form-control js-exam" id="MetodoPago">
+                        <option value="0">--Seleccione metodo de pago--</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Zelle">Zelle</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label for="">Referencia</label>
+                    <input type="text" class="form-control" id="Referencia" placeholder="Introduzca número de referencia" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table  class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Comentario</th>
+                        <th class="text-center">Monto</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody">
+                    {{#each solicitudEgreso.Egresos}}
+                        <tr>
+                            <td class="text-center">{{Comentario}}</td>
+                            <td class="text-center">{{Monto}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot >
+                    <tr>
+                        <td class="text-danger text-right">Total:</td>
+                        <td class="text-center" id="Total">{{solicitudEgreso.MontoTotal}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="text-right">
+        <button type="submit" data-id="{{solicitudEgreso._id}}"  id="btnEnvio" class="btn btn-success">Procesar egreso</button>
+    </div>
+</section>
+<script>
+    const d = document,
+    $MetodoPago = d.getElementById("MetodoPago"), 
+    $btnEnvio = d.getElementById("btnEnvio"), 
+    $insertarError = d.getElementById("insertarError"), 
+    $Total = d.getElementById("Total"), 
+    $tBody = d.getElementById("tBody"), 
+    $Referencia = d.getElementById("Referencia");
+    let _id = $btnEnvio.getAttribute("data-id") 
+
+       const procesarSolicitudEgreso = async (data) => {
+        return await fetch(`/procesar-egreso/${_id}`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            location.href = `/reportar-pago`
+        });
+    };
+       const solicitarNumeroTransaccion = async (data) => {
+        return await fetch(`/solicitar-numero-transaccion-cobranza`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            if(response.Existe == true){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                        El número de transacción ya se encuentra registrado. Por favor,
+                        Valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                $btnEnvio.setAttribute("disabled","")
+            }else{
+                $btnEnvio.removeAttribute("disabled")
+            }
+        });
+    };
+
+    $MetodoPago.onchange = () => {
+        if($MetodoPago.value != 0 && $MetodoPago.value != "Efectivo"){
+            $Referencia.removeAttribute("readonly")
+            $btnEnvio.setAttribute("disabled","")
+        }else{
+            $Referencia.setAttribute("readonly","")
+            $Referencia.value = ""
+            $btnEnvio.removeAttribute("disabled")
+        }
+    }
+
+    $Referencia.onchange = () => {
+        let data = {
+            Transaccion : $Referencia.value
+        }
+        solicitarNumeroTransaccion(data)
+    }
+
+    d.addEventListener("click", e => {
+        if(e.target == $btnEnvio){
+            if($MetodoPago.value == 0 || $MetodoPago.value == "" || !$MetodoPago.value){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                        Debe seleccionar una modalidad de pago. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+
+            }else{
+                let egresos = []
+
+                for(i=0; i< $tBody.children.length; i++){
+                    let data = {
+                        Comentario: $tBody.children[i].children[0].textContent,
+                        Monto: $tBody.children[i].children[1].textContent,
+                    }
+                    egresos.push(data)
+                }
+                let data 
+                if($MetodoPago.value == "Efectivo"){
+                    data = {
+                        Modalidad : $MetodoPago.value,
+                        Egresos: egresos,
+                        Total: $Total.textContent, 
+                    }
+                }else{
+                    data = {
+                        Modalidad : $MetodoPago.value,
+                        Referencia : $Referencia.value,
+                        Egresos: egresos,
+                        Total: $Total.textContent, 
+                    }
+                }
+                procesarSolicitudEgreso(data)
+
+            }
+        }
+    })
+
+
+</script>

@@ -1,0 +1,123 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Reportar ingreso</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <form action="/registrar-nueva-solicitud-de-ingreso-vendedor" method="POST">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label>Cliente</label>
+                        <select class="form-control js-exam" name="Cliente" id="cliente" required>
+                                <option value="0">--Seleccione un cliente--</option>
+                            {{#each clientes}}
+                                <option value="{{Empresa}}">{{Empresa}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>Modalidad</label>
+                        <select class="form-control js-exam" name="Modalidad" id="modalidad" required>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Zelle">Zelle</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>Monto</label>
+                        <input type="number" step="any" min="0" name="Monto"  class="form-control" id="montoCobrar" required>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Número de transacción</label>
+                        <input type="text" class="form-control" name="Transaccion" readonly id="numeroTransaccion">
+                        <span class="text-muted">Campo opcional de ser un pago en efectivo.</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Comentario <span class="text-muted">(opcional)</span></label>
+                        <input type="text" name="Comentario" class="form-control" id="comentario" >
+                    </div>
+                </div>
+        </div>
+    </div>
+    <div class="text-right my-2">
+        <button id="btnEnviarPago" type="submit" class="btn btn-success">Registrar pago</button>
+    </form>
+    <div>
+</section>
+<script>
+    const d = document, 
+    $comentario = d.getElementById("comentario"),
+    $numeroTransaccion = d.getElementById("numeroTransaccion"),
+    $montoCobrar = d.getElementById("montoCobrar"),
+    $pendiente = d.getElementById("pendiente"),
+    $notaEntrega = d.getElementById("notaEntrega"),
+    $modalidad = d.getElementById("modalidad"),
+    $cliente = d.getElementById("cliente"),
+    $insertarError = d.getElementById("insertarError"),
+    $tbody = d.getElementById("tbody"),
+    $Total = d.getElementById("Total"),
+    $SaldoFavor = d.getElementById("SaldoFavor"),
+    $btnEnviarPago = d.getElementById("btnEnviarPago"),
+    $btnAgregar = d.getElementById("btnAgregar");
+    let notas
+    let notasAgregadas = []
+    let total = 0
+    let SaldoFavor = 0
+    const solicitarNumeroTransaccion = async (data) => {
+        return await fetch(`/solicitar-numero-transaccion-cobranza`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            if(response.Existe == true){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                        El número de transacción ya se encuentra registrado. Por favor,
+                        Valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                $btnEnviarPago.setAttribute("disabled","")
+            }else{
+                $btnEnviarPago.removeAttribute("disabled")
+            }
+        });
+    };
+    $modalidad.onchange = () => {
+        if($modalidad.value != "Efectivo"){
+            $numeroTransaccion.removeAttribute("readonly")
+            $numeroTransaccion.setAttribute("required","")
+            $numeroTransaccion.value = ""
+            $btnEnviarPago.setAttribute("disabled","")
+        }else{
+            $btnEnviarPago.removeAttribute("disabled")
+            $numeroTransaccion.value = ""
+            $numeroTransaccion.setAttribute("readonly","")
+        }
+    }
+    $numeroTransaccion.onchange = () => {
+        let data = {
+            Transaccion : $numeroTransaccion.value
+        }
+        solicitarNumeroTransaccion(data)
+    }
+</script>

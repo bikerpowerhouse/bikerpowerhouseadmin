@@ -1,0 +1,41 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Calificaciones de vendedores</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+        </div>
+        <div class="card-body">
+            <table id="example1"class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Empresa</th>
+                        <th class="text-center">Nombres</th>
+                        <th class="text-center">Cédula</th>
+                        <th class="text-center">Calificación actual</th>
+                        <th class="text-center">Ver tareas</th>
+                        <th class="text-center">Historial calificaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each calificaciones}}
+                    <tr>
+                        <td class="text-center">{{Empresa}}</td>
+                        <td class="text-center">{{Nombres}} {{Apellidos}}</td>
+                        <td class="text-center">{{Documento}}</td>
+                        <td class="text-center">{{CalificacionActual}}</td>
+                        <td class="text-center"><a class="text-success" target="_blank" href="/ver-tareas/{{_idPersona}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                        <td class="text-center"><a class="text-info" target="_blank" href="/ver-historial-calificaciones-clientes/{{_id}}"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

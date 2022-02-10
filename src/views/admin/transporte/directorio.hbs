@@ -1,0 +1,33 @@
+<div class="container-fluid mt-2">
+    <section class="content">
+        <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Directorio de transportistas</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Dirección</th>
+                        <th>Celular</th>
+                        <th>Correo electronico</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{#each transporte}}
+                        <tr>
+                            <td><a href='/ver-transporte/{{_id}}' class="text-info">{{Empresa}}</a></td>
+                            <td>{{Direccion}}</td>
+                            <td>{{Celular}}</td>
+                            <td>{{email}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                </div>
+    </section>
+</div>

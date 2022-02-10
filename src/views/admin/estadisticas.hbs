@@ -1,0 +1,709 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Estadisticas generales</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+     <div class="row">
+          <div class="col-12 col-sm-12 col-md-12">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-file-invoice text-dark"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas generales</span>
+                <span class="info-box-number">{{ventasGenerales.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasGenerales.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasGenerales.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Ventas por mes</span>
+                <div>
+                    <canvas id="myChart" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Utilidades por mes</span>
+                <div>
+                    <canvas id="myChart1" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-secondary elevation-1"><img src="images/battery.png" class="img-fluid" width="60px" height="60px"  alt=""> </span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas baterías</span>
+                <span class="info-box-number">{{ventasBaterias.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasBaterias.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasBaterias.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Baterías por mes</span>
+                <div>
+                    <canvas id="myChart2" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-6">
+            <div class="info-box">
+              <span class="info-box-icon bg-danger elevation-1"><img src="images/shock-absorber.png" class="img-fluid" width="60px" height="60px"  alt=""> </span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas amortiguadores</span>
+                <span class="info-box-number">{{ventasAmortiguadores.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasAmortiguadores.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasAmortiguadores.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-6">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-warning elevation-1"><img src="images/bujias.png" class="img-fluid" width="60px" height="60px"  alt=""></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas bujías</span>
+                <span class="info-box-number">{{ventasBujias.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasBujias.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasBujias.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Amortiguadores por mes</span>
+                <div>
+                    <canvas id="myChart3" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Bujías por mes</span>
+                <div>
+                    <canvas id="myChart10" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+          <div class="clearfix hidden-md-up"></div>
+          <div class="col-12 col-sm-6 col-md-6">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-warning elevation-1"><img src="images/bombas.png" class="img-fluid" width="60px" height="60px"  alt=""></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas bombas</span>
+                <span class="info-box-number">{{ventasBombas.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasBombas.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasBombas.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-6">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-primary elevation-1"><img src="images/bases.png" class="img-fluid" width="60px" height="60px"  alt=""></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas base de amortiguador</span>
+                <span class="info-box-number">{{ventasBases.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasBases.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasBases.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+      
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Bombas por mes</span>
+                <div>
+                    <canvas id="myChart4" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Bases de amortiguadores por mes</span>
+                <div>
+                    <canvas id="myChart7" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+            <div class="col-12 col-sm-6 col-md-6">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-info elevation-1"><img src="images/guardapolvo.png" class="img-fluid" width="60px" height="60px"  alt=""></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas guardapolvo</span>
+                <span class="info-box-number">{{ventasGuardapolvo.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasGuardapolvo.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasGuardapolvo.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-6">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-success elevation-1"><img src="images/valvulas.png" class="img-fluid" width="60px" height="60px"  alt=""></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Ventas valvulas</span>
+                <span class="info-box-number">{{ventasValvulas.CantidadTotal}}</span>
+                <span class="info-box-number">{{ventasValvulas.MontoTotal}}</span>
+                <span class="info-box-number">{{ventasValvulas.UtilidadesTotales}}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Guardapolvos por mes</span>
+                <div>
+                    <canvas id="myChart8" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card border-0 shadow p-3 rounded">
+              <span>Valvulas por mes</span>
+                <div>
+                    <canvas id="myChart9" height="300"></canvas>
+                </div>
+            </div>
+          </div>
+      
+        </div>
+        <hr class="mt-2 mb-2 bg-dark">
+          <h4 class="text-center">Sección de graficas personalizadas</h4>
+          <div class="row">
+            <div class="col-sm-6">
+              <label for="">Categoría</label>
+              <select id="Categoria" class="form-control js-exam">
+                <option value="0">--Seleccione una categoría--</option>
+                <option value="Clientes">Clientes</option>
+                <option value="Vendedores">Vendedores</option>
+                <option value="Zonas">Zonas</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="">Dato</label>
+              <select id="Dato" class="form-control js-exam">
+                <option value="0">--Seleccione un dato--</option>
+              </select>
+            </div>
+            <div class="col-sm-12 mt-2 mb-2">
+              <div class="card border-0 shadow p-3 rounded">
+                <div>
+                    <canvas id="myChart6" height="300"></canvas>
+                </div>
+            </div>
+            </div>
+          </div>
+</section>
+<script>
+  const d = document,
+  $Categoria = d.getElementById("Categoria"),
+  $Dato = d.getElementById("Dato");
+  const solicitarInfoGraficas = async (data) => {
+        return await fetch(`/solicitar-info-grafica-estadisticas`, {
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                const ctx = document.getElementById("myChart")
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: response.ventasMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoVentasMes,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx1 = document.getElementById("myChart1")
+                    var myChart = new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: response.ventasMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.UtilidadesVentasMes,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx2 = document.getElementById("myChart2")
+                    var myChart = new Chart(ctx2, {
+                        type: 'bar',
+                        data: {
+                            labels: response.bateriasMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoBateriasMes,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx3 = document.getElementById("myChart3")
+                    var myChart = new Chart(ctx3, {
+                        type: 'bar',
+                        data: {
+                            labels: response.amortiguadoresMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoAmortiguadoresMes,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx4 = document.getElementById("myChart4")
+                    var myChart = new Chart(ctx4, {
+                        type: 'bar',
+                        data: {
+                            labels: response.bombasMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoBombasMes,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx7 = document.getElementById("myChart7")
+                    var myChart = new Chart(ctx7, {
+                        type: 'bar',
+                        data: {
+                            labels: response.basesMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoBases,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx8 = document.getElementById("myChart8")
+                    var myChart = new Chart(ctx8, {
+                        type: 'bar',
+                        data: {
+                            labels: response.guardapolvosMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoGuardapolvos,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx9 = document.getElementById("myChart9")
+                    var myChart = new Chart(ctx9, {
+                        type: 'bar',
+                        data: {
+                            labels: response.valvulasMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoValvulas,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+                const ctx10 = document.getElementById("myChart10")
+                    var myChart = new Chart(ctx10, {
+                        type: 'bar',
+                        data: {
+                            labels: response.bujiasMes,
+                            datasets: [{
+                                label: 'Monto',
+                                data: response.montoBujias,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    }
+                  );
+
+            });
+    };
+  solicitarInfoGraficas()
+
+  const solicitarCategoria = async (data) => {
+      return await fetch(`/solicitar-info-categoria`, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+          "Content-type": "application/json; charset=utf-8",
+          },
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        let options = `<option value="0">--Seleccione un dato--</option>`
+        for(i=0; i< response.length; i++){
+          let opt = `<option value="${response[i]}">${response[i]}</option>`
+          options += opt
+        }
+        $Dato.innerHTML = options
+      });
+  };
+  solicitarInfoGraficas()
+
+
+      const solicitarInfoGraficaPersonalizada = async (data) => {
+        return await fetch(`/solicitar-info-grafica-personalizada`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                const ctx6 = document.getElementById("myChart6")
+                    var myChart = new Chart(ctx6, {
+                        type: 'line',
+                        data: {
+                            labels: response.dataFecha,
+                            datasets: [{
+                                label: 'Calificación',
+                                data: response.dataMonto,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                          }
+                        }
+                    });
+            });
+    };
+  
+  $Categoria.onchange = () =>{
+    if($Categoria.value != 0){
+      $Dato.innerHTML = `<option value="0">--Seleccione un dato--</option>`
+      let data = {
+        Categoria : $Categoria.value
+      }
+      solicitarCategoria(data)
+    }
+  }
+  $Dato.onchange = () =>{
+    if($Dato.value != 0){
+      let data = {
+        Categoria:$Categoria.value, 
+        Dato: $Dato.value
+      }
+      solicitarInfoGraficaPersonalizada(data)
+    }
+  }
+</script>

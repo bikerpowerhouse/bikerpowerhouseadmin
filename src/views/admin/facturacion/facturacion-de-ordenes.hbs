@@ -1,0 +1,875 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0" id="titulo" data-NumeroOrden="{{orden.Numero}}">Procesar orden {{orden.Numero}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+        <div class="row">
+            <div class="col-sm-12" id="insertarErrores">
+            
+            </div>
+             <div id="introducirModalNota">
+
+            </div>  
+        </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5>Formulario de datos de facturación</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="">Fecha</label>
+                    <input type="date" id="Fecha" value="{{Fecha}}" class="form-control">
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Número de documento</label>
+                    <input type="text" id="Numero"  value="{{NumeroInicial}}" readonly class="form-control" placeholder="Introduzca correlativo inicial">
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Cambio bolívares</label>
+                    <input type="number" id="CambioBolivares" value="{{cambio}}" class="form-control" placeholder="Introduzca cambio bolivares">
+                </div>
+                <div class="col-sm-8">
+                    <label for="">Cliente</label>
+                    <select name="Cliente" id="Cliente" class="form-control" disabled>
+                        <option value="{{orden._idCliente}}">{{orden.Cliente}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Dias de credito</label>
+                    <input type="number" value="{{orden.DiasCredito}}" max="{{orden.DiasCredito}}" id="Vencimiento" min="0" class="form-control" placeholder="Introduzca días de creditos">
+                </div>
+                <div class="col-sm-8">
+                    <label for="">Vendedor</label>
+                    <select id="Vendedor" class="form-control js-exam">
+                        <option value="{{orden.Vendedor}}" selected>{{orden.Vendedor}}</option>
+                        {{#each vendedores}}
+                            <option value="{{Nombres}} {{Apellidos}}">{{Nombres}} {{Apellidos}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Porcentaje de ganancia</label>
+                    <input type="number" id="Porcentaje" step="any" value="{{orden.Porcentaje}}"  max="100" min="0" placeholder="Introduzca porcentaje de ganancia" class="form-control">
+                </div>
+                <div class="col-sm-6">
+                    <label for="">Transporte</label>
+                    <select name="Transporte" id="Transporte" class="form-control js-exam">
+                        <option value="0">--Seleccione un transporte--</option>
+                        {{#each transporte}}
+                            <option value="{{_id}}">{{Empresa}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label for="">Zona</label>
+                    <select class="form-control js-exam" name="Zona" id="Zona">
+                        <option value="0">--Seleccione la zona de entrega--</option>
+                    </select>   
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label for="">Productos</label>
+                    <select id="Producto" class="form-control js-exam">
+                        <option value="0">--Seleccione un producto--</option>
+                        {{#each listaProductos}}
+                            <option value="{{Codigo}}">{{Codigo}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label for="">Precio venta</label>
+                    <input type="number" placeholder="$0" id="PrecioVenta" readonly class="form-control">
+                </div>
+                <div class="col-sm-2">
+                    <label for="">Cantidad Actual</label>
+                    <input type="number" placeholder="0" id="CantidadActual" readonly class="form-control">
+                </div>
+                <div class="col-sm-3">
+                    <label for="">Cantidad a agregar</label>
+                    <input type="number" placeholder="0" id="CantidadAgregar" class="form-control">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-outline-info mt-1 w-100" id="btnAgregar">Agregar a lista</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5>Productos solicitados</h5>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <button class="btn btn-secondary"  data-toggle="modal" data-target="#modalGarantia" disabled id="btnGarantia">Garantías <span id="garantiasCantidad"></span></button>
+                    <button class="btn btn-secondary"  data-toggle="modal" data-target="#modalSaldo" disabled id="btnSaldo">Saldo <span id="saldoFavorCantidad"></span></button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-secondary table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center">Código</th>
+                                <th scope="col" class="text-center">Precio unitario</th>
+                                <th scope="col" class="text-center">Cantidad solicitada</th>
+                                <th scope="col" class="text-center">Precio total solicitado</th>
+                                <th scope="col" class="text-center">Cantidad atendible</th>
+                                <th scope="col" class="text-center">Precio total atendible</th>
+                                <th scope="col" class="text-center">-</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBody">
+                            {{#each orden.Productos}}
+                            <tr>
+                                <td class="text-center {{clase}}" >{{Codigo}}</td>
+                                <td class="text-center {{clase}}">{{PrecioFOBUnitario}}</td>
+                                <td class="text-center {{clase}}">{{Cantidad}}</td>
+                                <td class="text-center {{clase}}">{{PrecioFOBTotal}}</td>
+                                <td class="text-center {{clase}}"><input type="number" class="form-control cantidad" max="{{CantidadAtendible}}" min="0" value="{{CantidadAtendible}}"></td>
+                                <td class="text-center {{clase}}">{{MontoAtendible}}</td>
+                                <td></td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" class="text-right text-danger">Totales</th>
+                                <th class="text-center" id="CantidadTotalAgregada">{{orden.CantidadTotal}}</th>
+                                <th class="text-center" id="PrecioTotalAgregado">{{orden.PrecioTotal}}</th>
+                                <th class="text-center" id="CantidadAtendible">{{orden.CantidadGeneralAtendible}}</th>
+                                <th class="text-center" id="MontoAtendible">{{orden.MontoGeneralAtendible}}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="5" class="text-right text-danger">Saldo a favor incluido :</th>
+                                <th class="text-center" id="SaldoIncluido">0</th>
+                                <th class="text-center"><button class="btn btn-danger" disabled id="btnEliminarSaldo">Eliminar saldo</button></th>
+                            </tr>
+                            <tr>
+                                <th colspan="5" class="text-right text-danger">Total general :</th>
+                                <th class="text-center" id="totalMenosSaldo">{{orden.MontoGeneralAtendible}}</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span class="text-muted">Nota: De colocar una cantidad mayor a la disponible, solo se procesará la cantidad que se encuentre en inventario. Por favor, valide las cantidades antes de generar el documento</span>
+    <div class="text-right mt-2 mb-2">
+        <button class="btn btn-success" id="btnGenerar">Generar documento</button>
+    </div>
+     <div class="modal fade" id="modalGarantia" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Garantías solicitadas</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 text-right">
+                        <div class="form-check">
+                            <input class="form-check-input"  type="checkbox" value="" id="checkIncluirTodas">
+                            <label class="form-check-label h5" for="flexCheckIndeterminate">
+                                Incluir todas
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <table class="table table-light table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-center">Código</th>
+                                    <th scope="col" class="text-center">Cantidad</th>
+                                    <th scope="col" class="text-center">Cantidad a agregar</th>
+                                    <th scope="col" class="text-center" style="display: none">Precio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tBodyGarantia">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Aplicar garantías</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalSaldo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Saldo a favor</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <table class="table table-light table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center">Saldo</th>
+                                <th scope="col" class="text-center">Saldo a aplicar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodySaldo">
+                         
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnAplicarSaldo">Aplicar saldo</button>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Transporte = d.getElementById("Transporte"),
+    $Zona = d.getElementById("Zona"),
+    $Fecha = d.getElementById("Fecha"),
+    $CambioBolivares = d.getElementById("CambioBolivares"),
+    $Cliente = d.getElementById("Cliente"),
+    $Vencimiento = d.getElementById("Vencimiento"),
+    $Vendedor = d.getElementById("Vendedor"),
+    $Producto = d.getElementById("Producto"),
+    $Porcentaje = d.getElementById("Porcentaje"),
+    $PrecioVenta = d.getElementById("PrecioVenta"),
+    $CantidadActual = d.getElementById("CantidadActual"),
+    $CantidadAgregar = d.getElementById("CantidadAgregar"),
+    $tBody = d.getElementById("tBody"),
+    $CantidadTotalAgregada = d.getElementById("CantidadTotalAgregada"),
+    $PrecioTotalAgregado = d.getElementById("PrecioTotalAgregado"),
+    $CantidadAtendible = d.getElementById("CantidadAtendible"),
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $garantiasCantidad = d.getElementById("garantiasCantidad"),
+    $SaldoIncluido = d.getElementById("SaldoIncluido"),
+    $btnAplicarSaldo = d.getElementById("btnAplicarSaldo"),
+    $MontoAtendible = d.getElementById("MontoAtendible"),
+    $totalMenosSaldo = d.getElementById("totalMenosSaldo"),
+    $saldoFavorCantidad = d.getElementById("saldoFavorCantidad"),
+    $btnGarantia = d.getElementById("btnGarantia"),
+    $btnSaldo = d.getElementById("btnSaldo"),
+    $checkIncluirTodas = d.getElementById("checkIncluirTodas"),
+    $btnEliminarSaldo = d.getElementById("btnEliminarSaldo"),
+    $tBodySaldo = d.getElementById("tBodySaldo"),
+    $tBodyGarantia = d.getElementById("tBodyGarantia"),
+    $btnGenerar = d.getElementById("btnGenerar"),
+    $insertarErrores = d.getElementById("insertarErrores"),
+    $introducirModalNota = d.getElementById("introducirModalNota")
+    $titulo = d.getElementById("titulo"),
+    $Numero = d.getElementById("Numero")
+    let dataGeneralEnvio
+    let numeroNota 
+    const solicitarInfoProductos = async (data) => {
+        return await fetch("/solicitar-info-productos-facturacion-ordenes", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                $PrecioVenta.value = response.PrecioVenta
+                $CantidadActual.value = response.Cantidad
+                $CantidadAgregar.value = 0 
+            });
+    };
+    const solicitarInfoCliente = async (data) => {
+        return await fetch("/solicitar-info-cliente-facturacion", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                if(response.garantias.length != 0){
+                    let tr = ""
+                    for(i=0; i< response.garantias.length; i++){
+                        linea = `
+                            <tr>
+                                <td class="text-center">${response.garantias[i].Codigo}</td>
+                                <td class="text-center">${response.garantias[i].Cantidad}</td>
+                                <td class="text-center"><input type="number" value="0" class="form-control"></td>
+                                <th scope="col" class="text-center" style="display: none">${response.garantias[i].PrecioUnitario}</th>
+                            </tr>  
+                        `
+                        tr += linea
+                    }
+                    $garantiasCantidad.textContent = response.garantias.length 
+                    $tBodyGarantia.innerHTML = tr
+                    $btnGarantia.classList.remove("btn-secondary")
+                    $btnGarantia.classList.add("btn-danger")
+                    $btnGarantia.removeAttribute("disabled")
+                }
+                if(response.saldoFavor != 0){
+                    let tr =`
+                       <tr>
+                            <td class="text-center">${response.saldoFavor}</td>
+                            <td class="text-center"><input type="number" value="${response.saldoFavor}" class="form-control" readonly></td>
+
+                        </tr>
+                    ` 
+                    $tBodySaldo.innerHTML = tr
+                    $saldoFavorCantidad.textContent = new Intl.NumberFormat("en-US", {  style: "currency",  currency: "USD",}).format(response.saldoFavor)
+                    $btnSaldo.removeAttribute("disabled")
+                    $btnSaldo.classList.remove("bnt-secondary")
+                    $btnSaldo.classList.add("btn-danger")
+                }
+            });
+    };
+
+    let dataCliente = {
+        _idCliente: $Cliente.value
+    }
+    solicitarInfoCliente(dataCliente)
+
+    $Vendedor.onchange = () => {
+        $Porcentaje.value = ""
+    }
+    $Producto.onchange = () => {
+        if($Producto.value != 0){
+            let data = {
+                Codigo : $Producto.value
+            }
+            solicitarInfoProductos(data)
+        }else{
+
+        }
+    }
+
+
+    const solicitarNumeroNotaEntrega = async (data) => {
+        return await fetch("/solicitar-numero-nota-entrega", {
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+                $Numero.value = response
+                $Numero.setAttribute("readonly","")
+            });
+    };
+
+    const solicitarInfoTransporte = async (data) => {
+        return await fetch("/solicitar-info-transporte", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                let options = '<option value="0">--Seleccione la zona de entrega--</option>'
+                for(i=0; i<response.length; i++){
+                    let option = `<option value="${response[i].Ciudad}">${response[i].Ciudad}</option>`
+                    options += option
+                }
+                $Zona.innerHTML = options
+            });
+    };
+
+
+    $Transporte.onchange = () => {
+        if($Transporte.value != 0){
+            let data={
+                _id : $Transporte.value
+            }
+            solicitarInfoTransporte(data)
+        }
+    }
+
+ const cambiarEstadoOrden = async (data) => {
+        return await fetch(`/cambiar-estado-orden-facturada/${$titulo.getAttribute("data-NumeroOrden")}`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+             location.href= "/procesar-ordenes"
+            });
+    };
+    const cerrarSaldo = async (data) => {
+        return await fetch("/cerrar-saldo-cliente", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+              await window.open(`/ver-nota-entrega/${response}`, `Proforma ${response}`, "width=612, heigh=792");
+                let data  = {
+                   Factura: response
+               }
+               cambiarEstadoOrden(data)
+            });
+    };
+   const enviarNotaEntrega = async (data) => {
+        return await fetch("/enviar-nota-entrega", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+              numeroNota = response.Numero
+                 if(dataGeneralEnvio.Descuento > 0){
+                    let data = {
+                        Cliente: $Cliente.value,
+                        numeroNota: numeroNota,
+                        Saldo: dataGeneralEnvio.Descuento
+                    }
+                    cerrarSaldo(data)
+                }else{
+                    let data  = {
+                        Factura: response.Numero
+                    }
+                    await window.open(`/ver-nota-entrega/${response.Numero}`, `Proforma ${response.Numero}`, "width=612, heigh=792");
+                    cambiarEstadoOrden(data)
+                }
+    
+            });
+    };
+    const cerrarGarantias = async (data) => {
+        return await fetch("/cerrar-garantias-cliente", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+            });
+    };
+    d.addEventListener("click", e=>{
+        if(e.target == $btnGenerar){
+            let validacion = 0
+            if(+$Vencimiento.getAttribute("max") < +$Vencimiento.value){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Los días de credito ingresados no pueden ser mayor a los que tiene asignado el cliente (${$Vencimiento.getAttribute("max")} días). 
+                        Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Numero.value || $Numero.value == 0 || $Numero.value ==""){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe ingresar un número de documento.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Transporte.value || $Transporte.value == 0 || $Transporte.value ==""){
+                  $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una empresa de transporte.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Zona.value || $Zona.value == 0 || $Zona.value ==""){
+                  $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una zona de entrega.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Fecha.value || $Fecha.value == 0 || $Fecha.value ==""){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una fecha de emisión.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$CambioBolivares.value || $CambioBolivares.value == 0 || $CambioBolivares.value ==""){
+                   $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe ingresar un cambio en bolívares.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Cliente.value || $Cliente.value == 0 || $Cliente.value ==""){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un cliente.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Vencimiento.value || $Vencimiento.value == 0 || $Vencimiento.value ==""){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe ingresar lo días de credito.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Vendedor.value || $Vendedor.value == 0 || $Vendedor.value ==""){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un vendedor.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Porcentaje.value || $Porcentaje.value == 0 || $Porcentaje.value ==""){
+                 $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe ingresar un porcentaje de ganancia.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                ` 
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(validacion == 0){
+                let validacion2 = 0
+                for(i=0; i< $tBody.children.length; i++){
+                    validacion2 = +validacion2 + +$tBody.children[i].children[4].firstElementChild.value
+                }
+                if(validacion2 == 0){
+                    $insertarErrores.innerHTML += `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            No pueden estar en "0" todas las cantidades atendibles de todos los productos en la lista. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    ` 
+                    window.scrollTo(0,0)
+                }else{
+                    if(+$totalMenosSaldo.textContent <= 0){
+                        $insertarErrores.innerHTML += `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                El total general de la factura no puede ser negativo. Por favor, valide e intente de nuevo
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `
+                        window.scrollTo(0,0)
+                        validacion++
+                    }else{
+                        let Productos = []
+                        let productosGarantias = []
+                        for(i=0; i< $tBody.children.length; i++){
+                            if($tBody.children[i].children[3].textContent == 0){
+                                let subdata = {
+                                    Codigo: $tBody.children[i].children[0].textContent,
+                                    Cantidad: $tBody.children[i].children[2].textContent,
+                                }
+                                productosGarantias.push(subdata)
+                            }
+                            let data = {
+                                Codigo:  $tBody.children[i].children[0].textContent,
+                                PrecioUnidad: $tBody.children[i].children[1].textContent,
+                                Cantidad: $tBody.children[i].children[4].firstElementChild.value, 
+                                PrecioTotal: $tBody.children[i].children[5].textContent,
+                                PrecioTotal2: $tBody.children[i].children[5].textContent
+                            }
+                            Productos.push(data)
+                        }
+                        let PrecioTotal = $totalMenosSaldo.textContent
+                        let iva = (+PrecioTotal * 0.16).toFixed(2)
+                        precioTotalIva = (+PrecioTotal * 1.16).toFixed(2)
+                        dataGeneralEnvio = {
+                            Fecha:$Fecha.value ,  
+                            Numero: $Numero.value , 
+                            Orden : $titulo.getAttribute("data-NumeroOrden"), 
+                            CambioBolivares: $CambioBolivares.value, 
+                            Cliente: $Cliente.value, 
+                            Iva: iva,
+                            TotalSinDescuento: $MontoAtendible.textContent,
+                            Vendedor: $Vendedor.value, 
+                            Transporte: $Transporte.value, 
+                            Zona: $Zona.value, 
+                            Productos: Productos, 
+                            PrecioTotal: precioTotalIva,
+                            BaseImponible: $totalMenosSaldo.textContent,
+                            Descuento: $SaldoIncluido.textContent,
+                            CantidadTotalFactura: $CantidadTotalAgregada.textContent,
+                            Porcentaje: $Porcentaje.value,
+                            Comentario: "",
+                            Vencimiento: $Vencimiento.value
+                        }
+                        console.log(productosGarantias)
+                        if(productosGarantias.length > 0){
+                            let dataGarantia = {
+                                Productos: productosGarantias,
+                                Cliente: $Cliente.value,
+                            }
+                            cerrarGarantias(dataGarantia)
+                        }
+                        enviarNotaEntrega(dataGeneralEnvio)
+                     
+                    }
+                }
+            }
+
+        }if(e.target == $checkIncluirTodas){
+            if($checkIncluirTodas.checked == true){
+                for(i=0; i< $tBodyGarantia.children.length; i++){
+                    $tBodyGarantia.children[i].children[2].firstElementChild.value = +$tBodyGarantia.children[i].children[1].textContent
+                }
+            }else{
+                for(i=0; i< $tBodyGarantia.children.length; i++){
+                    $tBodyGarantia.children[i].children[2].firstElementChild.value = 0
+                }
+            }
+        }if(e.target.textContent == "Aplicar garantías"){
+            productosGarantia = []
+            for(i=0; i< $tBody.children.length; i++){
+                if($tBody.children[i].children[3].textContent == 0){
+                    let data = {
+                        Codigo: $tBody.children[i].children[0].textContent,
+                        Cantidad: $tBody.children[i].children[2].textContent
+                    }
+                    productosGarantia.push(data)
+                }
+            } 
+            let cantidadAgregadoGarantia = 0
+            for(i=0; i< $tBodyGarantia.children.length; i++){
+                let validacion = productosGarantia.find((data) => data.Codigo == $tBodyGarantia.children[i].children[0].textContent)
+                if(!validacion){
+                    if(+$tBodyGarantia.children[i].children[1].textContent < +$tBodyGarantia.children[i].children[2].firstElementChild.value){
+                        alert("La cantidad a agregar no puede ser mayor a la solicitada. Por favor, valide e intente de nuevo")
+                    }else{
+                        if(+$tBodyGarantia.children[i].children[2].firstElementChild.value != 0){
+                            CantidadTotalAgregada += +$tBodyGarantia.children[i].children[2].firstElementChild.value
+                            cantidadAgregadoGarantia += +$tBodyGarantia.children[i].children[2].firstElementChild.value
+                            let tr = `
+                                <tr class="bg-light">
+                                    <td class="text-center">${$tBodyGarantia.children[i].children[0].textContent}</td>
+                                    <td class="text-center">${$tBodyGarantia.children[i].children[3].textContent}</td>
+                                    <td class="text-center">${$tBodyGarantia.children[i].children[2].firstElementChild.value}</td>
+                                    <td class="text-center">0</td>
+                                    <td class="text-center"><input readonly class="form-control" type="number" value="${$tBodyGarantia.children[i].children[2].firstElementChild.value}"></td>
+                                    <td class="text-center">0</td>
+                                    <td class="text-center"><button class="btn btn-danger" style="font-size:10px">-</button></td>
+                                </tr>
+                            `
+                            $tBody.innerHTML += tr
+                        }else{
+                            alert("La cantidad tiene que ser mayor a cero. Por favor, valide e intente de nuevo")
+                        }
+                    }
+                }else{
+                     $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                         Todos los productos de la garantía fueron agregados. Por favor, valide e intente de nuevo
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+                }
+            }
+            $CantidadAtendible.textContent = +$CantidadAtendible.textContent + +cantidadAgregadoGarantia
+        }if(e.target.textContent == "Aplicar saldo"){
+            if($tBodySaldo.children[0].children[1].firstElementChild.value == 0){
+                alert("El saldo a incluir debe ser mayor a cero")
+            }else{
+                if(+$tBodySaldo.children[0].children[1].firstElementChild.value > +$tBodySaldo.children[0].children[0].textContent){
+                alert("El saldo a incluir tiene que ser menor o igual al saldo a favor del cliente")
+                }else{
+
+                    $SaldoIncluido.textContent = $tBodySaldo.children[0].children[1].firstElementChild.value
+                    $btnEliminarSaldo.removeAttribute("disabled")
+                    $totalMenosSaldo.textContent = +$MontoAtendible.textContent - +$SaldoIncluido.textContent 
+                    $tBodySaldo.children[0].children[1].firstElementChild.value = 0
+                    e.target.setAttribute("disabled","")
+                }
+            }
+        }if(e.target == $btnEliminarSaldo){
+            $totalMenosSaldo.textContent = +$totalMenosSaldo.textContent + +$SaldoIncluido.textContent
+            $SaldoIncluido.textContent = 0
+            $btnEliminarSaldo.setAttribute("disabled","")
+            $btnAplicarSaldo.removeAttribute("disabled")
+        }
+        if(e.target == $btnAgregar){
+            let validacion = 0
+            if(!$PrecioVenta.value || $PrecioVenta.value == 0 || $PrecioVenta.value == "" ){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El precio de venta no puede estar vacío. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$CantidadActual.value || $CantidadActual.value == 0 || $CantidadActual.value == "" ){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        La cantidad actual no puede estar vacío. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$CantidadAgregar.value || $CantidadAgregar.value == 0 || $CantidadAgregar.value == "" ){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        La cantidad a agregar no puede estar vacío. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$Producto.value || $Producto.value == 0 || $Producto.value == "" ){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un producto para poder agregar. Por favor, valide e intete de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(validacion == 0){
+                if(+$CantidadActual.value < +$CantidadAgregar.value){
+                    $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                         La cantidad a agregar no debe ser mayor a la actual. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+                    window.scrollTo(0,0)
+                }else{
+                    let validacionCodigo = 0
+                    for(i=0; i< $tBody.children.length; i++){
+                        if($tBody.children[i].children[0].textContent == $Producto.value){
+                            validacionCodigo++
+                        }
+                    }
+                    if(validacionCodigo > 0){
+                          $insertarErrores.innerHTML += `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                El código ya se encuentra agregado. Por favor, valide e intente de nuevo.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `
+                        window.scrollTo(0,0)
+                    }else{
+                        let precioTotalAgregado = (+$CantidadAgregar.value * +$PrecioVenta.value).toFixed(2)
+                        let tr = `
+                            <tr>
+                                <td class="text-center text-dark">${$Producto.value}</td>
+                                <td class="text-center text-dark">${$PrecioVenta.value}</td>
+                                <td class="text-center text-dark">${$CantidadAgregar.value}</td>
+                                <td class="text-center text-dark">${precioTotalAgregado}</td>
+                                <td class="text-center text-dark"><input type="number" class="form-control cantidad" max="${$CantidadAgregar.value}" min="0" value="${$CantidadAgregar.value}"></td>
+                                <td class="text-center text-dark">${precioTotalAgregado}</td>
+                                <td class="text-center text-dark"><button class="btn btn-danger">-</button></td>
+                                <td></td>
+                            </tr>
+                        `
+                        $MontoAtendible.textContent = +$MontoAtendible.textContent + +precioTotalAgregado
+                        $totalMenosSaldo.textContent = +$totalMenosSaldo.textContent + +precioTotalAgregado
+                        $tBody.innerHTML += tr
+                    }
+                }
+            }
+        }if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            $MontoAtendible.textContent = +$MontoAtendible.textContent - +linea.children[5].textContent
+            $totalMenosSaldo.textContent = +$totalMenosSaldo.textContent - +linea.children[5].textContent
+            $tBody.removeChild(linea) 
+        }
+    })
+
+    d.addEventListener("change", e => {
+        if(e.target.classList.contains("cantidad")){
+            let linea = e.target.parentElement.parentElement
+            linea.children[5].textContent = (+linea.children[1].textContent * +e.target.value).toFixed(2)
+            let cantidadAtendible = 0
+            let MontoAtendible = 0
+            for(i=0; i< $tBody.children.length; i++){
+                cantidadAtendible = +cantidadAtendible + +$tBody.children[i].children[4].firstElementChild.value
+                MontoAtendible = +MontoAtendible + +$tBody.children[i].children[5].textContent
+            }
+            $CantidadAtendible.textContent = cantidadAtendible
+            $MontoAtendible.textContent = MontoAtendible
+        }
+    })
+</script>

@@ -1,0 +1,106 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Registro de vendedores</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+        <div class="row">
+            <div class="col-sm-12">
+                {{#each errors}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{text}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {{/each}}
+                {{>success}}
+            </div>
+        </div>
+    <div class="card card-orange">
+        <div class="card-header">
+            <h3 class="card-title">Formulario de datos</h3>
+        </div>
+            <!-- /.card-header -->
+        <div class="card-body">
+            <form action="/registrar-vendedores" method="POST">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <!-- text input -->
+                        <div class="form-group">
+                        <label>Nombres</label>
+                        <input type="text" class="form-control" name="Nombres" value="{{Nombres}}"  placeholder="Introduzca los nombres">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                        <label>Apellidos</label>
+                        <input type="text" class="form-control" name="Apellidos" value="{{Apellidos}}" placeholder="Introduzca los apellidos">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                        <label>Cédula</label>
+                        <input type="number" class="form-control" name="Cedula" value="{{Cedula}}" placeholder="Introduzca la cedula">
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" class="form-control" name="Direccion" value="{{Direccion}}" placeholder="Introduzca la dirección fiscal de la empresa o negocio">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                        <label>Porcentaje de ganancia</label>
+                        <input type="number" class="form-control" name="Porcentaje" value="{{Porcentaje}}" placeholder="Introduzca el procentaje de ganancia" step="any" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Número celular</label>
+                            <div class="row">
+                            <div class="col-sm-4">
+                                <select name="CodigoCeular" class="form-control js-exam">
+                                    <option value="0">--Código--</option>
+                                    <option value="0412">0412</option>
+                                    <option value="0414">0414</option>
+                                    <option value="0416">0416</option>
+                                    <option value="0424">0424</option>
+                                    <option value="0426">0426</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" name="Celular" value="{{Celular}}" placeholder="Introduzca el celular del cliente">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Correo electronico</label>
+                        <input type="text" class="form-control" name="email" value="{{email}}" placeholder="Introduzca el correo electronico del cliente">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Zona</label>
+                        <input type="text" class="form-control" name="Zona" value="{{Zona}}" placeholder="Introduzca la zona del cliente">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Código postal</label>
+                        <input type="text" class="form-control" name="CodigoPostal" value="{{CodigoPostal}}" placeholder="Introduzca el código postal de la ubicación del cliente">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 text-right">
+                        <button type="submit" class="btn btn-success">Registrar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

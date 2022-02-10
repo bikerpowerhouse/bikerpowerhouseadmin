@@ -1,0 +1,166 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-8">
+                 <h1 class="m-0"> <span class="text-muted">Lista orden compra al proveedor</span> {{ordenProveedorTemporal.Proveedor}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content mt-2">
+     <div class="row">
+        <div class="col-sm-12" id="insertErrores">
+            {{>errors}}
+            {{>success}}
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">
+            <h4>Productos</h4>
+        <div class="row">
+            <div class="col-sm-3">
+                <label for="">Cantidad total:</label>
+                <p id="CantidadTotal" data-valor="{{ordenProveedorTemporal.CantidadTotal}}">{{ordenProveedorTemporal.CantidadTotal}}</p>
+            </div>
+            <div class="col-sm-3">
+                <label for="">Precio total:</label>
+                <p id="PrecioTotal" data-valor="{{ordenProveedorTemporal.PrecioTotal2}}">{{ordenProveedorTemporal.PrecioTotal}}</p>
+            </div>
+            <div class="col-sm-3">
+                <label for="">Metros cubicos total:</label>
+                <p id="MetrosCubicos" data-valor="{{ordenProveedorTemporal.MetrosCubicos}}">{{ordenProveedorTemporal.MetrosCubicos}} <span class="text-muted">m³</span></p>
+            </div>
+            <div class="col-sm-3">
+                <label for="">Peso total:</label>
+                <p id="PesoTotal" data-valor="{{ordenProveedorTemporal.Peso}}">{{ordenProveedorTemporal.Peso}} <span class="text-muted">kg</span></p>
+            </div>
+        </div>
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Código</th>
+                    <th class="text-center">Referencia</th>
+                    <th class="text-center">Tipo producto</th>
+                    <th class="text-center">Descripción</th>
+                    <th class="text-center">Precio FOB unitario</th>
+                    <th class="text-center">Precio FOB total</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-center">Eliminar</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each ordenProveedorTemporal.Productos}}
+                        <tr data-metrosUnidad="{{MetrosCubicosUnidad}}" data-metrosTotal="{{MetrosCubicosTotal}}" data-pesoUnidad="{{PesoUnidad}}" data-pesoTotal="{{PesoTotal}}">
+                            <td class="text-center"><p >{{Codigo}}</p></td>
+                            <td class="text-center"><input type="text" value="{{Referencia}}" class="form-control"></td>
+                            <td class="text-center"><p >{{TipoProducto}}</p></td>
+                            <td class="text-center"><p >{{Descripcion}}</p></td>
+                            <td class="text-center"><p >{{PrecioFOBUnitario}}</p></td>
+                            <td class="text-center"><p data-precioAnterior={{PrecioFOBTotal}}>{{PrecioFOBTotal}}</p></td>
+                            <td class="text-center"><input type="text" value="{{Cantidad}}" data-cantidadAnterior="{{Cantidad}}" class="form-control Cantidad"></td>
+                            <td class="text-center"><a href="#" class="btnEliminar" data-Codigo="{{Codigo}}"><i class="far fa-trash-alt text-danger btnEliminar" style="font-size: 22px;" data-Codigo="{{Codigo}}"></i></a></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="text-right mt-2 mb-2">
+        <a href="/generar-orden-compra-proveedor" class="btn btn-success">Generar orden de compra</a>
+    </div>
+</section>
+<script>
+    const d = document,
+    $tbody = d.getElementById("tbody"),
+    $Cantidad = d.getElementById("Cantidad"),
+    $CantidadTotal = d.getElementById("CantidadTotal"),
+    $PrecioTotal = d.getElementById("PrecioTotal"),
+    $MetrosCubicos = d.getElementById("MetrosCubicos"),
+    $PesoTotal = d.getElementById("PesoTotal"),
+    $insertErrores = d.getElementById("insertErrores");
+
+    const eliminarCodigo = async (data) => {
+        return await fetch(`/eliminar-codigo-orden-temporal-proveedor`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            location.reload()
+        })
+    }
+    const cambiandoCantidad = async (data) => {
+        return await fetch(`/cambiando-cantidad-orden-temporal-proveedor`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+    }
+    d.addEventListener("click", e=> {
+        if(e.target.classList.contains("btnEliminar")){
+            let Codigo = e.target.getAttribute("data-Codigo")
+            let data= {
+                Codigo
+            }
+            eliminarCodigo(data) 
+        }
+    })
+
+    d.addEventListener("change", e=> {
+        if(e.target.classList.contains("Cantidad")){
+            if(e.target.value == 0){
+                $insertErrores.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    La cantidad a agregar no puede ser igual a "0". Si desea eliminar el producto, haga click en el boton con símbolo de papelera.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }else{
+                let linea = e.target.parentElement.parentElement
+                let precioFPBTotalLinea =  (+linea.children[4].firstElementChild.textContent * +e.target.value).toFixed(2)
+                linea.children[4].firstElementChild.textContent = precioFPBTotalLinea
+                let Producto =  [{
+                    Codigo: linea.children[0].firstElementChild.textContent,
+                    Referencia: linea.children[1].firstElementChild.textContent,
+                    Cantidad: e.target.value,
+                    TipoProducto: linea.children[2].firstElementChild.textContent,
+                    PrecioFOBUnitario: linea.children[4].firstElementChild.textContent,
+                    PrecioFOBTotal: linea.children[5].firstElementChild.textContent,
+                    MetrosCubicosUnidad: linea.getAttribute("data-metrosUnidad"),
+                    MetrosCubicosTotal: (+linea.getAttribute("data-metrosUnidad") * +e.target.value).toFixed(2),
+                    PesoUnidad: linea.getAttribute("data-pesoUnidad"),
+                    PesoTotal: (+linea.getAttribute("data-pesoUnidad") * +e.target.value).toFixed(2),
+                    Descripcion: linea.children[3].firstElementChild.textContent,
+                }]
+                let data = {
+                    MetrosCubicos: ((+e.target.value * +linea.getAttribute("data-metrosUnidad")) - (+linea.getAttribute("data-metrosUnidad") * +e.target.getAttribute("data-cantidadAnterior"))),
+                    Peso: ((+e.target.value * +linea.getAttribute("data-pesoUnidad")) - (+linea.getAttribute("data-pesoUnidad") * +e.target.getAttribute("data-cantidadAnterior"))),
+                    CantidadTotal: +e.target.value - +e.target.getAttribute("data-cantidadAnterior"),
+                    PrecioTotal: ((+e.target.value * +linea.children[4].firstElementChild.textContent) - +(+e.target.getAttribute("data-cantidadAnterior") * +linea.children[4].firstElementChild.textContent)),
+                    Producto: Producto[0]
+                }
+                let resultado = (+$MetrosCubicos.getAttribute("data-valor") + data.MetrosCubicos).toFixed(10)
+                $MetrosCubicos.innerHTML = `${resultado} <span class="text-muted">m³</span>`
+                $CantidadTotal.textContent = (+$CantidadTotal.getAttribute("data-valor") + data.CantidadTotal) 
+                let precioTotalResultado = (+$PrecioTotal.getAttribute("data-valor") + data.PrecioTotal) 
+                $PrecioTotal.textContent = new Intl.NumberFormat("en-US", {  style: "currency",  currency: "USD",}).format(precioTotalResultado) 
+                let Peso = (+$PesoTotal.getAttribute("data-valor") + data.Peso)
+                $PesoTotal.innerHTML = `${Peso.toFixed(2)} <span class="text-muted">kg</span>`
+                $CantidadTotal.setAttribute("data-valor", $CantidadTotal.textContent)
+                $PrecioTotal.setAttribute("data-valor", precioTotalResultado)
+                $PesoTotal.setAttribute("data-valor", Peso)
+                $MetrosCubicos.setAttribute("data-valor", resultado)
+                +e.target.setAttribute("data-cantidadAnterior", e.target.value)
+                //cambiandoCantidad(data)
+                console.log(data)
+            }
+        }
+    })
+
+
+</script>

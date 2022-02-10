@@ -1,0 +1,45 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Todas las transacciones</h1>
+            </div>
+            <div class="col-sm-12 my-2">
+                {{>success}}
+                {{>errors}}
+            </div>
+        </div>
+    </div>
+</div>
+<div id="introducirModal2"></div>
+<section class="content">
+    <div class="card">
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-hover ">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Trasancción</th>
+                    <th>Modalidad</th>
+                    <th>Tipo de documento</th>
+                    <th>Número de documento</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                {{#each transacciones}}
+                <tr>
+                    <td>{{Fecha}}</td>
+                    <td>{{Transaccion}}</td>
+                    <td>{{Modalidad}}</td>
+                    <td>{{Tipo}}</td>
+                    <td><a class="text-info" target="_blank" href="{{link}}">{{Numero}}</a></td>
+                    <td>{{Monto}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>

@@ -1,0 +1,97 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Anulación de documentos</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h5>Formulario de datos</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/anular-documentos">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label>Tipo de documento</label>
+                        <select class="form-control js-exam" name="TipoDocumento" id="TipoDocumento" required>
+                            <option value="0">--Seleccione un tipo de documento--</option>
+                            <option value="Factura">Facturas</option>
+                            <option value="NotaDevolucion">Nota de devolución</option>
+                            <option value="NotaEntrega">Nota de entrega</option>
+                            <option value="NotaPago">Nota de pago</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-5">
+                        <label>Número de documento</label>
+                        <select class="form-control js-exam" id="NumeroDocumento" name="NumeroDocumento" required>
+                            <option value="0">--Seleccione número de documento--</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2 mt-4">
+                        <button class="mt-2 btn btn-danger w-100" id="btnAnular" disabled>Anular</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $TipoDocumento = d.getElementById("TipoDocumento"),
+    $btnAnular = d.getElementById("btnAnular"),
+    $NumeroDocumento = d.getElementById("NumeroDocumento");
+
+    
+
+    const solicitarTipoDocumentos = async (data) => {
+        return await fetch(`/solicitar-tipo-documentos-anulacion`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            let options= `<option value="0">--Seleccione número de documento--</option>`
+            for(i=0; i< response.length; i++){
+                let option = `<option value="${response[i].Numero}">${response[i].Numero}</option>`
+                options += option  
+            }
+            $NumeroDocumento.innerHTML = options
+        });
+    };  
+
+    $NumeroDocumento.onchange = () => {
+        if($NumeroDocumento.value != 0){
+            if($TipoDocumento.value != 0){
+                $btnAnular.removeAttribute("disabled","")
+            }else{
+                $btnAnular.setAttribute("disabled","")
+            }
+        }else{
+            $btnAnular.setAttribute("disabled","")
+        }
+    }
+
+
+    $TipoDocumento.onchange = () => {
+        if($TipoDocumento.value != 0){
+            $NumeroDocumento.innerHTML = `<option value="0">--Seleccione número de documento--</option>`
+            let data = {
+                TipoDocumento : $TipoDocumento.value
+            }
+            solicitarTipoDocumentos(data)
+        }
+    }
+</script>

@@ -1,0 +1,132 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Comisiones</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5>Documentos emitidos: <span id="documentosEmitidos">{{cantidadGeneralNotas}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Documentos pendientes de pago: <span id="documentoPendientesPago">{{documentosPendientes}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Comisión total generada:<span id="ComisionTotalGenerada">{{comisionTotalGenerada}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Comisión cancelada: <span id="ComisionPendientePago">{{comisionPendiente}}</span></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5>Todas las comisiones</h5>
+                </div>
+            </div>
+        </div>
+         <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Número</th>
+                    <th class="text-center">Cantidad de documentos</th>
+                    <th class="text-center">Valor total</th>
+                    <th class="text-center">Monto total</th>
+                    <th class="text-center">Pendiente</th>
+                    <th class="text-center">Ver detalles</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each notasComisiones}}
+                        <tr>
+                            <td class="text-center"><p>{{Fecha}}</p></td>
+                            <td class="text-center"><p>{{Numero}}</p></td>
+                            <td class="text-center"><p>{{CantidadTotalDocumentos}}</p></td>
+                            <td class="text-center"><p>{{ValorTotal}}</p></td>
+                            <td class="text-center"><p>{{MontoCancelado}}</p></td>
+                            <td class="text-center"><p>{{Pendiente}}</p></td>
+                            <td class="text-center"><a class="text-info" target="_blank" href="/nota-comision/{{Numero}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>       
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $documentosEmitidos = d.getElementById("documentosEmitidos"),
+    $documentoPendientesPago = d.getElementById("documentoPendientesPago"),
+    $ComisionTotalGenerada = d.getElementById("ComisionTotalGenerada"),
+    $ComisionPendientePago = d.getElementById("ComisionPendientePago"),
+    $tbody = d.getElementById("tbody"),
+    $Estado = d.getElementById("Estado"),
+    $btnBuscar = d.getElementById("btnBuscar");
+
+    $Estado.onchange = () => {
+        if($Estado.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }
+    }
+
+    const solicitarComisiones = async (data) => {
+    return await fetch(`/solicitar-comisiones-vendedor`, {
+        body: JSON.stringify(data),
+        method: "POST",
+        headers: {
+        "Content-type": "application/json; charset=utf-8",
+        },
+    })
+    .then((response) => {
+        return response.json();
+    })
+    .then((response) => {
+        $documentosEmitidos.textContent = response.documentosEmitidos
+        $documentoPendientesPago.textContent = response.documentoPendientesPago
+        $ComisionTotalGenerada.textContent = response.ComisionTotalGenerada
+        $ComisionPendientePago.textContent = response.ComisionPendientePago
+        let tr = ""
+        for(i=0; i< response.comisiones.length; i++){
+            let linea = `
+                <tr>
+                    <td class="text-center">${response.comisiones[i].Fecha}</td>
+                    <td class="text-center">${response.comisiones[i].Estado}</td>
+                    <td class="text-center">${response.comisiones[i].NumeroFactura}</td>
+                    <td class="text-center">${response.comisiones[i].NumeroComision}</td>
+                    <td class="text-center">${response.comisiones[i].PrecioFactura}</td>
+                    <td class="text-center">${response.comisiones[i].PorcentajeGanancia}</td>
+                    <td class="text-center">${response.comisiones[i].Comision}</td>
+                    <td class="text-center">${response.comisiones[i].SaldoComision}</td>
+                </tr>
+            ` 
+            tr += linea
+        }
+        $tbody.innerHTML = tr
+    });
+}
+
+    d.addEventListener("click", e=> {
+        if(e.target == $btnBuscar){
+            if($Estado.value == 0){
+                location.reload()
+            }else{
+                let data = {
+                    Estado: $Estado.value,
+                }   
+                solicitarComisiones(data)
+            }
+        }
+    })
+
+</script>

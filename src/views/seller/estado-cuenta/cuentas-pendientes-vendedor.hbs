@@ -1,0 +1,190 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Cuentas por cobrar</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h5>Documentos pendientes:  <span id="documentosPendientes">{{documentosPendientes}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5>Documentos vencidos: <span id="documentosVencidos">{{documentosVencidos}}</span></h5>
+                </div>
+                 <div class="col-sm-4">
+                    <h5>Solicitudes de devolución: <span id="solicitudesDevoluciones">{{solicitudes}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5>Monto por cobrar general: <span id="montoDocumentosPendientes">{{montoDocumentosPendientes}}</span></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5>Monto por cobrar vencido: <span id="montoDocumentosVencidos">{{montoDocumentosVencidos}}</span></h5>
+                </div>
+                    <div class="col-sm-4">
+                    <h5 class="text-danger">Monto por cobrar: <span id="montoPorCobrar">{{montoPorPagar}}</span></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5>Todas las facturas</h5>
+                </div>
+                <div class="col-sm-8">
+                    <label for="">Seleccione un cliente</label>
+                    <select name="" id="Cliente" class="form-control js-exam">
+                        <option value="0" selected>Todos</option>
+                        {{#each clientes}}
+                        <option value="{{Empresa}}">{{Empresa}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-2" id="btnBuscar" disabled>Buscar</button>
+                </div>
+            </div>
+        </div>
+         <div class="card-body">
+             <div class="table-responsive">
+                <table id="tabla" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Fecha de emisión</th>
+                        <th class="text-center">Fecha vencimiento</th>
+                        <th class="text-center">Número</th>
+                        <th class="text-center">Tipo</th>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Cantidad total</th>
+                        <th class="text-center">Neto</th>
+                        <th class="text-center">Saldo</th>
+                        <th class="text-center">Historial pagos</th>
+                        <th class="text-center">Ver documento</th>
+                    </tr>
+                    <td colspan="10">
+                        <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                    </td>
+                    </thead>
+                    <tbody id="tbody">
+                        {{#each facturasGeneral}}
+                            <tr>
+                                <td class="text-center"><p class="{{clase}}">{{Fecha}}</p></td>
+                                <td class="text-center"><p class="{{clase}}">{{Vencimiento}}</p></td>
+                                <td class="text-center"><p class="{{clase}}">{{Numero}}</p></td>
+                                <td class="text-center"><p class="{{clase}}">{{Tipo}}</p></td>
+                                <td class="text-center"><p class="{{clase}}">{{Cliente}}</p></td>
+                                <td class="text-center"><p class="{{clase}}">{{CantidadTotal}}</p></td>
+                                <td class="text-center"><p class="{{clase}}">{{Neto}}</p></td>
+                                <td class="text-center"><p class="{{clase}}">{{Saldo}}</p></td>
+                                <td class="text-center"><a href="/ver-historial-pagos/{{Numero}}" class="text-success"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>
+                                <td class="text-center"><a href="{{link}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+             </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $tbody = d.getElementById("tbody"), 
+    $Cliente = d.getElementById("Cliente"), 
+    $documentosPendientes = d.getElementById("documentosPendientes"),
+    $documentosVencidos = d.getElementById("documentosVencidos"),
+    $montoDocumentosPendientes = d.getElementById("montoDocumentosPendientes"),
+    $montoPorCobrar = d.getElementById("montoPorCobrar"),
+    $solicitudesDevoluciones = d.getElementById("solicitudesDevoluciones"),
+    $montoDocumentosVencidos = d.getElementById("montoDocumentosVencidos"),
+    $btnBuscar = d.getElementById("btnBuscar");
+    const table = d.getElementById("tabla").tBodies[0];
+     buscaTabla = function () {
+            texto =  d.getElementById('buscar').value.toLowerCase();
+            let r = 0;
+            while (row = table.rows[r++]) {
+                if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                    row.style.display = null;
+                else
+                    row.style.display = 'none';
+            }
+        }
+    d.getElementById('buscar').addEventListener("keydown", e => {
+        if(e.keyCode == 13){
+            e.preventDefault()
+        }
+    })
+    d.getElementById('buscar').addEventListener('keyup', buscaTabla);
+
+
+    const solicitarInfoCliente = async (data) => {
+        return await fetch(`/solicitar-facturas-cliente`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            $documentosPendientes.textContent = response.documentosPendientes
+            $documentosVencidos.textContent = response.documentosVencidos
+            $montoDocumentosPendientes.textContent = response.montoDocumentosPendientes
+            $montoDocumentosVencidos.textContent = response.montoDocumentosVencidos
+            $montoPorCobrar.textContent = response.montoPorPagar
+            $solicitudesDevoluciones.textContent = response.solicitudes
+            let tr = ""
+            for(i=0; i< response.facturasGeneral.length; i++){
+                let linea = `
+                    <tr>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].Fecha}</p></td>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].Vencimiento}</p></td>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].Numero}</p></td>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].Tipo}</p></td>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].Cliente}</p></td>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].CantidadTotal}</p></td>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].Neto}</p></td>
+                        <td><p class="${response.facturasGeneral[i].clase}">${response.facturasGeneral[i].Saldo}</p></td>
+                        <td><a href="/ver-historial-pagos/${response.facturasGeneral[i].Numero}">Ver</a></td>
+                        <td><a href="/ver-nota-entrega/${response.facturasGeneral[i].Numero}">Ver</a></td>
+                    </tr>
+                ` 
+                tr += linea
+            }
+            $tbody.innerHTML = tr
+        });
+    }
+   
+
+
+    $Cliente.onchange = () => {
+        if($Cliente.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }
+    }
+
+    d.addEventListener("click", e => {
+        if(e.target == $btnBuscar) {
+            if($Cliente.value == 0){
+                location.reload()                
+            }else{
+                let data = {
+                    Cliente : $Cliente.value
+                }
+                solicitarInfoCliente(data)
+            }
+        }
+    })
+
+
+
+
+</script>

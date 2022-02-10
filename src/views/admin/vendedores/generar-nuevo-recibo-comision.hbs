@@ -1,0 +1,355 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Pago de calculos de comisión</h1>
+            </div>
+            <div class="col-sm-12 mt-2">
+                {{>success}}
+                {{>errors}}
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+     <div class="row">
+        <div class="col-sm-12" id="insertarErrores">
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <dvi class="row">
+                <div class="col-sm-4">
+                    <label>Vendedor</label>
+                    <select class="form-control js-exam" id="Vendedor">
+                        <option value="0">--Seleccione un vendedor--</option>
+                        {{#each vendedores}}
+                            <option value="{{_id}}">{{Nombres}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label>Calculo de comision</label>
+                    <select class="form-control js-exam" id="NotaEntrega">
+                        <option value="0">--Seleccione un calculo--</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label>Modalidad</label>
+                    <select class="form-control js-exam" id="Modalidad">
+                        <option value="0">--Seleccione modalidad de pago--</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Zelle">Zelle</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label>Número de transacción</label>
+                    <input type="text" class="form-control" readonly id="Transaccion">
+                    <p class="text-muted">Campo opional de ser pago en efectivo</p>
+                </div>
+                <div class="col-sm-3">
+                    <label>Saldo</label>
+                    <input class="form-control" readonly id="MontoPendiente">
+                </div>
+                <div class="col-sm-3">
+                    <label>A pagar</label>
+                    <input class="form-control"  id="APagar">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-info mt-1 w-100" id="btnAgregar">Agregar a la lista</button>
+                </div>
+            </dvi> 
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center">Calculo de comisión</th>
+                        <th class="text-center">Saldo</th>
+                        <th class="text-center">A pagar</th>
+                        <th class="text-center">Pendiente</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-danger text-right">Total</td>
+                        <td class="text-center" id="totalGeneral">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="text-right">
+        <button id="btnGenerar" class="btn btn-success">Generar recibo</button>
+    </div>
+</section>
+<script>
+    const d = document,
+    $tbody = d.getElementById("tbody"),
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $MontoPendiente = d.getElementById("MontoPendiente"),
+    $insertErrors = d.getElementById("insertErrors"),
+    $Transaccion = d.getElementById("Transaccion"),
+    $Modalidad = d.getElementById("Modalidad"),
+    $insertarErrores = d.getElementById("insertarErrores"),
+    $NotaEntrega = d.getElementById("NotaEntrega"),
+    $APagar = d.getElementById("APagar"),
+    $totalGeneral = d.getElementById("totalGeneral"),
+    $Vendedor = d.getElementById("Vendedor"),
+    $btnGenerar = d.getElementById("btnGenerar")
+    let notasAgregadas = []  
+    let calculos
+    const generarNuevoCalculo = async (data) => {
+        return await fetch("/generar-nuevo-recibo-pago-comision", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then(async (response) => {
+            if(response == 0){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El número de transacción ${$Transaccion.value} ya se encuentra registrado. Por favor, valide e intente de nuev.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+            }else{
+                await window.open(`/ver-recibo-pago-comision/${response.Numero}`, `Recibo comisión ${response.Numero} ${response.Vendedor}`, "width=612, heigh=792");
+                location.reload()
+            }
+        });
+    };
+
+    const solicitarCalculosComision = async (data) => {
+        return await fetch("/solicitar-calculos-comision-nuevo-recibo", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            calculos = response
+            let options = `<option value="0">--Seleccione un calculo--</option>`
+            for(i=0; i< response.length; i++){
+                let option = `<option value="${response[i].Numero}">${response[i].Numero}</option>`
+                options += option
+            }
+            $NotaEntrega.innerHTML = options
+        });
+    };
+
+    $Modalidad.onchange = () => {
+        if($Modalidad.value != 0 &&$Modalidad.value != "Efectivo"){
+            $Transaccion.removeAttribute("readonly")
+        }else{
+            $Transaccion.setAttribute("readonly","")
+
+        }
+    }
+
+    $NotaEntrega.onchange = () => {
+        if($NotaEntrega.value != 0){
+            let coincidencia = calculos.find((data) => data.Numero == $NotaEntrega.value)
+            $MontoPendiente.value = coincidencia.Saldo
+        }else{
+            $MontoPendiente.value = ""
+        }
+    }
+
+    $Vendedor.onchange = () => {
+        if($Vendedor.value != 0){
+            let data = {
+                Vendedor: $Vendedor.value
+            }
+            solicitarCalculosComision(data)
+        }else{
+            $NotaEntrega.innerHTML = `<option value="0">--Seleccione una nota--</option>`
+            $MontoPendiente.value = ""
+        }
+    }
+
+    d.addEventListener("click", e=> {
+        if(e.target == $btnAgregar){
+            let validacion = 0
+            if($Modalidad.value == 0 || !$Modalidad.value){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una modalidad para poder agregar a la lista. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if($Vendedor.value == 0 || !$Vendedor.value){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un vendedor para poder agregar a la lista. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if($NotaEntrega.value == 0 || !$NotaEntrega.value){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un calculo de comisión para poder agregar a la lista. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if($APagar.value == 0 || !$APagar.value){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe introducir un monto a pagar. Por favor, valide e intente de nuevo
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(+$APagar.value > +$MontoPendiente.value){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El monto a pagar no puede ser mayor al saldo. Por favor,valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(validacion == 0){
+                let existenNota = notasAgregadas.find((data) => data == $NotaEntrega.value)
+                if(existenNota){
+                    $insertarErrores.innerHTML += `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El calculo de comisión ya se encuentra agregado. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                 window.scrollTo(0,0)
+                }
+                else{
+                    notasAgregadas.push($NotaEntrega.value)
+                    let Pendiente = (+$MontoPendiente.value - +$APagar.value).toFixed(2)
+                    let estado = "Abono"
+                    if(Pendiente == 0){
+                        estado = "Pago completo"
+                    }
+                    let tr = `
+                        <tr>
+                            <td class="text-center">${$NotaEntrega.value}</td>
+                            <td class="text-center">${$MontoPendiente.value}</td>
+                            <td class="text-center">${$APagar.value}</td>
+                            <td class="text-center">${Pendiente}</td>
+                            <td class="text-center">${estado}</td>
+                            <td class="text-center"><button class="btn btn-danger">-</button></td>
+                        </tr>
+                    `
+                    $totalGeneral.textContent = (+$totalGeneral.textContent + +$APagar.value).toFixed(2)
+                    $Vendedor.setAttribute("disabled","")
+                    $tbody.innerHTML += tr
+                }
+            }
+        }
+        if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            notasAgregadas = notasAgregadas.filter((data) => data != linea.children[0].textContent)
+            $totalGeneral.textContent = (+$totalGeneral.textContent - +linea.children[2].textContent).toFixed(2)
+            $tbody.removeChild(linea)
+            if($tbody.children.length == 0){
+                $Vendedor.removeAttribute("disabled")
+            }
+        }
+        if(e.target == $btnGenerar){
+            if($tbody.children.length == 0){
+                $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Para poder generar el documento de calculo debe agregar como minimo una nota de entrega. Por favor, valide e 
+                        intete de nuevo
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+            }else{
+                let notas = []
+                if($Modalidad.value != "Efectivo" && $Modalidad.value != 0){
+                    console.log($Transaccion.value)
+                    if(!$Transaccion.value || $Transaccion.value == 0 || $Transaccion.value == ""){
+                        $insertarErrores.innerHTML += `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                Debe introducir un numero de transaccion para poder generar el pago. Por favor, valide e intente de nuevo.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `
+                        window.scrollTo(0,0)
+                    }else{
+                        for(i=0; i< $tbody.children.length; i++){
+                            let subdata = {
+                                CalculoComision: $tbody.children[i].children[0].textContent, 
+                                Saldo: $tbody.children[i].children[1].textContent,
+                                Apagar: $tbody.children[i].children[2].textContent,
+                                Pendiente: $tbody.children[i].children[3].textContent,
+                                Estados: $tbody.children[i].children[4].textContent,
+                            }
+                            notas.push(subdata)
+                        }
+                        let dataEnvio = {
+                            Vendedor: $Vendedor.value,
+                            Modalidad: $Modalidad.value,
+                            Transaccion: $Transaccion.value,
+                            Total: $totalGeneral.textContent,
+                            Facturas: notas
+                        }
+                        generarNuevoCalculo(dataEnvio)
+                    }
+                } else{
+                    for(i=0; i< $tbody.children.length; i++){
+                        let subdata = {
+                            CalculoComision: $tbody.children[i].children[0].textContent, 
+                            Saldo: $tbody.children[i].children[1].textContent,
+                            Apagar: $tbody.children[i].children[2].textContent,
+                            Pendiente: $tbody.children[i].children[3].textContent,
+                            Estados: $tbody.children[i].children[4].textContent,
+                        }
+                        notas.push(subdata)
+                    }
+                    let dataEnvio = {
+                        Vendedor: $Vendedor.value,
+                        Modalidad: $Modalidad.value,
+                        Transaccion: "",
+                        Total: $totalGeneral.textContent,
+                        Facturas: notas
+                    }
+                    generarNuevoCalculo(dataEnvio)
+                }
+            }
+        }
+    })
+
+
+</script>

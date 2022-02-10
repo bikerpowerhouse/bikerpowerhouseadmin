@@ -1,0 +1,343 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Registro de transporte</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+        <div class="row">
+            <div class="col-sm-12" id="insertErrors">
+                {{#each errors}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{text}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {{/each}}
+                {{>success}}
+            </div>
+        </div>
+    <div class="card card-orange">
+        <div class="card-header">
+            <h3 class="card-title">Formulario de datos</h3>
+        </div>
+            <!-- /.card-header -->
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <label for="">Empresa</label>
+                    <input type="text" name="Empresa" id="Empresa" class="form-control" placeholder="Introduzca el nombre de la empresa de transporte">
+                </div>
+                <div class="col-sm-6">
+                    <label for="">Dirección <span class="text-muted">(opcional)</span> </label>
+                    <input type="text" name="Direccion" id="Direccion" class="form-control" placeholder="Introduzca la dirección de la empresa de transporte">
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                    <label>Número celular</label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <select id="CodigoCelular" class="form-control js-exam">
+                                <option value="0">--Código--</option>
+                                <option value="0412">0412</option>
+                                <option value="0414">0414</option>
+                                <option value="0416">0416</option>
+                                <option value="0424">0424</option>
+                                <option value="0426">0426</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" id="Celular" value="{{Celular}}" placeholder="Introduzca el celular del cliente">
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label>Número telefono<span class="text-muted">(Opcional)</span></label>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <select id="CodigoTelefono" class="form-control js-exam">
+                                    <option value="0">--Código--</option>
+                                    <option value="0212">0212</option>
+                                    <option value="0234">0234</option>
+                                    <option value="0235">0235</option>
+                                    <option value="0238">0238</option>
+                                    <option value="0239">0239</option>
+                                    <option value="0240">0240</option>
+                                    <option value="0241">0241</option>
+                                    <option value="0242">0242</option>
+                                    <option value="0243">0243</option>
+                                    <option value="0244">0244</option>
+                                    <option value="0245">0245</option>
+                                    <option value="0246">0246</option>
+                                    <option value="0247">0247</option>
+                                    <option value="0248">0248</option>
+                                    <option value="0249">0249</option>
+                                    <option value="0251">0251</option>
+                                    <option value="0252">0252</option>
+                                    <option value="0253">0253</option>
+                                    <option value="0254">0254</option>
+                                    <option value="0255">0255</option>
+                                    <option value="0256">0256</option>
+                                    <option value="0257">0257</option>
+                                    <option value="0258">0258</option>
+                                    <option value="0259">0259</option>
+                                    <option value="0261">0261</option>
+                                    <option value="0262">0262</option>
+                                    <option value="0263">0263</option>
+                                    <option value="0264">0264</option>
+                                    <option value="0265">0265</option>
+                                    <option value="0266">0266</option>
+                                    <option value="0267">0267</option>
+                                    <option value="0268">0268</option>
+                                    <option value="0269">0269</option>
+                                    <option value="0271">0271</option>
+                                    <option value="0272">0272</option>
+                                    <option value="0273">0273</option>
+                                    <option value="0274">0274</option>
+                                    <option value="0275">0275</option>
+                                    <option value="0276">0276</option>
+                                    <option value="0277">0277</option>
+                                    <option value="0278">0278</option>
+                                    <option value="0279">0279</option>
+                                    <option value="0281">0281</option>
+                                    <option value="0282">0282</option>
+                                    <option value="0283">0283</option>
+                                    <option value="0284">0284</option>
+                                    <option value="0285">0285</option>
+                                    <option value="0286">0286</option>
+                                    <option value="0287">0287</option>
+                                    <option value="0288">0288</option>
+                                    <option value="0289">0289</option>
+                                    <option value="0291">0291</option>
+                                    <option value="0292">0292</option>
+                                    <option value="0293">0293</option>
+                                    <option value="0294">0294</option>
+                                    <option value="0295">0295</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" id="Telefono" value="{{Telefono}}" placeholder="Introduzca el telefono del cliente">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Correo electronico <span class="text-muted">(opcional)</span> </label>
+                    <input type="text" name="Direccion" id="Email" class="form-control" placeholder="Introduzca el correo electronico de la empresa">
+                </div>
+            </div>
+        </div>
+    </div>
+      <div class="card card-secondary">
+        <div class="card-header">
+            <h5 class="card-title">Tarifario</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-7">
+                    <div class="row">
+                        <div class="col-sm-10">
+                        <label for="">Ciudad</label>
+                            <select id="Ciudad" class="form-control js-exam">
+                                <option value="0">-Seleccione una ciudad-</option>
+                                {{#each ciudades}}
+                                <option value="{{Nombre}}">{{Nombre}}</option>
+                                {{/each}}
+                            </select>
+
+                        </div>
+                        <div class="col-sm-2 mt-4">
+                            <button class="btn btn-outline-info mt-2 w-100" data-toggle="modal" data-target="#modalCiudad">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <label for="">Porcentaje</label>
+                    <input type="number" class="form-control" id="Porcentaje" min="0" max="100" placeholder="Introduzca porcentaje de cobro">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn mt-1 btn-outline-warning text-dark w-100" id="btnAgregar">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-secondary table-hover">
+        <thead>
+            <tr>
+            <th scope="col" class="text-center">Ciudad</th>
+            <th scope="col" class="text-center">Porcentaje</th>
+            <th scope="col" class="text-center">Eliminar</th>
+            </tr>
+        </thead>
+        <tbody id="tBody">
+        </tbody>
+    </table>
+    <div class="text-right mt-2 mb-2">
+        <button class="btn btn-success" id="btnEnviar">Registrar</button>
+    </div>
+        <div class="modal fade" id="modalCiudad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Registrar nueva ciudad</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/registrar-nueva-ciudad">
+                     <div class="row">
+                        <div class="col-sm-12">
+                            <label>Introduzca el nombre de la ciudad</label>
+                            <input class="form-control" name="Nombre" type="text" placeholder="Nombre de la ciudad" required>
+                        </div>
+                        <div class="col-sm-12 text-right">
+                            <button type="submit" class="btn btn-primary my-2">Registrar ciudad</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+</section>
+<script>
+    const d = document,
+    $Empresa = d.getElementById("Empresa"), 
+    $Direccion = d.getElementById("Direccion"),
+    $CodigoCelular = d.getElementById("CodigoCelular"),
+    $CodigoTelefono = d.getElementById("CodigoTelefono"),
+    $Ciudad = d.getElementById("Ciudad"),
+    $Porcentaje = d.getElementById("Porcentaje"),
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $btnEnviar = d.getElementById("btnEnviar"),
+    $insertErrors = d.getElementById("insertErrors"),
+    $tBody = d.getElementById("tBody"),
+    $Celular = d.getElementById("Celular"),
+    $Telefono = d.getElementById("Telefono"),
+    $Email = d.getElementById("Email");
+
+        const enviarTransporte = async (data) => {
+        return await fetch("/registrar-transporte", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                if(response.length == 2){
+                    $Empresa.value = ""
+                    $Direccion.value = ""
+                    $Porcentaje.value = ""
+                    $Celular.value = ""
+                    $Telefono.value = ""
+                    $Email.value = ""
+                    $("#Ciudad").select2("val", "0");
+                    $tBody.innerHTML = ""
+
+                    $insertErrors.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Transporte registrado correctamente.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                window.scrollTo(0,0)
+                }else{
+                     $insertErrors.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El transporte ${$Empresa.value} ya se encuentra registrado.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                       window.scrollTo(0,0)
+                }
+            });
+    };
+
+    d.addEventListener("click", e=> {
+        if(e.target == $btnAgregar){
+            let validacion = 0
+            if(!$Celular.value || $Celular.value == "" || $Celular.value == 0 ){
+                validacion++
+            }
+            if(!$Empresa.value || $Empresa.value == "" || $Empresa.value == 0 ){
+                validacion++
+            }
+            if(!$Ciudad.value || $Ciudad.value == "" || $Ciudad.value == 0 ){
+                validacion++
+            }
+            if(!$CodigoCelular.value || $CodigoCelular.value == "" || $CodigoCelular.value == 0){
+                validacion++
+            }
+            if(!$Porcentaje.value || $Porcentaje.value == ""){
+                validacion++
+            }
+            if(validacion > 0){
+               $insertErrors.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Para poder agregar una tarifa debe llenar todos los datos del formulario.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+            }else{
+                let tr = `
+                    <tr>
+                        <td class="text-center">${$Ciudad.value}</td>
+                        <td class="text-center">${$Porcentaje.value}</td/>
+                        <td class="text-center"><button class="btn btn-danger">-</button></td>
+                    </tr>
+                `
+                $tBody.innerHTML +=tr
+            }
+        }
+        if(e.target.textContent == "-"){
+            let fila = e.target.parentElement.parentElement
+            $tBody.removeChild(fila)
+        }
+        if(e.target == $btnEnviar){
+            let Tarifario = []
+            let tabla = $tBody.children
+            if(tabla.length < 0){
+                  $insertErrors.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe ingresar una tarifa como minimo para poder registrar un transporte.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+            }else{
+                let Descripcion = ""
+                for(i=0; i< tabla.length; i++ ){
+                    let data = {
+                        Ciudad: tabla[i].children[0].textContent,
+                        Porcentaje: tabla[i].children[1].textContent,
+                    }
+                    Tarifario.push(data)
+                }
+                let dataEnvio = {
+                    Empresa: $Empresa.value,
+                    Direccion: $Direccion.value,
+                    Celular: $Celular.value,
+                    CodigoCelular : $CodigoCelular.value,
+                    CodigoTelefono: $CodigoTelefono.value,
+                    Telefono: $Telefono.value,
+                    email: $Email.value,
+                    Tarifario: Tarifario,
+                }
+                enviarTransporte(dataEnvio)
+            }
+        }
+    })
+
+
+
+</script>

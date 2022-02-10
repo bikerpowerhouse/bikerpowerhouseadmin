@@ -1,0 +1,33 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Historial reestructuraciones</h1>
+            </div>
+        </div>
+    </div>
+    <section class="content">
+        <div class="card">
+             <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Número</th>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Descargar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each estructuras}}
+                    <tr>
+                        <td class="text-center">{{Numero}}</td>
+                        <td class="text-center">{{Fecha}}</td>
+                        <td class="text-center"><a href="/descargar-estructura/{{_id}}" class="text-success"><i class="fas fa-file-download fa-2x"></i></a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,39 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Solcitudes de garantía</h2>
+        </div>
+        <div class="col-sm-6 text-right mt-1">
+            <a class="btn btn-info" href="/realizar-solicitud-garantia-vendedor">Realizar solicitud devolución</a>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h5>Todas las devoluciones</h5>
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Fecha de solicitud</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Código</th>
+                    <th class="text-center">Cantidad</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each garantias}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>
+                            <td class="text-center">{{Estado}}</td>
+                            <td class="text-center">{{Codigo}}</td>
+                            <td class="text-center">{{Cantidad}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

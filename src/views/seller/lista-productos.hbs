@@ -1,0 +1,138 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Lista de productos</h2>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="row my-3">
+        <div class="col-sm-8">
+            <label>Tipo de aplicación</label>
+            <select class="form-control js-exam" id="aplicacion">
+                <option value="0">--Seleccione un tipo de aplicación--</option>
+                <option value="Auto">Autos</option>
+                <option value="Moto">Motos</option>
+                <option value="General">General</option>
+            </select>
+        </div>
+        <div class="col-sm-4 mt-4">
+            <button class="btn btn-success mt-2" id="Buscar" disabled>Buscar</button>
+        </div>
+        <div class="col-sm-12 my-3">
+            <div class="row">
+                <div class="col-sm-4" id="insetarBtnExcel">
+                    
+                </div>  
+                <div class="col-sm-4" id="insetarBtnPDF">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">.
+                <table  class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Código</th>
+                            <th class="text-center">Tipo de vehiculo</th>
+                            <th class="text-center">Tipo producto</th>
+                            <th class="text-center">Descripción</th>
+                            <th class="text-center">Precio</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document
+    const $Buscar = d.getElementById("Buscar")
+    const $insetarBtnExcel = d.getElementById("insetarBtnExcel")
+    const $aplicacion = d.getElementById("aplicacion")
+    const $tbody = d.getElementById("tbody")
+
+     const solicitarProductos = async (data) => {
+        return await fetch(`/solicitar-productos-lista`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            let tr = ""
+            for(i=0; i< response.length; i++){
+                let clase 
+                if(response[i].Semaforo == "Amarillo"){
+                    clase = "text-warning"
+                }
+                if(response[i].Semaforo == "Rojo"){
+                    clase = "text-danger"
+
+                }
+                if(response[i].Semaforo == "Verde"){
+                    clase = "text-success"
+                }
+                let linea = `
+                <tr>
+                    <td>${response[i].Codigo}</td>
+                    <td>${response[i].TipoVehiculo}</td>
+                    <td>${response[i].TipoProducto}</td>
+                    <td>${response[i].Descripcion}</td>
+                    <td>${response[i].PrecioVenta}</td>
+                    <td class="text-center"><i class="fas fa-circle ${clase}"></i></td>
+                </tr>
+                `
+                tr += linea
+            }
+            $tbody.innerHTML = tr
+            d.querySelector(".table").setAttribute("id","example1")
+            $(function () {
+                $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "ordering": false,
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            });
+            let tipoLink 
+            if($aplicacion.value == "Auto" ){
+                tipoLink = "auto"
+            } 
+            if($aplicacion.value == "Moto" ){
+                tipoLink = "moto"
+            } 
+            if($aplicacion.value == "General" ){
+                tipoLink = "general"
+            } 
+            $insetarBtnExcel.innerHTML = `<a href="/descargar-lista-excel-${tipoLink}" target="_blank" class="btn btn-success mr-2">Descargar excel <i class="fas fa-file-excel"></i></href>
+             <a href="/descargar-lista-pdf-${tipoLink}" target="_blank" class="btn btn-danger">Descargar PDF <i class="fas fa-file-pdf"></i></href>`
+        });
+    }
+
+
+    $aplicacion.onchange = () => {
+        if($aplicacion.value != 0){
+            $Buscar.removeAttribute("disabled")
+        }else{
+            $Buscar.setAttribute("disabled","")
+        }
+    }
+    d.addEventListener("click", e => {
+        if(e.target == $Buscar){
+            let data = {
+                TipoVehiculo : $aplicacion.value
+            }
+            solicitarProductos(data)
+        }
+    })
+
+</script>

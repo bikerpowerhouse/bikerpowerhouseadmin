@@ -1,0 +1,56 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Registrar garantias</h1>
+            </div>
+            <div class="col-sm-12 mt-2">
+                {{>errors}}
+                {{>success}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <form method="POST" accept="/registrar-nueva-garantia">
+        <div class="card">
+            <div class="card-header">
+                <h5>Formulario de datos</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Fecha</label>
+                        <input type="date" name="Fecha" class="form-control" required value="{{Fecha}}">
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Cliente</label>
+                        <select class="form-control js-exam" name="Cliente" required>
+                            <option value="0">--Seleccione un cliente--</option>
+                            {{#each clientes}}
+                                <option value="{{Empresa}}">{{Empresa}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Código</label>
+                        <select class="form-control js-exam" name="Codigo" required>
+                            <option value="0">--Seleccione un código--</option>
+                            {{#each productos}}
+                                <option value="{{Codigo}}">{{Codigo}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Cantidad</label>
+                        <input type="number" name="Cantidad" min="1" required class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <button type="submit" class="btn btn-success">Registrar</button>
+        </div>  
+    </form>
+</section>

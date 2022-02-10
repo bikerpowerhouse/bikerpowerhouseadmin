@@ -1,0 +1,41 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Solicitudes clientes</h1>
+            </div>
+              <div class="col-sm-12">
+                {{>success}}
+                {{>errors}}
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Vendedor</th>
+                        <th class="text-center">Direccion</th>
+                        <th class="text-center">Ver detalles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each solicitudesCliente}}
+                    <tr>
+                        <td class="text-center">{{Fecha}}</td>
+                        <td class="text-center">{{Cliente}}</td>
+                        <td class="text-center">{{Vendedor}}</td>
+                        <td class="text-center">{{Direccion}}</td>
+                        <td class="text-center"><a href="/ver-ficha-solicitud/{{_id}}" class="text-info h5">Ver</a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

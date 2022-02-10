@@ -1,0 +1,45 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Reporte de inventario</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <form action="/reporte-inventario" method="POST">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label for="">Cantidad</label>
+                        <select name="Cantidad" class="form-control">
+                            <option value="Todas">Todas</option>
+                            <option value="Mayores">Mayores a cero</option>
+                            <option value="Iguales">Iguales a cero</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-5">
+                        <label for="">Tipo producto</label>
+                        <select name="TipoProducto" class="form-control">
+                            <option value="0">Todos</option>
+                            <option value="Amortiguador">Amortiguador</option>
+                            <option value="Bateria">Baterias</option>
+                            <option value="Base amortiguador">Base de amortiguador</option>
+                            <option value="Bomba">Bombas</option>
+                            <option value="Guardapolvo">Guardapolvos</option>
+                            <option value="Valvula">Valvulas</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2 mt-4">
+                        <button class="btn btn-success mt-1 w-100"  type="submit" id="btnGenerar">Generar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

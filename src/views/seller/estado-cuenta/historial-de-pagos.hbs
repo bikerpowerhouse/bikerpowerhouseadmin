@@ -1,0 +1,41 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Historial de documento</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{Numero}}</h3>
+        </div>
+        <div class="row">
+        <div class="card-body">
+            <table  class="table table-bordered table-hover ">
+            <thead>
+                <tr>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Modalidad</th>
+                    <th class="text-center">Recibo</th>
+                    <th class="text-center">Comentario</th>
+                    <th class="text-center">Monto</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                {{#each historial}}
+                <tr>
+                    <td class="text-center">{{Fecha}}</td>
+                    <td class="text-center">{{Modalidad}}</td>
+                    <td class="text-center"><a href="{{link}}" target="_blank" class="text-info">{{Recibo}}</a></td>
+                    <td class="text-center">{{Comentario}}</td>
+                    <td class="text-center">{{Monto}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,56 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Todas las ventas</h2>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-4">
+                    <p class="text-dark h5">Cantidad de ventas: <span class="" id="CantidadVentas">{{notasTotales}}</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="text-dark h5">Valor general: <span class="" id="ValorGeneral">{{netoTotal}}</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="text-dark h5">Saldo pendiente: <span class="" id="SaldoPendiente">{{saldoTotal}}</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Vencimiento</th>
+                        <th class="text-center">Número</th>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Cantidad total</th>
+                        <th class="text-center">Neto</th>
+                        <th class="text-center">Saldo</th>
+                        <th class="text-center">Historial</th>
+                        <th class="text-center">Detalle</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each notas}}
+                    <tr>
+                        <td class="text-center">{{Fecha}}</td>
+                        <td class="text-center">{{Vencimiento}}</td>
+                        <td class="text-center">{{Numero}}</td>
+                        <td class="text-center">{{Cliente}}</td>
+                        <td class="text-center">{{CantidadTotal}}</td>
+                        <td class="text-center">{{Neto}}</td>
+                        <td class="text-center">{{Saldo}}</td>
+                        <td class="text-center"><a href="/ver-historial-pagos-cliente/{{Numero}}" class="text-success"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>
+                        <td class="text-center"><a href="/ver-nota-entrega/{{Numero}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

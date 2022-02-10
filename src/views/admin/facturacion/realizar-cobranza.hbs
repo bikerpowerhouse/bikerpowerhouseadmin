@@ -1,0 +1,475 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Cobranza</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label>Cliente</label>
+                    <select class="form-control js-exam" id="cliente">
+                        <option value="0">--Seleccione un cliente--</option>
+                        {{#each clientes}}
+                        <option value="{{Empresa}}">{{Empresa}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Notas de entrega</label>
+                    <select class="form-control js-exam" id="notaEntrega">
+                        <option value="0">--Seleccione una nota--</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Pendiente a pagar</label>
+                    <input type="number" class="form-control" step="any" readonly id="pendiente">
+                </div>
+                <div class="col-sm-3">
+                    <label>Modalidad</label>
+                    <select class="form-control js-exam" id="modalidad">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Zelle">Zelle</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Monto</label>
+                    <input type="number" step="any" min="0" class="form-control" id="montoCobrar">
+                </div>
+                <div class="col-sm-4">
+                    <label>Número de transacción</label>
+                    <input type="text" class="form-control" readonly id="numeroTransaccion">
+                    <span class="text-muted">Campo opcional de ser un pago en efectivo</span>
+                </div>
+                <div class="col-sm-3">
+                    <label>Comentario <span class="text-muted">(opcional)</span></label>
+                    <input type="text" class="form-control" id="comentario" >
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-outline-info mt-2 w-100" id="btnAgregar" >Agregar a lista</button>
+                </div>
+            </div>
+        </div>
+    </div>
+      <div class="card">
+        <div class="row">
+            <div class="card-body">
+                <table  class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Nota de entrega</th>
+                        <th class="text-center">Modalidad</th>
+                        <th class="text-center">Pendiente</th>
+                        <th class="text-center">Monto</th>
+                        <th class="text-center">Saldo a favor</th>
+                        <th class="text-center">Comentario</th>
+                        <th class="text-center">Nota</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+                <tfoot >
+                    <tr>
+                        <td colspan="4" class="text-danger text-right">Total:</td>
+                        <td class="text-center" id="Total">0</td>
+                        <td class="text-center" id="SaldoFavor">0</td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="text-right my-2">
+        <button id="btnEnviarPago" class="btn btn-success">Registrar pago</button>
+    <div>
+</section>
+<script>
+    const d = document, 
+    $comentario = d.getElementById("comentario"),
+    $numeroTransaccion = d.getElementById("numeroTransaccion"),
+    $montoCobrar = d.getElementById("montoCobrar"),
+    $pendiente = d.getElementById("pendiente"),
+    $notaEntrega = d.getElementById("notaEntrega"),
+    $modalidad = d.getElementById("modalidad"),
+    $cliente = d.getElementById("cliente"),
+    $insertarError = d.getElementById("insertarError"),
+    $tbody = d.getElementById("tbody"),
+    $Total = d.getElementById("Total"),
+    $SaldoFavor = d.getElementById("SaldoFavor"),
+    $btnEnviarPagoSolicitud = d.getElementById("btnEnviarPagoSolicitud"),
+    $btnEnviarPago = d.getElementById("btnEnviarPago"),
+    $btnAgregar = d.getElementById("btnAgregar");
+    let notas
+    let notasAgregadas = []
+    let total = 0
+    let SaldoFavor = 0
+
+    const solicitarNumeroTransaccion = async (data) => {
+        return await fetch(`/solicitar-numero-transaccion-cobranza`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            if(response.Existe == true){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                        El número de transacción ya se encuentra registrado. Por favor,
+                        Valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                $btnAgregar.setAttribute("disabled","")
+            }else{
+                $btnAgregar.removeAttribute("disabled")
+            }
+        });
+    };
+    const enviarCobranza = async (data) => {
+        return await fetch(`/registrar-nueva-cobranza`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then(async (response) => {
+              await window.open(`/ver-nota-de-pago/${response}`, `Recibo de pago ${response}`, "width=612, heigh=792");
+              location.reload()
+
+        });
+    };
+
+    const solicitarNotasDeEntrega = async (data) => {
+        return await fetch(`/solicitar-notas-de-entrega-cobranza`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            let opts = `<option value="0">--Seleccione una nota--</option>`
+            notas = response
+            for(i=0; i< response.length; i++){
+                let opt = `<option value="${response[i].Numero}">${response[i].Numero}</option>`
+                opts += opt
+            }
+            $notaEntrega.innerHTML = opts
+        });
+    };
+
+    $notaEntrega.onchange = () => {
+        if($notaEntrega.value != 0){
+            let monto  = notas.find((data) => data.Numero == $notaEntrega.value)
+            $pendiente.value =  monto.Saldo
+            $montoCobrar.setAttribute("max", monto.Saldo)
+        }
+    }
+    $modalidad.onchange = () => {
+        if($modalidad.value != "Efectivo"){
+            $numeroTransaccion.removeAttribute("readonly")
+            $numeroTransaccion.value = ""
+            $btnAgregar.setAttribute("disabled","")
+        }else{
+            $btnAgregar.removeAttribute("disabled")
+            $numeroTransaccion.value = ""
+            $numeroTransaccion.setAttribute("readonly","")
+        }
+    }
+
+    $numeroTransaccion.onchange = () => {
+        let data = {
+            Transaccion : $numeroTransaccion.value
+        }
+        solicitarNumeroTransaccion(data)
+    }
+
+    $cliente.onchange = () => {
+        if($cliente.value != 0){
+            let data = {
+                Cliente: $cliente.value
+            }
+            solicitarNotasDeEntrega(data)
+        }
+    }
+    d.addEventListener("click", e=> {
+        if(e.target == $btnAgregar){
+            if($modalidad.value != "Efectivo"){
+                let validacion = 0
+                if($cliente.value == 0){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El campo "Cliente" no puede estar vacío. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    validacion++ 
+                }
+                if($notaEntrega.value == 0){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El campo "Nota de entrega" no puede estar vacío. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    validacion++
+                }
+                if($montoCobrar.value == 0 || !$montoCobrar.value ){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El campo "Monto" no puede estar vacío. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    validacion++
+                }
+                if($numeroTransaccion.value == 0 || !$numeroTransaccion.value){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El campo "Número de transacción" no puede estar vacío. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    validacion++
+                }
+                if(validacion == 0){
+                    let validacionNota = notasAgregadas.find((data) => data == $notaEntrega.value)
+                    if(validacionNota){
+                         $insertarError.innerHTML = `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                La nota ya se encuentra agregada. Por favor, valide e intente de nuevo
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `
+
+                    }else{
+                        notasAgregadas.push($notaEntrega.value)
+                        let restante = (+$pendiente.value - +$montoCobrar.value).toFixed(2)
+                        let nota = ""
+                        if(restante > 0){
+                            nota = "Abono"
+                        }else{
+                            nota = "Pago completo"
+                        }
+                        if(+$pendiente.value < +$montoCobrar.value){
+                            restante = Math.abs(restante)
+                        }else{
+                            restante = 0
+                        }
+                        let tr = `
+                            <tr>
+                                <td class="text-center">${$cliente.value}</td>
+                                <td class="text-center">${$notaEntrega.value}</td>
+                                <td class="text-center">${$modalidad.value}</td>
+                                <td class="text-center">${$pendiente.value}</td>
+                                <td class="text-center">${$montoCobrar.value}</td>
+                                <td class="text-center">${restante}</td>
+                                <td class="text-center">${$comentario.value}</td>
+                                <td class="text-center">${nota}</td>
+                                <td class="text-center"><button class="btn btn-danger">-</button></td>
+                            </tr>
+                        `
+                        $tbody.innerHTML += tr
+                        SaldoFavor = (+SaldoFavor + +restante).toFixed(2)
+                        total = (+total + +$montoCobrar.value).toFixed(2)
+                        $SaldoFavor.textContent = SaldoFavor
+                        $Total.textContent = total 
+                        $cliente.setAttribute("disabled","")
+                        $modalidad.setAttribute("disabled","")
+                        $comentario.setAttribute("readonly","")
+                        $montoCobrar.value = ""
+                        $numeroTransaccion.setAttribute("readonly","")
+                    }
+                    }
+
+            }else{
+                let validacion = 0
+                if($cliente.value == 0){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El campo "Cliente" no puede estar vacío. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    validacion++ 
+                }
+                if($notaEntrega.value == 0){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El campo "Nota de entrega" no puede estar vacío. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    validacion++
+                }
+                if($montoCobrar.value == 0 || !$montoCobrar.value ){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El campo "Monto" no puede estar vacío. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                    validacion++
+                }
+                if(validacion == 0){
+                    let validacionNota = notasAgregadas.find((data) => data == $notaEntrega.value)
+                    if(validacionNota){
+                        $insertarError.innerHTML = `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                La nota ya se encuentra agregada. Por favor, valide e intente de nuevo
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `
+
+                    }else{
+                        notasAgregadas.push($notaEntrega.value)
+                        let restante = (+$pendiente.value - +$montoCobrar.value).toFixed(2)
+                        let nota = ""
+                        if(restante > 0){
+                            nota = "Abono"
+                        }else{
+                            nota = "Pago completo"
+                        }
+                        if(+$pendiente.value < +$montoCobrar.value){
+                            restante = Math.abs(restante)
+                        }else{
+                            restante = 0
+                        }
+                        let tr = `
+                            <tr>
+                                <td class="text-center">${$cliente.value}</td>
+                                <td class="text-center">${$notaEntrega.value}</td>
+                                <td class="text-center">${$modalidad.value}</td>
+                                <td class="text-center">${$pendiente.value}</td>
+                                <td class="text-center">${$montoCobrar.value}</td>
+                                <td class="text-center">${restante}</td>
+                                <td class="text-center">${$comentario.value}</td>
+                                <td class="text-center">${nota}</td>
+                                <td class="text-center"><button class="btn btn-danger">-</button></td>
+                            </tr>
+                        `
+                        SaldoFavor = (+SaldoFavor + +restante).toFixed(2)
+                        total = (+total + +$montoCobrar.value).toFixed(2)
+                        $SaldoFavor.textContent = SaldoFavor
+                        $Total.textContent = total 
+                        $tbody.innerHTML += tr
+                        $cliente.setAttribute("disabled","")
+                        $modalidad.setAttribute("disabled","")
+                        $comentario.setAttribute("readonly","")
+                        $montoCobrar.value = ""
+                        $numeroTransaccion.setAttribute("readonly","")
+                    }
+                }
+            }
+        }
+        if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            notasAgregadas = notasAgregadas.filter((data) => data != linea.children[1].textContent)
+            total = (+total - +linea.children[4].textContent).toFixed(2)
+            SaldoFavor = (+SaldoFavor - +linea.children[5].textContent).toFixed(2)
+            $SaldoFavor.textContent = SaldoFavor
+            $Total.textContent = total
+            $tbody.removeChild(linea)
+            if($tbody.children.length == 0){
+                $cliente.removeAttribute("disabled")
+                $modalidad.removeAttribute("disabled")
+                $comentario.removeAttribute("readonly")
+                $numeroTransaccion.removeAttribute("readonly")
+            }
+        }
+        if(e.target == $btnEnviarPago){
+            let validacionDatos = 0
+            if($tbody.children.length == 0){
+                $insertarError.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe agregar productos a a tabla para poder reportar el pago
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacionDatos++
+            }
+            if($cliente.value == 0 || !$cliente){
+                $insertarError.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un cliente para poder reportar el pago.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacionDatos++
+
+            }
+            if(validacionDatos == 0){
+                let Timestamp = Date.now();
+                let Fecha = new Date();
+                let dia;
+                let mes;
+                let año = Fecha.getFullYear();
+                if (Fecha.getDate() < 10) {
+                dia = `0${Fecha.getDate()}`;
+                } else {
+                dia = Fecha.getDate();
+                }
+                if (Fecha.getMonth() + 1 < 10) {
+                mes = `0${Fecha.getMonth() + 1}`;
+                } else {
+                mes = Fecha.getMonth() + 1;
+                }
+                Fecha = `${año}-${mes}-${dia}`;
+                let tableBody = $tbody.children
+                let Facturas = []
+                for(i=0; i< tableBody.length; i++){
+                    let data = {
+                        NotaEntrega: tableBody[i].children[1].textContent,
+                        Monto: tableBody[i].children[4].textContent,
+                        SaldoFavor: tableBody[i].children[5].textContent,
+                        Modalidad: tableBody[i].children[2].textContent,
+                        Comentario: tableBody[i].children[7].textContent,
+                    }
+                    Facturas.push(data)
+                }
+                let data = {
+                    Fecha: Fecha,
+                    SaldoFavor : SaldoFavor,
+                    Timestamp: Timestamp,
+                    MontoTotal : total,
+                    Cliente: $cliente.value,
+                    Modalidad: $modalidad.value,
+                    NumeroTransaccion: $numeroTransaccion.value,
+                    Comentario: $comentario.value,
+                    Facturas: Facturas,
+                }
+                enviarCobranza(data)
+            }
+
+        }
+    })
+
+</script>

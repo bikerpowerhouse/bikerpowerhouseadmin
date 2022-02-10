@@ -1,0 +1,252 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Todas las notas</h1>
+            </div>
+            <div class="col-sm-12 my-2">
+                {{>success}}
+                {{>errors}}
+            </div>
+        </div>
+    </div>
+</div>
+<div id="introducirModal2"></div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-4 ">
+                    <p class="h5">Cantidad de notas generadas: <span id="cantidadTotalGenerada">{{cantidadTotalGenerada}}</span></p>
+                </div>
+                <div class="col-sm-4 ">
+                    <p class="h5">Neto total generado: <span id="netoTotalGenerado">{{netoTotalGenerado}}</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="h5">Saldo general: <span id="saldoTotalGenerado">{{saldoTotalGenerado}}</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 ml-4">
+                <label for="">Filtros</label>
+                <select id="Filtro" class="form-control">
+                    <option value="Por pagar" selected>En proceso</option>
+                    <option value="Cerrada">Cerradas</option>
+                    <option value="Anulada">Anuladas</option>
+                    <option value="Todas">Todas</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body" >
+            <div class="table-responsive" id="insertarTabla">
+                <table id="example1" class="table table-bordered table-hover ">
+                <thead id="thead">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Vencimiento</th>
+                        <th>Número</th>
+                        <th>Factura</th>
+                        <th>Estado</th>
+                        <th>Cliente</th>
+                        <th>Vendedor</th>
+                        <th>Neto</th>
+                        <th>Saldo</th>
+                        <th>Generar factura</th>
+                        <th>Historial</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each notasEntregas}}
+                    <tr>
+                        <td>{{Fecha}}</td>
+                        <td>{{Vencimiento}}</td>
+                        <td><a class="text-info" target="_blank" href="/ver-nota-entrega/{{Numero}}">{{Numero}}</a></td>
+                        <td>{{Factura}}</td>
+                        <td>{{Estado}}</td>
+                        <td>{{Cliente}}</td>
+                        <td>{{Vendedor}}</td>
+                        <td>{{Neto}}</td>
+                        <td>{{Saldo}}</td>
+                        <td class="text-center">
+                            <a class="text-primary modal-open" href="#" data-id="{{_id}}">
+                                <i class="fas fa-print modal-open" style="font-size: 22px;" data-id="{{_id}}"></i>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a class="text-info" target="_blank" href="/ver-historial-nota-entrega/{{_id}}">
+                                <i class="fas fa-history" style="font-size: 22px;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+<script>
+    const d = document,
+    $tbody = d.getElementById("tbody"),
+    $Filtro = d.getElementById("Filtro"),
+    $netoTotalGenerado = d.getElementById("netoTotalGenerado"),
+    $saldoTotalGenerado = d.getElementById("saldoTotalGenerado"),
+    $cantidadTotalGenerada = d.getElementById("cantidadTotalGenerada"),
+    $thead = d.getElementById("thead"),
+    $table = d.getElementsByClassName("table"),
+    $insertarTabla = d.getElementById("insertarTabla"),
+    $introducirModal2 = d.getElementById("introducirModal2");
+
+    d.addEventListener("click", e => {
+        if(e.target.classList.contains("modal-open")){
+            let _id = e.target.getAttribute("data-id") 
+            $introducirModal2.innerHTML = `
+            <div class="modal fade show" id="exampleModal1121" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-modal="true" style="display: block;background-color:rgba(0,0,0,0.5)">
+                <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Generar factura</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="close">&times;</span>
+                            </div>
+                            <form method="post" action="/generar-factura-de-nota/${_id}">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label>Numero control</label>
+                                            <input type="text" class="form-control" name="NumeroControl" required placeholder="Introduzca número de control">
+                                        </div>
+                                        <div class="col-sm-12 text-right my-2">
+                                            <button type="submit" class="btn btn-success">Generar factura</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+              </div>
+            `
+        }
+        if(e.target.classList.contains("close")){
+            $introducirModal2.innerHTML=""
+        }
+    })
+
+    const filtroNotas = async (data) => {
+        return await fetch("/solicitar-notas-por-filtro", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            $tbody.innerHTML = ""
+            let tr = ""
+            for(i=0; i < response.notasEntregas.length; i++){
+                let factura = response.notasEntregas[i].Factura
+                if(factura == "undefined"){
+                    factura = "-"
+                }
+                let linea = `
+                    <tr>
+                        <td>${response.notasEntregas[i].Fecha}</td>
+                        <td>${response.notasEntregas[i].Vencimiento}</td>
+                        <td><a class="text-info" target="_blank" href="/ver-nota-entrega/${response.notasEntregas[i].Numero}">${response.notasEntregas[i].Numero}</a></td>
+                        <td>${factura}</td>
+                        <td>${response.notasEntregas[i].Estado}</td>
+                        <td>${response.notasEntregas[i].Cliente}</td>
+                        <td>${response.notasEntregas[i].Vendedor}</td>
+                        <td>${response.notasEntregas[i].Neto}</td>
+                        <td>${response.notasEntregas[i].Saldo}</td>
+                        <td class="text-center">
+                            <a class="text-primary modal-open" href="#" data-id="${response.notasEntregas[i]._id}">
+                                <i class="fas fa-print modal-open" style="font-size: 22px;" data-id="${response.notasEntregas[i]._id}"></i>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a class="text-info" target="_blank" href="/ver-historial-nota-entrega/${response.notasEntregas[i]._id}">
+                                <i class="fas fa-history" style="font-size: 22px;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                `
+                tr += linea
+            }
+            if(+screen.width <= 991){
+                $insertarTabla.innerHTML = `
+                <table id="tabla" class="table table-bordered table-hover ">
+                    <thead id="thead">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Vencimiento</th>
+                            <th>Número</th>
+                            <th>Factura</th>
+                            <th>Estado</th>
+                            <th>Cliente</th>
+                            <th>Vendedor</th>
+                            <th>Neto</th>
+                            <th>Saldo</th>
+                            <th>Generar factura</th>
+                            <th>Historial</th>
+                        </tr>
+                        <td colspan="11">
+                            <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                        </td>
+                    </thead>
+                    <tbody id="tbody">
+                        ${tr}
+                    </tbody>
+                </table>
+                `
+                const table = d.getElementById("tabla").tBodies[0];
+                let buscar = d.getElementById('buscar')
+                buscaTabla = function () {
+                    texto =  buscar.value.toLowerCase();
+                    let r = 0;
+                    while (row = table.rows[r++]) {
+                        if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                            row.style.display = null;
+                        else
+                            row.style.display = 'none';
+                    }
+                }
+                buscar.addEventListener("keydown", e => {
+                        if(e.keyCode == 13){
+                            e.preventDefault()
+                        }
+                    })
+                buscar.addEventListener('keyup', buscaTabla);
+
+            }else{
+                d.querySelector(".table").setAttribute("id","example1")
+                $(function () {
+                    $("#example1").DataTable({
+                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                    "ordering": true,
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                });
+                $tbody.innerHTML = tr
+                $netoTotalGenerado.textContent = response.netoTotalGenerado
+                $saldoTotalGenerado.textContent = response.saldoTotalGenerado
+                $cantidadTotalGenerada.textContent = response.cantidadTotalGenerada
+            }
+
+        });
+    };
+    $Filtro.onchange = () => {
+        let data = {
+            Estado : $Filtro.value
+        }
+        filtroNotas(data)
+        d.querySelector(".table").removeAttribute("id")
+    }
+
+
+
+</script>

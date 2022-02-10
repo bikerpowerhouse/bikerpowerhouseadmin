@@ -1,0 +1,74 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Realizar recibo de vuelto</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/registrar-nuevo-recibo-pago">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label>Cliente</label>
+                        <select name="Cliente" id="Cliente" class="form-control js-exam" required>
+                            <option value="0">--Seleccione un cliente--</option>
+                            {{#each clientes}}
+                                <option value="{{Empresa}}">{{Empresa}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-sm-5">
+                        <label>Saldo a favor</label>
+                        <input type="number" step="any" readonly required name="Monto" id="Monto" class="form-control">
+                    </div>
+                    <div class="col-sm-2 mt-4">
+                        <button class="mt-2 btn btn-success w-100" type="submit">Generar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Cliente = d.getElementById("Cliente"),
+    $Monto = d.getElementById("Monto")
+    const solicitarSaldo = async (data) => {
+        return await fetch(`/solicitar-saldo-favor-cliente`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                $Monto.value = response
+            });
+        };
+
+    $Cliente.onchange = () => {
+        if($Cliente.value != 0){
+            let data = {
+                Cliente: $Cliente.value
+            }
+            console.log(data)
+            solicitarSaldo(data)
+        }else{
+            $Monto.value == ""
+        }
+    }
+</script>

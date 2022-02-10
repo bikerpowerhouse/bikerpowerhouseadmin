@@ -1,0 +1,61 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Historial de transacción</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                 <h3 class="text-danger">Saldo {{saldo}}</h3 >
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-4">                    
+                    <h5 class="text-center">Orden de compra: <a target="_blank" href="/ver-detalles-orden-compra/{{orden}}" class="text-info">{{NumeroOrden}}</a></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5 class="text-center">Nota de entrega: <a target="_blank" href="/ver-nota-entrega/{{Numero}}" class="text-info">{{Numero}}</a></h5>
+                </div>
+                <div class="col-sm-4">
+                    <h5 class="text-center">Factura/control: <a target="_blank" href="/ver-factura/{{numeroFactura}}" class="text-info">{{numeroFactura}}</a>/{{numeroControl}} </h5>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Modalidad</th>
+                        <th class="text-center">Recibo</th>
+                        <th class="text-center">Comentario</th>
+                        <th class="text-center">Monto</th>
+                    </tr>
+                </thead>
+                  <tbody id="tbody">
+                    {{#each historial}}
+                    <tr>
+                        <td class="text-center">{{Fecha}}</td>
+                        <td class="text-center">{{Modalidad}}</td>
+                        <td class="text-center"><a href="{{link}}" target="_blank" class="text-info">{{Recibo}}</a></td>
+                        <td class="text-center">{{Comentario}}</td>
+                        <td class="text-center">{{Monto}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-right text-danger" colspan="4">Total</td>
+                        <td class="text-center">{{total}}</td>
+                    </tr>
+                </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

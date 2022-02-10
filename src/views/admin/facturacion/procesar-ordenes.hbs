@@ -1,0 +1,202 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Ordenes de compras</h1>
+            </div>
+        </div>
+    </div>
+</div>
+{{>success}}
+{{>errors}}
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-8">
+                    <label for="">Estado de ordenes</label>
+                    <select id="EstadoOrdenes" class="form-control js-exam">
+                        <option value="En proceso" selected>En proceso</option>
+                        <option value="Cancelada">Canceladas</option>
+                        <option value="Facturada">Facturadas</option>
+                        <option value="Procesada">Procesadas</option>
+                    </select>
+                </div>
+                <div class="col-sm-4 mt-4">
+                    <button id="btnBuscar" class="btn btn-success mt-2">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table id="tabla" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="font-size: 13px;">Fecha</th>
+                        <th class="text-center" style="font-size: 13px;">Número</th>
+                        <th class="text-center" style="font-size: 13px;">Estado</th>
+                        <th class="text-center" style="font-size: 13px;">Factura</th>
+                        <th class="text-center" style="font-size: 13px;">Solicitado por</th>
+                        <th class="text-center" style="font-size: 13px;">Cliente</th>
+                        <th class="text-center" style="font-size: 13px;">Vendedor</th>
+                        <th class="text-center" style="font-size: 13px;">Cantidad total</th>
+                        <th class="text-center" style="font-size: 13px;">Precio total</th>
+                        <th class="text-center" style="font-size: 13px;">Cambiar estado</th>
+                        <th class="text-center" style="font-size: 13px;">Facturar</th>
+                        <th class="text-center" style="font-size: 13px;">Ver detalles</th>
+                    </tr>
+                    <td colspan="12">
+                        <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                    </td>
+                </thead>
+                <tbody id="tbody">
+                    {{#each ordenComprasClientes}}
+                    <tr>
+                        <td class="text-center">{{Fecha}}</td>
+                        <td class="text-center">{{Numero}}</td>
+                        <td class="text-center">{{Estado}}</td>
+                        <td class="text-center">{{Factura}}</td>
+                        <td class="text-center">{{SolicitadoPor}}</td>
+                        <td class="text-center">{{Cliente}}</td>
+                        <td class="text-center">{{Vendedor}}</td>
+                        <td class="text-center">{{CantidadTotal}}</td>
+                        <td class="text-center">{{PrecioTotal}}</td>
+                        <td class="text-center"><a href="#" class="text-info cambiar-estado" style="font-size: 11px;" data-toggle="modal" data-target="#exampleModal" data-estado="{{Estado}}" data-id="{{_id}}"><i class="fas fa-history cambiar-estado" style="font-size: 20px;"  data-id="{{_id}}" data-estado="{{Estado}}"></i></a></td>
+                        <td class="text-center"><a href="/facturar-orden/{{_id}}" class="facturar"><i class="fas fa-print facturar" style="font-size:20px"></i></a></td>
+                        <td class="text-center"><a href="/ver-detalles-orden-compra/{{_id}}" class="text-success" target="_blank"><i class="fas fa-file-alt" style="font-size: 20px;"></i></a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5 class="modal-title" id="exampleModalLabel">Cambio de estado</h5>
+                </div>
+                <div class="col-sm-12">
+                    <span class="text-muted">Las unicas ordenes que pueden ser cambiadas de estado son las que se encuentren previamente en los estados "En proceso" y "Procesada".</span>
+                </div>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form method="POST" action="" id="formEstado">
+            <div class="modal-body">
+                <label for="">Estado</label>
+                <select name="Estado" id="Estado" class="form-control" required>
+
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $formEstado = d.getElementById("formEstado"),
+    $EstadoOrdenesFiltro = d.getElementById("EstadoOrdenes"),
+    $btnBuscar = d.getElementById("btnBuscar"),
+    $tbody = d.getElementById("tbody"),
+    $Estado = d.getElementById("Estado");
+    const table = d.getElementById("tabla").tBodies[0];
+    buscaTabla = function () {
+            texto =  d.getElementById('buscar').value.toLowerCase();
+            let r = 0;
+            while (row = table.rows[r++]) {
+                if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                    row.style.display = null;
+                else
+                    row.style.display = 'none';
+            }
+        }
+    d.getElementById('buscar').addEventListener("keydown", e => {
+        if(e.keyCode == 13){
+            e.preventDefault()
+        }
+    })
+    d.getElementById('buscar').addEventListener('keyup', buscaTabla);
+
+
+    const solicitarOrdenes = async (data) => {
+        return await fetch("/solicitar-ordenes-clientes-por-estado", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+                let tr = ""
+                for(i=0; i< response.length; i++){
+                    let linea = `
+                        <tr>
+                            <td class="text-center">${response[i].Fecha}</td>
+                            <td class="text-center">${response[i].Numero}</td>
+                            <td class="text-center">${response[i].Estado}</td>
+                            <td class="text-center">${response[i].Factura}</td>
+                            <td class="text-center">${response[i].SolicitadoPor}</td>
+                            <td class="text-center">${response[i].Cliente}</td>
+                            <td class="text-center">${response[i].Vendedor}</td>
+                            <td class="text-center">${response[i].CantidadTotal}</td>
+                            <td class="text-center">${response[i].PrecioTotal}</td>
+                            <td class="text-center"><a href="#" class="text-info cambiar-estado" style="font-size: 11px;" data-toggle="modal" data-target="#exampleModal" data-estado="${response[i].Estado}" data-id="${response[i]._id}"><i class="fas fa-history cambiar-estado" style="font-size: 20px;"  data-id="${response[i]._id}" data-estado="${response[i].Estado}"></i></a></td>
+                            <td class="text-center"><a href="/facturar-orden/${response[i]._id}" class="facturar"><i class="fas fa-print facturar" style="font-size:20px"></i></a></td>
+                            <td class="text-center"><a href="/ver-detalles-orden-compra/${response[i]._id}" class="text-success" target="_blank"><i class="fas fa-file-alt" style="font-size: 20px;"></i></a></td>
+                        </tr>
+                    `
+                    tr += linea
+                }
+                $tbody.innerHTML = tr
+                $(function () {
+                    $("#example1").DataTable({
+                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                    "ordering": false,
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                });
+            });
+    };
+
+
+    d.addEventListener("click", e => {
+        if(e.target.classList.contains("cambiar-estado")){
+            let _id = e.target.getAttribute("data-id")
+            let estado  = e.target.getAttribute("data-estado")
+            $formEstado.setAttribute("action", `/cambiar-estado-orden/${_id}`)
+            if(estado == "En proceso"){
+                let opt = `
+                    <option value="Procesada">Procesada</option>
+                    <option value="Cancelada">Cancelada</option>
+                `
+                $Estado.innerHTML = opt
+
+            }
+            if(estado == "Procesada"){
+                let opt = `
+                    <option value="Cancelada">Cancelada</option>
+                `
+                $Estado.innerHTML = opt
+            }
+        }
+        if(e.target == $btnBuscar){
+            let data = {
+                Estado : $EstadoOrdenesFiltro.value
+            }
+            solicitarOrdenes(data)
+        }
+    })
+
+
+</script>

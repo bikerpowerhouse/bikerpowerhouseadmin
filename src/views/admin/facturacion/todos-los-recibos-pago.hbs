@@ -1,0 +1,49 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Recibos de pago</h2>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <p class="text-dark h5">Cantidad de notas: {{cantidadTotal}}</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="text-dark h5">Precio total: {{precioTotal}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Recibo</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Modalidad</th>
+                        <th class="text-center">Transaccion</th>
+                        <th class="text-center">Precio</th>
+                        <th class="text-center">Detalle</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each notasPago}}
+                    <tr>
+                        <td class="text-center">{{Recibo}}</td>
+                        <td class="text-center">{{Estado}}</td>
+                        <td class="text-center">{{Cliente}}</td>
+                        <td class="text-center">{{Modalidad}}</td>
+                        <td class="text-center">{{Transaccion}}</td>
+                        <td class="text-center">{{Monto}}</td>
+                        <td class="text-center"><a href="/ver-nota-de-pago/{{Recibo}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

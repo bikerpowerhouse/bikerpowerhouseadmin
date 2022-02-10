@@ -1,0 +1,170 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Ordenes de compra</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5>Ordenes generadas:  <span id="ordenesGeneradas">{{ordenesGeneradas}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Ordenes atendidas:  <span id="ordenesAtendidas">{{ordenesAtendidas}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Monto de ordenes generadas: <span id="montoOrdenesGeneradas">{{montoOrdenesGeneradas}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Monto de ordenes atendidas: <span id="montoOrdenesAtendidas">{{montoOrdenesAtendidas}}</span></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5>Todas las ordenes</h5>
+                </div>
+                <div class="col-sm-8">
+                    <label for="">Seleccione un estado</label>
+                    <select name="" id="Estado" class="form-control js-exam">
+                        <option value="0">Todas</option>
+                        <option value="En proceso" >En proceso</option>
+                        <option value="Cancelada">Canceladas</option>
+                        <option value="Facturada">Facturadas</option>
+                        <option value="Procesada">Procesadas</option>
+                    </select>
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-2" id="btnBuscar" disabled>Buscar</button>
+                </div>
+            </div>
+        </div>
+         <div class="card-body">
+            <table id="tabla" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Número</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Cliente</th>
+                    <th class="text-center">Nota entrega</th>
+                    <th class="text-center">Cantidad total</th>
+                    <th class="text-center">Monto total</th>
+                </tr>
+                 <td colspan="7">
+                    <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                </td>
+                </thead>
+                <tbody id="tbody">
+                    {{#each ordenes}}
+                        <tr>
+                            <td class="text-center"><p>{{Fecha}}</p></td>
+                            <td class="text-center"><p>{{Numero}}</p></td>
+                            <td class="text-center"><p>{{Estado}}</p></td>
+                            <td class="text-center"><p>{{Cliente}}</p></td>
+                            <td class="text-center"><p>{{Factura}}</p></td>
+                            <td class="text-center"><p>{{CantidadTotal}}</p></td>
+                            <td class="text-center"><p>{{PrecioTotal}}</p></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $tbody = d.getElementById("tbody"),
+    $Estado = d.getElementById("Estado"),
+    $ordenesGeneradas = d.getElementById("ordenesGeneradas"),
+    $ordenesAtendidas = d.getElementById("ordenesAtendidas"),
+    $montoOrdenesGeneradas = d.getElementById("montoOrdenesGeneradas"),
+    $montoOrdenesAtendidas = d.getElementById("montoOrdenesAtendidas"),
+    $btnBuscar = d.getElementById("btnBuscar");
+    const table = d.getElementById("tabla").tBodies[0];
+
+    buscaTabla = function () {
+        texto =  d.getElementById('buscar').value.toLowerCase();
+        let r = 0;
+        while (row = table.rows[r++]) {
+            if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                row.style.display = null;
+            else
+                row.style.display = 'none';
+        }
+    }
+    d.getElementById('buscar').addEventListener("keydown", e => {
+        if(e.keyCode == 13){
+            e.preventDefault()
+        }
+    })
+    d.getElementById('buscar').addEventListener('keyup', buscaTabla);
+
+    $Estado.onchange = () => {
+        if($Estado.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }
+    }
+
+    const solicitarOrdenes = async (data) => {
+        return await fetch(`/solicitar-ordenes-compras-vendedor`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            $ordenesGeneradas.textContent = response.ordenesGeneradas
+            $ordenesAtendidas.textContent = response.ordenesAtendidas
+            $montoOrdenesGeneradas.textContent = response.montoOrdenesGeneradas
+            $montoOrdenesAtendidas.textContent = response.montoOrdenesAtendidas
+            let tr = ""
+            for(i=0; i< response.ordenes.length; i++){
+                let linea = `
+                    <tr>
+                        <td class="text-center"><p>${response.ordenes[i].Fecha}</p></td>
+                        <td class="text-center"><p>${response.ordenes[i].Numero}</p></td>
+                        <td class="text-center"><p>${response.ordenes[i].Estado}</p></td>
+                        <td class="text-center"><p>${response.ordenes[i].Cliente}</p></td>
+                        <td class="text-center"><p>${response.ordenes[i].Factura}</p></td>
+                        <td class="text-center"><p>${response.ordenes[i].CantidadTotal}</p></td>
+                        <td class="text-center"><p>${response.ordenes[i].PrecioTotal}</p></td>
+                    </tr>
+                ` 
+                tr += linea
+            }
+            $tbody.innerHTML = tr
+     
+
+        });
+    }
+
+
+    d.addEventListener("click", e => {
+        if(e.target == $btnBuscar){
+            if($Estado.value == 0){
+                location.reload()
+            }else{
+                let data = {
+                    Estado : $Estado.value 
+                }
+                solicitarOrdenes(data)
+            }
+        }
+    })
+
+
+
+</script>

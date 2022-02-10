@@ -1,0 +1,129 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Solicitudes de pago</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a href="/realizar-cobranza" class="btn btn-info">Reportar pago</a>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+      <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h5>Todos las solicitudes</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Tipo</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Solicitado por</th>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Vendedor</th>
+                        <th class="text-center">Monto</th>
+                        <th class="text-center">Procesar</th>
+                        <th class="text-center">Rechazar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each solicitud}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>
+                            <td class="text-center">{{Tipo}}</td>
+                            <td class="text-center">{{Estado}}</td>
+                            <td class="text-center">{{SolicitadoPor}}</td>
+                            <td class="text-center">{{Cliente}}</td>
+                            <td class="text-center">{{Vendedor}}</td>
+                            <td class="text-center">{{Monto}}</td>
+                            <td class="text-center"><a class="text-success h5 procesar" href="#" data-estado="{{Estado}}" data-Tipo="{{Tipo}}"  data-id="{{_id}}"><i class="far fa-check-circle procesar" data-estado="{{Estado}}" data-Tipo="{{Tipo}}" data-id="{{_id}}"></i></a></td>
+                            <td class="text-center"><a class="text-danger h5 rechazo" href="#"data-toggle="modal" data-estado="{{Estado}}" data-target="#modalRechazo" data-id="{{_id}}"><i class="fas fa-ban rechazo" data-id="{{_id}}" data-estado="{{Estado}}"></i></a></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="modalRechazo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Rechazo de solicitud</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" id="form" >
+                <div class="modal-body" >
+                    ¿Estas seguro que desea rechazar la solicitud?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-danger">Rechazar</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $insertarError = d.getElementById("insertarError"),
+    $form = d.getElementById("form");
+
+
+    d.addEventListener("click", e=> {
+        if(e.target.classList.contains("procesar")){
+            let estado = e.target.getAttribute("data-estado")
+            let _id = e.target.getAttribute("data-id")
+            let Tipo = e.target.getAttribute("data-Tipo")
+            if(estado == "Pendiente"){
+                if(Tipo == "Ingreso"){
+                    location.href = `/procesar-solicitud-de-pago/${_id}`
+                }else{
+                    location.href = `/procesar-solicitud-de-egreso/${_id}`
+                }
+            }else{
+                $insertarError.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    Solo pueden ser procesadas las solicitudes en estado "Pendiente". Por favor, valide e intente de nuevo.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                `
+            }
+        }
+        if(e.target.classList.contains("rechazo")){
+            let _id = e.target.getAttribute("data-id")
+            let estado = e.target.getAttribute("data-estado")
+            console.log(estado)
+            if(estado == "Pendiente"){
+                $form.setAttribute("action", `/rechazar-solicitud-pago/${_id}`)
+                $form.innerHTML = `
+                <div class="modal-body" >
+                    ¿Estas seguro que desea rechazar la solicitud?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-danger">Rechazar</button>
+                </div>
+                ` 
+            }else{
+                $form.innerHTML = `
+                    <p class="ml-2 mr-2">La solicitud debe estar en estado "Pendiente" para poder ser rechazada. Por favor, valide e intente de nuevo.</p>
+                ` 
+            }
+        }
+    })
+</script>

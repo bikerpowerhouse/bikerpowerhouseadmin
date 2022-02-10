@@ -1,0 +1,108 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0" data-id="{{_id}}" id="idCalificacion">Historial calificaciones {{nombres}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="row">
+         <div class="col-sm-12">
+            <div class="card border-0 shadow p-3 rounded">
+                <div>
+                    <canvas id="myChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="row">
+        <div class="card-body">
+            <table  class="table table-bordered table-hover ">
+            <thead>
+                <tr>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Puntos</th>
+                    <th class="text-center">Calificación</th>
+                    <th class="text-center">Motivo</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                {{#each historiaCalificaciones}}
+                <tr>
+                    <td class="text-center">{{Fecha}}</td>
+                    <td class="text-center">{{Puntos}}</td>
+                    <td class="text-center">{{Calificacion}}</td>
+                    <td class="text-center">{{Motivo}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document;
+    const $idCalificacion = d.getElementById("idCalificacion")
+    const _id = $idCalificacion.getAttribute("data-id")
+    const solicitarInfoGraficas = async (data) => {
+        return await fetch(`/solicitar-info-grafica/${_id}`, {
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                console.log(response.puntos)
+                console.log(response.fecha)
+                const ctx = document.getElementById("myChart")
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: response.fechas,
+                            datasets: [{
+                                label: 'Calificación',
+                                data: response.puntos,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Valor facturado por mes'
+                            }
+                            }
+                            }
+                    });
+            });
+    };
+    solicitarInfoGraficas()
+</script>

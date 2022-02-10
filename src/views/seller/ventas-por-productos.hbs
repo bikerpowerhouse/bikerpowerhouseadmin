@@ -1,0 +1,128 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Ventas por productos</h2>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-8">
+                    <label>Producto</label>
+                    <select class="form-control js-exam" id="Producto">
+                        <option value="0">--Todos los productos--</option>
+                        {{#each producto}}
+                            <option value="{{Codigo}}">{{Codigo}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-2" id="btnBuscar">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tabla" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Código</th>
+                            <th class="text-center">Tipo producto</th>
+                            <th class="text-center">Descripción</th>
+                            <th class="text-center">Cantidad vendida</th>
+                            <th class="text-center">Valor vendido</th>
+                            <th class="text-center">Ver detalles</th>
+                        </tr>
+                        <td colspan="6">
+                            <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                        </td>
+                    </thead>
+                    <tbody id="tbody">
+                        {{#each data}}
+                        <tr>
+                            <td class="text-center">{{Codigo}}</td>
+                            <td class="text-center">{{TipoProducto}}</td>
+                            <td class="text-center">{{Descripcion}}</td>
+                            <td class="text-center">{{CantidadVendida}}</td>
+                            <td class="text-center">{{ValorVendido}}</td>
+                            <td class="text-center"><a target="_blank" href="/ver-detalles-ventas-producto/{{_id}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Producto = d.getElementById("Producto"),   
+    $tbody = d.getElementById("tbody"),  
+    $btnBuscar = d.getElementById("btnBuscar");
+    const table = d.getElementById("tabla").tBodies[0];
+     buscaTabla = function () {
+            texto =  d.getElementById('buscar').value.toLowerCase();
+            let r = 0;
+            while (row = table.rows[r++]) {
+                if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                    row.style.display = null;
+                else
+                    row.style.display = 'none';
+            }
+        }
+    d.getElementById('buscar').addEventListener("keydown", e => {
+        if(e.keyCode == 13){
+            e.preventDefault()
+        }
+    })
+    d.getElementById('buscar').addEventListener('keyup', buscaTabla);
+
+
+    
+     const solicitarVentasProductos = async (data) => {
+        return await fetch(`/solicitar-ventas-por-producto`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            let tr = ""
+            console.log(response)
+            for(i=0; i< response.length; i++){
+                let linea = `
+                    <tr>
+                        <td class="text-center">${response[i].Codigo}</td>
+                        <td class="text-center">${response[i].TipoProducto}</td>
+                        <td class="text-center">${response[i].Descripcion}</td>
+                        <td class="text-center">${response[i].CantidadVendida}</td>
+                        <td class="text-center">${response[i].ValorVendido}</td>
+                        <td class="text-center"><a target="_blank" href="/ver-detalles-ventas-producto/${response[i]._id}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                    </tr>
+                `
+                tr += linea
+            }
+            d.getElementById("tbody").innerHTML = tr
+        });
+    }
+
+    d.addEventListener("click", e=> {
+        if(e.target == $btnBuscar)
+        if($Producto.value == 0){
+            location.reload
+        }else{
+            let data = {
+                Codigo : $Producto.value
+            }
+            solicitarVentasProductos(data)
+
+        }
+    })
+</script>
+

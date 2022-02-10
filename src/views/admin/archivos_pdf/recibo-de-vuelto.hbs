@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{Titulo}}</title>
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
+    <link href="/css/select.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/btnClose.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+</head>
+<body>
+    {{#if notaEntrega.Anulada}}
+    <style>
+        body{
+            background-image: url("/images/anulada.png") !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;.
+            background-attachment: fixed !important;
+            background-size: 780px 220px !important;
+        }
+    </style>
+    {{/if }}
+    <div class="container mt-5">
+        <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="text-center">Recibo de vuelto #{{reciboVuelto.Numero}}</h4>
+                </div>
+                <div class="col-sm-12">
+                    <table  class="table table-bordered table-hover ">
+                        <thead>
+                            <tr>
+                                <td colspan="2" class="text-dark h4">Fecha: <span>{{reciboVuelto.Fecha}}</span></td>
+                            </tr>
+                            <tr>
+                                <th class="h4">Descripción</th>
+                                <th class="h4">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            <tr>
+                                <td class="h5">Recibo de vuelto por saldo acumulado</td>
+                                <td class="h5">{{reciboVuelto.Monto}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </div>
+    </div>
+</body>
+<script>
+    window.print()
+</script>
+</html>

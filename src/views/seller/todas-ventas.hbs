@@ -1,0 +1,152 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Todas las ventas</h2>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-4">
+                    <p class="text-dark h5">Cantidad de ventas: <span class="" id="CantidadVentas">{{notasTotales}}</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="text-dark h5">Valor general: <span class="" id="ValorGeneral">{{netoTotal}}</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="text-dark h5">Saldo pendiente: <span class="" id="SaldoPendiente">{{saldoTotal}}</span></p>
+                </div>
+                <div class="col-sm-8">
+                    <label>Clientes</label>
+                    <select class="form-control js-exam" id="Cliente">
+                        <option value="0">--Selecciona un cliente--</option>
+                        {{#each Clientes}}
+                            <option value="{{Empresa}}">{{Empresa}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-2" disabled id="btnBuscar">Buscar</button>                        
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tabla" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Vencimiento</th>
+                            <th class="text-center">Número</th>
+                            <th class="text-center">Cliente</th>
+                            <th class="text-center">Cantidad total</th>
+                            <th class="text-center">Neto</th>
+                            <th class="text-center">Saldo</th>
+                            <th class="text-center">Historial</th>
+                            <th class="text-center">Detalle</th>
+                        </tr>
+                        <td colspan="9">
+                            <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                        </td>
+                    </thead>
+                    <tbody id="tbody">
+                        {{#each notaEntrega}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>
+                            <td class="text-center">{{Vencimiento}}</td>
+                            <td class="text-center">{{Numero}}</td>
+                            <td class="text-center">{{Cliente}}</td>
+                            <td class="text-center">{{CantidadTotal}}</td>
+                            <td class="text-center">{{Neto}}</td>
+                            <td class="text-center">{{Saldo}}</td>
+                            <td class="text-center"><a href="/ver-historial-pagos/{{Numero}}" class="text-success"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>
+                            <td class="text-center"><a href="/ver-nota-entrega/{{Numero}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Cliente = d.getElementById("Cliente"),
+    $SaldoPendiente = d.getElementById("SaldoPendiente"),
+    $CantidadVentas = d.getElementById("CantidadVentas"),
+    $ValorGeneral = d.getElementById("ValorGeneral"),
+    $btnBuscar = d.getElementById("btnBuscar");
+    const table = d.getElementById("tabla").tBodies[0];
+     buscaTabla = function () {
+            texto =  d.getElementById('buscar').value.toLowerCase();
+            let r = 0;
+            while (row = table.rows[r++]) {
+                if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                    row.style.display = null;
+                else
+                    row.style.display = 'none';
+            }
+        }
+    d.getElementById('buscar').addEventListener("keydown", e => {
+        if(e.keyCode == 13){
+            e.preventDefault()
+        }
+    })
+    d.getElementById('buscar').addEventListener('keyup', buscaTabla);
+
+     const solicitarVentasCliente = async (data) => {
+        return await fetch(`/solicitar-ventas-por-cliente`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            let tr = ""
+            for(i=0; i< response.notaEntrega.length; i++){
+                let linea = `
+                    <tr>
+                        <td class="text-center">${response.notaEntrega[i].Fecha}</td>
+                        <td class="text-center">${response.notaEntrega[i].Vencimiento}</td>
+                        <td class="text-center">${response.notaEntrega[i].Numero}</td>
+                        <td class="text-center">${response.notaEntrega[i].Cliente}</td>
+                        <td class="text-center">${response.notaEntrega[i].CantidadTotal}</td>
+                        <td class="text-center">${response.notaEntrega[i].Neto}</td>
+                        <td class="text-center">${response.notaEntrega[i].Saldo}</td>
+                        <td class="text-center"><a href="/ver-historial-pagos/${response.notaEntrega[i].Numero}" class="text-success"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>
+                        <td class="text-center"><a href="/ver-nota-entrega/${response.notaEntrega[i].Numero}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                    </tr>
+                `
+                tr += linea
+            }
+            $SaldoPendiente.textContent = response.saldoTotal
+            $CantidadVentas.textContent = response.notasTotales
+            $ValorGeneral.textContent = response.netoTotal
+            d.getElementById("tbody").innerHTML = tr
+        });
+    }
+
+    $Cliente.onchange = () => {
+        if($Cliente.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }else{
+            $btnBuscar.setAttribute("disabled","")
+        }
+    }
+    d.addEventListener("click", e=>{
+        if(e.target == $btnBuscar){
+            let data ={
+                Cliente: $Cliente.value
+            }
+            solicitarVentasCliente(data)
+        }
+    })
+
+    
+</script>

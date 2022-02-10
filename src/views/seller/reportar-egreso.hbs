@@ -1,0 +1,190 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Reportar egreso</h1>
+            </div>
+            <div class="col-sm-6 text-right mt-2">
+                <h3 class=""><img src="/images/pote.png" alt="" class="img-fluid" width="30px"> <span class="text-danger" id="SaldoEnPosecion">{{SaldoEnPosesion}}</span></h3>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <label>Comentario</label>
+                    <textarea required class="form-control" id="Comentario" rows="1" placeholder="Introduzca comentario"></textarea>
+                </div>
+                <div class="col-sm-4">
+                    <label>Monto</label>
+                    <input class="form-control" id="Monto" type="number" placeholder="Introduzca monto">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-outline-info mt-2 w-100" id="btnAgregar" >Agregar a lista</button>
+                </div>
+            </div>
+        </div>
+    </div>
+      <div class="card">
+        <div class="row">
+            <div class="card-body">
+                <table  class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Comentario</th>
+                        <th class="text-center">Monto</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+                <tfoot >
+                    <tr>
+                        <td class="text-danger text-right">Total:</td>
+                        <td class="text-center" id="Total">0</td>
+                        <td ></td>
+                    </tr>
+                </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="text-right my-2">
+        <button id="btnEnviarEgreso" class="btn btn-success">Registrar egreso</button>
+    <div>
+</section>
+<script>
+    const d = document,
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $SaldoEnPosecion = d.getElementById("SaldoEnPosecion"),
+    $insertarError = d.getElementById("insertarError"),
+    $Monto = d.getElementById("Monto"),
+    $Total = d.getElementById("Total"),
+    $btnEnviarEgreso = d.getElementById("btnEnviarEgreso"),
+    $tbody = d.getElementById("tbody"),
+    $Comentario = d.getElementById("Comentario");
+
+
+       const enviarNuevoEgresoVendedor = async (data) => {
+        return await fetch(`/enviar-nuevo-egreso-vendedor`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            $insertarError.innerHTML += `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                Egreso registrado correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `
+        $tbody.innerHTML = ""
+        $Monto.value =""
+        $Comentario.value = ""
+        });
+    }
+
+
+
+    d.addEventListener("click", e => {
+        if(e.target == $btnAgregar){
+            let validacion = 0
+            if($Monto.value == 0 || !$Monto.value  || $Monto.value == ""){
+                $insertarError.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe introducir un monto para poder agregar a la lista.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+            }
+            if($Comentario.value == 0 || !$Comentario.value  || $Comentario.value == ""){
+                  $insertarError.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe introducir un comentario para poder agregar a la lista.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+            }
+            if(validacion == 0){
+                let tr = `
+                <tr>
+                    <td class="text-center">${$Comentario.value}</td>
+                    <td class="text-center">${$Monto.value}</td>
+                    <td class="text-center"><button class="btn btn-danger">-</button></td>
+                </tr>
+                `
+                let total = $Total.textContent
+                $Total.textContent = (+$Total.textContent + +$Monto.value).toFixed(2)
+                $tbody.innerHTML += tr
+                $Comentario.value  =""
+                $Monto.value  =""
+            }
+        }
+        if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            $Total.textContent = (+$Total.textContent - +linea.children[1].textContent).toFixed(2)
+            $tbody.removeChild(linea)
+        }
+        if(e.target == $btnEnviarEgreso){
+            if($tbody.children.length == 0){
+                      $insertarError.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe agregar egresos a la lista para poder registrar el egreso.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+            }else{
+                let Egresos = []
+                let Timestamp = Date.now();
+                let Fecha = new Date();
+                let dia;
+                let mes;
+                let año = Fecha.getFullYear();
+                if (Fecha.getDate() < 10) {
+                dia = `0${Fecha.getDate()}`;
+                } else {
+                dia = Fecha.getDate();
+                }
+                if (Fecha.getMonth() + 1 < 10) {
+                mes = `0${Fecha.getMonth() + 1}`;
+                } else {
+                mes = Fecha.getMonth() + 1;
+                }
+                Fecha = `${año}-${mes}-${dia}`;
+                for(i=0; i< $tbody.children.length; i++){
+                    let data = {
+                        Comentario: $tbody.children[i].children[0].textContent,
+                        Monto: $tbody.children[i].children[1].textContent,
+                    }
+                    Egresos.push(data)
+                }
+                let data = {
+                    Fecha: Fecha,
+                    Timestamp: Timestamp,
+                    Estado: "Pendiente",
+                    MontoTotal: +$Total.textContent,
+                    Egresos: Egresos,
+                }
+                enviarNuevoEgresoVendedor(data)
+            }
+        }
+    })
+
+</script>

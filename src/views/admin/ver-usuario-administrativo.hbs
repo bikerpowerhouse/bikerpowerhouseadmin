@@ -1,0 +1,156 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">{{cliente.Empresa}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+        <div class="row">
+            <div class="col-sm-12">
+                {{>success}}
+                {{>errors}}
+            </div>
+        </div>
+    <div class="card card-orange">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6 text-start">
+                    <h3 class="card-title">Todos los datos</h3>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <button class="btn"><i class="fas fa-user-edit text-light"  id="btnEditar"></i></button>
+                </div>
+            </div>
+        </div>
+            <!-- /.card-header -->
+        <div class="card-body">
+            <form action="/actualizar-usuario/{{usuario._id}}" method="POST">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <!-- text input -->
+                        <div class="form-group">
+                        <label>Nombres</label>
+                        <input type="text" class="form-control" name="Nombres" value="{{usuario.Nombres}}"  placeholder="Introduzca los nombres" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                        <label>Apellidos</label>
+                        <input type="text" class="form-control" name="Apellidos" value="{{usuario.Apellidos}}" placeholder="Introduzca los apellidos" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                        <label>Cédula</label>
+                        <input type="number" class="form-control" name="Cedula" value="{{usuario.Cedula}}" placeholder="Introduzca la cedula" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Nombre de usuario</label>
+                        <input type="text" class="form-control" name="Usuario" value="{{usuario.Usuario}}" placeholder="Introduzca un nombre de usuario" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Role</label>
+                            <select name="Role" id="Role" class="form-control js-example-basic-multiple" multiple disabled>
+                                {{#each usuario.Role}}
+                                <option value="{{this}}" selected>{{this}}</option>
+                                {{/each}}
+                                <option value="0">--Seleccione nivel--</option>
+                                <option value="Cliente">Clientes</option>
+                                <option value="Contabilidad">Contabilidad</option>
+                                <option value="Estadisticas">Estadisticas</option>
+                                <option value="Facturacion">Facturación</option>
+                                <option value="Inventario">Inventario</option>
+                                <option value="Master">Master</option>
+                                <option value="Proveedor">Proveedores</option>
+                                <option value="Registro">Registro</option>
+                                <option value="Tareas">Manager de tareas</option>
+                                <option value="Transporte">Transporte</option>
+                                <option value="Vendedor">Vendedores</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Correo electronico</label>
+                        <input type="email"  class="form-control" name="email" value="{{usuario.email}}" placeholder="Introduzca correo electronico" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Confirmar correo electronico</label>
+                        <input type="email" class="form-control" name="emailConfirm" value="{{usuario.email}}" placeholder="Confirma correo electronico" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Contraseña</label>
+                            <input type="password" class="form-control" name="password" value="{{usuario.password}}" placeholder="Introduzca contraseña" readonly>
+                            <span class="text-muted">La contraseña debe tener un minimo de 7 caracteres</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                        <label>Confirmar contraseña</label>
+                            <input type="password" class="form-control" name="passwordConfirm" value="{{usuario.password}}" placeholder="Confirma contraseña" readonly>
+                        </div>
+                </div>
+                    <div class="col-sm-12 text-right" id="InsertarBtn">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal12" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">¿Estas seguro que quiere eliminar el usuario?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/eliminar-usuario-administrativo/{{usuario._id}}">
+                    <div class="row">
+                        <div class="col-sm-12 text-right">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $btnEditar = d.getElementById("btnEditar"),
+    $inputs = d.getElementsByTagName("input"),
+    $Vendedor = d.getElementById("Vendedor"),
+    $Role = d.getElementById("Role"),
+    $InsertarBtn = d.getElementById("InsertarBtn"),
+    $InsertarBtnEliminar = d.getElementById("InsertarBtnEliminar")
+    let validacion = 0
+    d.addEventListener("click", e => {
+        if(e.target == $btnEditar){
+            for(i=0; i< $inputs.length; i++){
+                if($inputs[i].hasAttribute("readonly")){
+                    $inputs[i].removeAttribute("readonly")
+                }
+            }
+            $Role.removeAttribute("disabled")
+            if(validacion == 0){
+                let buton = `<button type="submit" class="btn btn-success">Actualizar</button>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal12">Eliminar</button>`
+                $InsertarBtn.innerHTML += buton 
+                validacion++
+            }
+        }
+    })
+</script>

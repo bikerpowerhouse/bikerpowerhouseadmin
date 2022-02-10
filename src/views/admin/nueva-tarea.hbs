@@ -1,0 +1,92 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Nueva tarea</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+     <div class="row">
+        <div class="col-sm-12">
+            {{>errors}}
+            {{>success}}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h5>Formulario</h5>
+        </div>
+        <div class="card-body">
+              <form action="/nueva-tarea" method="POST">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label for="">Tipo de usuario</label>
+                        <select name="TipoUsuario" id="TipoUsuario" class="form-control js-exam">
+                            <option value="0">--Seleccione un tipo de usuario--</option>
+                            <option value="Admin">Administrativo</option>
+                            <option value="Cliente">Cliente</option>
+                            <option value="Vendedor">Vendedor</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="">Usuario</label>
+                        <select name="Usuario" id="Usuario" class="form-control js-exam">
+                            <option value="0">--Seleccione usuario--</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="">Fecha estimada de entrega</label>
+                        <input type="date" name="FechaEstimada" required id="FechaEstimada" class="form-control">
+                    </div>
+                    <div class="col-sm-12">
+                        <label for="">Descripción</label>
+                        <textarea name="Descripcion" class="form-control" required id="" cols="7" rows="2"></textarea>
+                    </div>
+                    <div class="col-sm-12 text-right mt-4">
+                        <button class="btn btn-success mt-1 " id="btnGenerar" type="submit">Generar tarea</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $TipoUsuario =  d.getElementById("TipoUsuario"), 
+    $Usuario =  d.getElementById("Usuario");
+    const solicitarUsuarios = async (data) => {
+        return await fetch(`/solicitar-usuarios`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                let opts = ""
+                for(i=0; i< response.length; i++){
+                    let option = `<option value="${response[i]._id}">${response[i].Nombres}</option>`
+                    opts += option
+                }
+                $Usuario.innerHTML += opts
+            });
+    };
+
+    $TipoUsuario.onchange = () => {
+        if($TipoUsuario.value != 0){
+            let data = {
+                TipoUsuario : $TipoUsuario.value
+            }
+            let option = `<option value="0">--Seleccione usuario--</option>`
+            $Usuario.innerHTML = option
+            solicitarUsuarios(data)
+
+        }
+    }
+
+</script>

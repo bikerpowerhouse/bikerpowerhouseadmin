@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{Titulo}}</title>
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
+    <link href="/css/select.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/btnClose.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+</head>
+<body>
+   <div class="container-fluid mt-2 mx-auto ">
+        <div class="container-fluid">
+            <div class="row bg-light">
+                <div class="col-sm-12 text-center">
+                    <h5>Solcitud de devolución</h5>
+                </div>
+                <div class="col-sm">
+                    <p class="text-dark text-end h6">Fecha: {{solicitudesDevolucion.Fecha}} <strong id="date"></strong></p>
+                    <p class="h6 text-dark">Cliente: {{solicitudesDevolucion.Cliente}} <span id="cliente" class="h6"></span></p>
+                    <p class="h6 text-dark">Vendedor: {{solicitudesDevolucion.Vendedor}} <span id="documento" class="h6"></span></p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead class="border">
+                            <tr>
+                                <th class="h6 text-center border border-dark">Código</th>
+                                <th class="h6 text-center border border-dark">Tipo producto</th>
+                                <th class="h6 text-center border border-dark">Descripción</th>
+                                <th class="h6 text-center border border-dark">Precio unidad</th>
+                                <th class="h6 text-center border border-dark">Cantidad</th>
+                                <th class="h6 text-center border border-dark">Precio total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contenido-table">
+                            {{#each solicitudesDevolucion.Productos}}
+                            <tr>
+                                <td class="h6 text-center">{{Codigo}}</td>
+                                <td class="h6 text-center">{{TipoProducto}}</td>
+                                <td class="h6 text-center">{{Descripcion}}</td>
+                                <td class="h6 text-center">{{PrecioUnidad}}</td>
+                                <td class="h6 text-center">{{Cantidad}}</td>
+                                <td class="h6 text-center">{{PrecioTotal}}</td>
+                            </tr>
+                            {{/each}}
+                            <tr>    
+                                <td colspan="4" class="h5 text-danger text-right">Total:</td>
+                                <td class="text-dark h6 text-center">{{solicitudesDevolucion.CantidadTotal}}</td>
+                                <td class="text-dark h6 text-center">{{solicitudesDevolucion.PrecioTotal}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    window.print()
+</script>
+</html>

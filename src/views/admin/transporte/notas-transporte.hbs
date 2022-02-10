@@ -1,0 +1,107 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Todas las notas transporte</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Directorio de notas</h3>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 ml-4">
+                <label for="">Filtros</label>
+                <select id="Filtro" class="form-control">
+                    <option value="Pendiente" selected>Pendientes</option>
+                    <option value="Cerrado">Cerradas</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-hover ">
+            <thead>
+                <tr>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Número nota</th>
+                    <th class="text-center">Número factura/nota de entrega</th>
+                    <th class="text-center">Precio total</th>
+                    <th class="text-center">Cambio bs</th>
+                    <th class="text-center">Precio total bs</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                {{#each notasTransporte}}
+                <tr>
+                    <td class="text-center">{{Fecha}}</td>
+                    <td class="text-center">{{Estado}}</td>
+                    <td class="text-center">{{NumeroNota}}</td>
+                    <td class="text-center">{{NumeroFactura}}</td>
+                    <td class="text-center">{{PrecioTotalFactura}}</td>
+                    <td class="text-center">{{CambioBolivares}}</td>
+                    <td class="text-center">{{PrecioTotalFacturaBS}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $tbody = d.getElementById("tbody"),
+    $Filtro = d.getElementById("Filtro"),
+    $netoTotalGenerado = d.getElementById("netoTotalGenerado"),
+    $saldoTotalGenerado = d.getElementById("saldoTotalGenerado"),
+    $cantidadTotalGenerada = d.getElementById("cantidadTotalGenerada");
+
+    const filtroNotas = async (data) => {
+        return await fetch("/solicitar-notas-de-transporte", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            $tbody.innerHTML = ""
+            let tr = ""
+            for(i=0; i < response.length; i++){
+                let linea = `
+                    <tr>
+                        <td class="text-center">${response[i].Fecha}</td>
+                        <td class="text-center">${response[i].Estado}</td>
+                        <td class="text-center">${response[i].NumeroNota}</td>
+                        <td class="text-center">${response[i].NumeroFactura}</td>
+                        <td class="text-center">${response[i].PrecioTotalFactura}</td>
+                        <td class="text-center">${response[i].CambioBolivares}</td>
+                        <td class="text-center">${response[i].PrecioTotalFacturaBS}</td>
+                    </tr>
+                `
+                tr += linea
+            }
+            $tbody.innerHTML = tr
+            $(function () {
+                $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false, "ordering": false,
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            });
+
+
+        });
+    };
+    $Filtro.onchange = () => {
+        let data = {
+            Estado : $Filtro.value
+        }
+        filtroNotas(data)
+    }
+
+</script>

@@ -1,0 +1,40 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Estructura de costo</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a class="btn btn-outline-info" href="/histoial-reestructuraciones">Historial de reestructuraciones de costos</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            {{>errors}}
+            {{>success}}
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header bg-info">
+            Importarción/exportación
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <label for="">Importar</label>
+                    <a href="/importar-format-excel-estrcutura-costos" class="btn btn-outline-primary w-100" style="height: 43px;">Importar formato</a>
+                </div>
+                <div class="col-sm-6">
+                    <form action="/leer-estructura-costo" method="POST" enctype="multipart/form-data">
+                        <label for="">Exportar</label>
+                        <input type="file" name="Control" class="form-control" id="customFiles" style="height: 43px;" >
+                        <button type="submit" class="btn btn-info w-25 mt-2 w-100">ENVIAR</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

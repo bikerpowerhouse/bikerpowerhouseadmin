@@ -1,0 +1,102 @@
+<section class="content">
+    <div class="row">
+        <div class="col-sm-12 mt-2">
+            <h4 class="text-center">Bienvenido <span class="text-info">{{nombres}}</span></h4>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Notas de entrega vencidas</h5>
+                </div>
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="font-size:13px">Número</th>
+                                <th class="text-center" style="font-size:13px">Vencimiento</th>
+                                <th class="text-center" style="font-size:13px">Cliente</th>
+                                <th class="text-center" style="font-size:13px">Vendedor</th>
+                                <th class="text-center" style="font-size:13px">Neto</th>
+                                <th class="text-center" style="font-size:13px">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each notasEntregaVencida}}
+                               <tr>
+                                    <td class="text-center" style="font-size:13px"><a class="text-info" target="_blank" href="/ver-nota-entrega/{{Numero}}">{{Numero}}</a></td>
+                                    <td class="text-center" style="font-size:13px">{{Vencimiento}}</td>
+                                    <td class="text-center" style="font-size:13px">{{Cliente}}</td>
+                                    <td class="text-center" style="font-size:13px">{{Vendedor}}</td>
+                                    <td class="text-center" style="font-size:13px">{{Neto}}</td>
+                                    <td class="text-center" style="font-size:13px">{{Saldo}}</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Notas de entrega proximas a vencer <span class="text-muted">(7 días).</span></h5>
+                </div>
+                <div class="card-body">
+                    <table id="example2" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="font-size:13px">Número</th>
+                                <th class="text-center" style="font-size:13px">Vencimiento</th>
+                                <th class="text-center" style="font-size:13px">Cliente</th>
+                                <th class="text-center" style="font-size:13px">Neto</th>
+                                <th class="text-center" style="font-size:13px">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each notasEntregaProximasVencer}}
+                                <tr>
+                                    <td class="text-center" style="font-size:13px"><a class="text-info"  target="_blank" href="/ver-nota-entrega/{{Numero}}">{{Numero}}</a></td>
+                                    <td class="text-center" style="font-size:13px">{{Vencimiento}}</td>
+                                    <td class="text-center" style="font-size:13px">{{Cliente}}</td>
+                                    <td class="text-center" style="font-size:13px">{{Neto}}</td>
+                                    <td class="text-center" style="font-size:13px">{{Saldo}}</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Tareas pendientes</h5>
+                </div>
+                <div class="card-body">
+                         <table id="example3" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Tipo tarea</th>
+                                <th class="text-center">Fecha entrega</th>
+                                <th class="text-center">Fecha pospuesta</th>
+                                <th class="text-center">Descripción</th>
+                                <th class="text-center">Responsable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each tareas}}
+                                <tr>
+                                    <td class="text-center">{{TipoTarea}}</td>
+                                    <td class="text-center">{{FechaEntrega}}</td>
+                                    <td class="text-center">{{FechaPospuesta}}</td>
+                                    <td class="text-center">{{Descripcion}}</td>
+                                    <td class="text-center">{{Empresa}}</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

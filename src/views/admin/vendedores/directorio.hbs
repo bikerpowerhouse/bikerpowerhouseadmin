@@ -1,0 +1,41 @@
+<div class="container-fluid mt-2">
+    <section class="content">
+        <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h3 class="card-title">Directorio de clientes</h3>
+                        </div>
+                        <div class="col-sm-12">
+                            {{>success}}
+                            {{>errors}}
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Cédula</th>
+                        <th>Celular</th>
+                        <th>Zona</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{#each vendedores}}
+                        <tr>
+                            <td><a href='/ver-vendedor/{{_id}}' class="text-info">{{Nombres}} {{Apellidos}}</a></td>
+                            <td>{{Cedula}}</td>
+                            <td>{{Celular}}</td>
+                            <td>{{Zona}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                </div>
+    </section>
+</div>

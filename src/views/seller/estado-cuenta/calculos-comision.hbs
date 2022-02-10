@@ -1,0 +1,64 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Calculos de comisión</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5>Documentos emitidos: <span id="documentosEmitidos">{{documentosEmitidos}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Documentos pendientes de pago: <span id="documentoPendientesPago">{{documentosPendientesPago}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Comisión total generada:<span id="ComisionTotalGenerada">{{comisionTotalGenerada}}</span></h5>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Comisión pendiente: <span id="ComisionPendientePago">{{comisionPendiente}}</span></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5>Todos los calculos</h5>
+                </div>
+            </div>
+        </div>
+         <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Número</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Neto</th>
+                    <th class="text-center">Saldo</th>
+                    <th class="text-center">Historial</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each calculoComison}}
+                        <tr>
+                            <td class="text-center"><p>{{Fecha}}</p></td>
+                            <td class="text-center"><a class="text-info" target="_blank" href="/ver-calculo-comision/{{Numero}}">{{Numero}}</a></td>
+                            <td class="text-center"><p>{{Estado}}</p></td>
+                            <td class="text-center"><p>{{Neto}}</p></td>
+                            <td class="text-center"><p>{{Saldo}}</p></td>
+                            <td class="text-center"><a href="/ver-historial-calculo-comision-vendedor/{{Numero}}" class="text-success"><i class="fas fa-history" style="font-size: 22px;"></i></a></td>       
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

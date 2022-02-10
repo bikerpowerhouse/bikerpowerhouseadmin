@@ -1,0 +1,347 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0" id="Titulo" data-id="{{data._id}}">Procesar solicitud de pago</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label>Cliente</label>
+                    <select class="form-control js-exam" id="cliente">
+                        <option value="{{data.Cliente}}" selected>{{data.Cliente}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Notas de entrega</label>
+                    <select class="form-control js-exam" id="notaEntrega">
+                        <option value="0">--Seleccione una nota--</option>
+                        {{#each notasEntrega}}
+                            <option value="{{Numero}}">{{Numero}}</option>
+                        {{/each}}
+
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Pendiente a pagar</label>
+                    <input type="number" class="form-control" step="any" readonly id="Pendiente">
+                </div>
+                <div class="col-sm-3">
+                    <label>Modalidad</label>
+                    <input type="text" class="form-control" name="Modalidad" id="Modalidad" value="{{data.Modalidad}}" readonly>
+                </div>
+                <div class="col-sm-3">
+                    <label>Monto</label>
+                    <input type="number" step="any" min="0" class="form-control" id="MontoCobrar" readonly value="{{data.Monto}}">
+                </div>
+                <div class="col-sm-4">
+                    <label>Número de transacción</label>
+                    <input type="text" class="form-control" readonly id="NumeroTransaccion" value="{{data.Transaccion}}"> 
+                    <span class="text-muted">Campo opcional de ser un pago en efectivo</span>
+                </div>
+                <div class="col-sm-3">
+                    <label>Comentario <span class="text-muted">(opcional)</span></label>
+                    <input type="text" class="form-control" id="Comentario" >
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-outline-info mt-2 w-100" id="btnAgregar" >Agregar a lista</button>
+                </div>
+            </div>
+        </div>
+    </div>
+      <div class="card">
+        <div class="row">
+            <div class="card-body">
+                <table  class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Nota de entrega</th>
+                        <th class="text-center">Pendiente</th>
+                        <th class="text-center">Monto</th>
+                        <th class="text-center">Restante</th>
+                        <th class="text-center">Nota</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each data.facturas}}
+                    <tr>
+                        <td class="text-center">{{NotaDeEntrega}}</td>
+                        <td class="text-center">{{Saldo}}</td>
+                        <td class="text-center">{{MontoPagado}}</td>
+                        <td class="text-center">{{Pendiente}}</td>
+                        <td class="text-center">{{Nota}}</td>
+                        <td class="text-center"><button class="btn btn-danger">-</button></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot >
+                    <tr>
+                        <td colspan="2" class="text-danger text-right">Saldo a favor:</td>
+                        <td class="text-center" id="saldoFavor">{{saldoFavor}}</td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-danger text-right">Total pendiente:</td>
+                        <td class="text-center" id="TotalPendiente">{{totalPendiente}}</td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-danger text-right">Monto reportado:</td>
+                        <td class="text-center" id="Total">{{data.Monto}}</td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="text-right my-2">
+        <button id="btnEnviarPago" class="btn btn-success">Registrar pago</button>
+    <div>
+</section>
+<script>
+    const d = document,
+    $Total = d.getElementById("Total"),
+    $saldoFavor = d.getElementById("saldoFavor"),
+    $cliente = d.getElementById("cliente"),
+    $notaEntrega = d.getElementById("notaEntrega"),
+    $Pendiente = d.getElementById("Pendiente"),
+    $Modalidad = d.getElementById("Modalidad"),
+    $insertarError = d.getElementById("insertarError"),
+    $tbody = d.getElementById("tbody"),
+    $MontoCobrar = d.getElementById("MontoCobrar"),
+    $NumeroTransaccion = d.getElementById("NumeroTransaccion"),
+    $Titulo = d.getElementById("Titulo"),
+    $btnEnviarPago = d.getElementById("btnEnviarPago"),
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $Comentario = d.getElementById("Comentario");
+    let _idSolicitud = $Titulo.getAttribute("data-id")
+    const procesarSolicitud = async (data) => {
+        return await fetch(`/procesar-solicitud-de-ingreso`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then(async (response) => {
+            location.href = "/reportar-pago"
+        });
+    };
+
+
+    const enviarCobranza = async (data) => {
+        return await fetch(`/registrar-nueva-cobranza`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then(async (response) => {
+              await window.open(`/ver-nota-de-pago/${response}`, `Recibo de pago ${response}`, "width=612, heigh=792");
+              let data = {
+                  _id: _idSolicitud
+              }
+              procesarSolicitud(data)
+        });
+    };
+    let notas = []
+    let facturas = []
+    let monto = $MontoCobrar.value
+
+     const solicitarPendieneteCobranza = async (data) => {
+        return await fetch("/solicitar-pendiente-cobranza", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                nota = response
+                $Pendiente.value = response.Saldo
+            });
+    };
+
+    $notaEntrega.onchange = () => {
+        if($notaEntrega.value != 0){
+            let data = {
+                NotaEntrega: $notaEntrega.value
+            }
+            solicitarPendieneteCobranza(data)
+        }
+    }
+
+    d.addEventListener("click", e=> {
+        if(e.target.textContent == "-"){
+            let fila = e.target.parentElement.parentElement
+            let total = (+$Total.textContent - +fila.children[2].textContent).toFixed(2)
+            facturas = facturas.filter((data) => data != fila.children[0].textContent)
+            $Total.textContent = total
+            $tbody.removeChild(fila)
+        }
+        if(e.target == $btnAgregar){
+            if(+$Total.textContent != $MontoCobrar.value){
+                let total = +$MontoCobrar.value + -$Total.textContent
+                if($notaEntrega.value == 0){
+                    $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Debe seleccionar una factura que agregar.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                }else{
+                    for(i=0; i< $tbody.children.length; i++){
+                        facturas.push($tbody.children[i].children[0].textContent)
+                    }
+                    let validacion = facturas.find((data) => data == $notaEntrega.value)
+                    if(validacion){
+                        $insertarError.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            La nota de entrega ya se encuentra agregada. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    }else{
+                    saldo = nota.Saldo
+                    if(+total > +saldo){
+                        //pago compelto
+                        let tr = `
+                            <tr>
+                                <td class="text-center">${$notaEntrega.value}</td>
+                                <td class="text-center">${saldo}</td>
+                                <td class="text-center">${saldo}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-center">Pago completo</td>
+                                <td class="text-center"><button class="btn btn-danger">-</button></td>
+                            </tr>
+                        `
+                        total = (+$Total.textContent + +saldo).toFixed(2)
+                        $Total.textContent = total
+                        $tbody.innerHTML += tr
+                    }
+                    if(+total < +saldo){
+                        //abono
+                        let pendiente = (+saldo - +total).toFixed(2)
+                           let tr = `
+                            <tr>
+                                <td class="text-center">${$notaEntrega.value}</td>
+                                <td class="text-center">${saldo}</td>
+                                <td class="text-center">${total}</td>
+                                <td class="text-center">${pendiente}</td>
+                                <td class="text-center">Abono</td>
+                                <td class="text-center"><button class="btn btn-danger">-</button></td>
+                            </tr>
+                        `
+                        total = (+$Total.textContent + +total).toFixed(2)
+                        $Total.textContent = total
+                        $tbody.innerHTML += tr
+
+
+                    }
+                    if(+total == +saldo){
+                        //pago completo
+                        $Total.textContent = total
+                           let tr = `
+                            <tr>
+                                <td class="text-center">${$notaEntrega.value}</td>
+                                <td class="text-center">${saldo}</td>
+                                <td class="text-center">${saldo}</td>
+                                <td class="text-center">0</td>
+                                <td class="text-center">Pago completo</td>
+                                <td class="text-center"><button class="btn btn-danger">-</button></td>
+                            </tr>
+                        `
+                        total = (+$Total.textContent + +total).toFixed(2)
+                        $Total.textContent = total
+                        $tbody.innerHTML += tr
+                    }
+                    }
+                }
+            }else{  
+                $insertarError.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    No se puede agregar la factura, ya que el monto reportado esta abarcado totalmente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+            }
+        }
+        if(e.target == $btnEnviarPago){
+            let notasDeEntrega = []
+             let Timestamp = Date.now();
+            let Fecha = new Date();
+            let dia;
+            let mes;
+            let año = Fecha.getFullYear();
+            if (Fecha.getDate() < 10) {
+            dia = `0${Fecha.getDate()}`;
+            } else {
+            dia = Fecha.getDate();
+            }
+            if (Fecha.getMonth() + 1 < 10) {
+            mes = `0${Fecha.getMonth() + 1}`;
+            } else {
+            mes = Fecha.getMonth() + 1;
+            }
+            Fecha = `${año}-${mes}-${dia}`;
+            for(i=0; i< $tbody.children.length; i++){
+                if($tbody.children[i].children[4].textContent == "Abono"){
+                    let subdata = {
+                        NotaEntrega: $tbody.children[i].children[0].textContent, 
+                        Monto: $tbody.children[i].children[2].textContent, 
+                        Modalidad: $Modalidad.value, 
+                        Comentario: $tbody.children[i].children[4].textContent, 
+                    }   
+                    notasDeEntrega.push(subdata)          
+                }else{
+                    let subdata = {
+                        NotaEntrega: $tbody.children[i].children[0].textContent, 
+                        Monto: $tbody.children[i].children[2].textContent, 
+                        Modalidad: $Modalidad.value, 
+                        Comentario: $tbody.children[i].children[4].textContent, 
+                    }      
+                    notasDeEntrega.push(subdata)          
+                }
+            }
+
+            let data = {
+                Timestamp: Timestamp,
+                Fecha: Fecha,
+                NumeroTransaccion: $NumeroTransaccion.value,
+                MontoTotal: $MontoCobrar.value,
+                SaldoFavor: $saldoFavor.textContent,
+                Modalidad: $Modalidad.value,
+                Comentario: $Comentario.value,
+                Cliente: $cliente.value,
+                Facturas: notasDeEntrega,
+            }
+            enviarCobranza(data)
+        }
+    })
+
+</script>

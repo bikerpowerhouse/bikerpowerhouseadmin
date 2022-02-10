@@ -1,0 +1,119 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Manager de tareas</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a href="/crear-nueva-tarea" class="btn btn-info" style="">Nueva tarea</a>
+            </div>
+        </div>
+    </div>
+    {{>success}}
+    {{>errors}}
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            Tareas pendientes
+        </div>
+        <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Fecha creación</th>
+                        <th class="text-center">Fecha estimada</th>
+                        <th class="text-center">Fecha pospuesta</th>
+                        <th class="text-center">Tipo usuario</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Descripción</th>
+                        <th class="text-center">Completar</th>
+                        <th class="text-center">Posponer</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each tareas}}
+                    <tr>
+                        <td class="text-center {{Class}}">{{Fecha}}</td>
+                        <td class="text-center {{Class}}">{{FechaEntrega}}</td>
+                        <td class="text-center {{Class}}">{{FechaPospuesta}}</td>
+                        <td class="text-center {{Class}}">{{TipoUsuario}}</td>
+                        <td class="text-center {{Class}}">{{Empresa}}</td>
+                        <td class="text-center {{Class}}">{{Descripcion}}</td>
+                        <td class="text-center"><a href="/completar-tarea/{{_id}}" class="text-success" style="font-size: 22px;"><i class="fas fa-check-circle"></i></a></td>
+                        <td class="text-center"><a href="#" class="text-info btnPosponer" style="font-size: 22px;"  data-toggle="modal" data-target="#exampleModal" data-id="{{_id}}"><i class="fas fa-calendar-times btnPosponer"  data-id="{{_id}}"></i></a></td>
+                        <td class="text-center"><a href="#" class="text-danger btnEliminar" style="font-size: 22px;"  data-toggle="modal" data-target="#exampleModal1515" data-id="{{_id}}"><i class="fas fa-ban btnEliminar"  data-id="{{_id}}"></i></a></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Posponer tarea</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formPosponer" method="POST">
+            <div class="row">
+                <div class="col-sm-12">
+                    <label for="">Nueva fecha de entrega</label>
+                    <input type="date" name="FechaPospuesta" class="form-control" required>
+                </div>
+            </div>
+            <div class="col-sm-12 text-right mt-2">
+                <button type="submit" class="btn btn-primary">Posponer</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="exampleModal1515" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Posponer tarea</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formEliminar" method="POST">
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>¿Estas seguro/a qué quiere eliminar la tarea?</p>
+                </div>
+                <div class="col-sm-12 text-right"> 
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    const d = document,
+    $formEliminar = d.getElementById("formEliminar"),
+    $formPosponer = d.getElementById("formPosponer");
+    d.addEventListener("click", e => {
+        if(e.target.classList.contains("btnPosponer")){
+            $formPosponer.setAttribute("action", `/posponer-tarea/${e.target.getAttribute("data-id")}`)
+        }
+        if(e.target.classList.contains("btnEliminar")){
+            $formEliminar.setAttribute("action", `/eliminar-tarea/${e.target.getAttribute("data-id")}`)
+        }
+    })
+
+</script>

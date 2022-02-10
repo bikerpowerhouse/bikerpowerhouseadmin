@@ -1,0 +1,506 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Nueva factura</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+        <div class="row">
+            <div class="col-sm-12" id="insertarErrores">
+            
+            </div>
+        </div>
+    <div class="card">
+        <div class="card-header">
+               <h5>Formulario de datos de facturación</h5> 
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="">Fecha</label>
+                    <input type="date" id="Fecha" value="{{Fecha}}" class="form-control">
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Número de factura</label>
+                    <input type="text" id="Numero" class="form-control" placeholder="Introduzca correlativo inicial">
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Cambio bolívares</label>
+                    <input type="number" id="CambioBolivares" class="form-control" placeholder="Introduzca cambio bolivares">
+                </div>
+                <div class="col-sm-8">
+                    <label for="">Cliente</label>
+                    <select class="form-control js-exam" id="Cliente">
+                        <option value="0">--Seleccione un cliente--</option>
+                        {{#each Clientes}}
+                            <option value="{{_id}}">{{Empresa}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Dias de credito</label>
+                    <input type="number" id="Vencimiento" class="form-control" placeholder="Introduzca días de creditos">
+                </div>
+                <div class="col-sm-8">
+                    <label for="">Vendedor</label>
+                    <input type="text" id="Vendedor" readonly class="form-control" placeholder="Introduzca vendedor">
+                </div>
+                <div class="col-sm-4">
+                    <label for="">Porcentaje de ganancia</label>
+                    <input type="number" id="Porcentaje" step="any" max="100" min="0" placeholder="Introduzca porcentaje de ganancia" class="form-control">
+                </div>
+                <div class="col-sm-6">
+                    <label for="">Transporte</label>
+                    <select name="Transporte" id="Transporte" class="form-control js-exam">
+                        <option value="0">--Seleccione un transporte--</option>
+                        {{#each transporte}}
+                            <option value="{{_id}}">{{Empresa}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label for="">Zona</label>
+                    <select class="form-control js-exam" name="Zona" id="Zona">
+                        <option value="0">--Seleccione la zona de entrega--</option>
+                    </select>   
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h6>Lista de productos</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label for="">Productos</label>
+                    <select id="Producto" class="form-control js-exam">
+                        <option value="0">--Seleccione un producto--</option>
+                        {{#each productos}}
+                            <option value="{{Codigo}}">{{Codigo}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label for="">Precio venta</label>
+                    <input type="number" placeholder="$0" id="PrecioVenta" readonly class="form-control">
+                </div>
+                <div class="col-sm-2">
+                    <label for="">Cantidad Actual</label>
+                    <input type="number" placeholder="0" id="CantidadActual" readonly class="form-control">
+                </div>
+                <div class="col-sm-3">
+                    <label for="">Cantidad a agregar</label>
+                    <input type="number" placeholder="0" id="CantidadAgregar" class="form-control">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-outline-info mt-1 w-100" id="btnAgregar">Agregar a lista</button>
+                </div>
+            </div>
+        </div>
+    </div>
+       <table class="table table-secondary table-hover">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center">Código</th>
+                <th scope="col" class="text-center">Precio unitario</th>
+                <th scope="col" class="text-center">Cantidad</th>
+                <th scope="col" class="text-center">Precio total</th>
+                <th scope="col" class="text-center">Eliminar</th>
+            </tr>
+        </thead>
+        <tbody id="tBody">
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="2" class="text-right text-danger">Totales</th>
+                <th class="text-center" id="CantidadTotalAgregada">0</th>
+                <th class="text-center" id="PrecioTotalAgregado">0</th>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="text-right mt-2 mb-2">
+        <button class="btn btn-success" id="btnGenerar">Generar factura</button>
+    </div>
+</section>
+<script>
+    const d = document
+    let $btnGenerar = d.getElementById("btnGenerar")
+    let $btnAgregar = d.getElementById("btnAgregar")
+    let $CantidadAgregar = d.getElementById("CantidadAgregar")
+    let $CantidadActual = d.getElementById("CantidadActual")
+    let $PrecioVenta = d.getElementById("PrecioVenta")
+    let $Producto = d.getElementById("Producto")
+    let $Transporte = d.getElementById("Transporte")
+    let $Zona = d.getElementById("Zona")
+    let $Vendedor = d.getElementById("Vendedor")
+    let $Porcentaje = d.getElementById("Porcentaje")
+    let $CambioBolivares = d.getElementById("CambioBolivares")
+    let $Numero = d.getElementById("Numero")
+    let $Cliente = d.getElementById("Cliente")
+    let $insertarErrores = d.getElementById("insertarErrores")
+    let $tBody = d.getElementById("tBody")
+    let $CantidadTotalAgregada = d.getElementById("CantidadTotalAgregada")
+    let $PrecioTotalAgregado = d.getElementById("PrecioTotalAgregado")
+    let $Fecha = d.getElementById("Fecha")
+    let CantidadTotalAgregada = 0
+    let PrecioTotalAgregado = 0
+    let $Vencimiento = d.getElementById("Vencimiento")
+    let codgiosAgregados = []
+    fetch("/info-nueva-nota", {
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+               $CambioBolivares.value = response.Cambio
+        });
+
+    const enviarFactura = async (data) => {
+        return await fetch("/enviar-factura", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+              await window.open(`/ver-factura/${response.Numero}`, `Proforma ${response.Numero} ${response.Cliente}`, "width=612, heigh=792");
+              location.reload()
+            });
+    };
+        const enviarNotaEntrega = async (data) => {
+        return await fetch("/enviar-nota-entrega", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+              await window.open(`/ver-nota-entrega/${response.Numero}`, `Proforma ${response.Numero} ${response.Cliente}`, "width=612, heigh=792");
+              location.reload()
+            });
+    };
+
+    const solicitarInfoProducto = async (data) => {
+        return await fetch("/solicitar-info-producto", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                console.log(response)
+                $PrecioVenta.value = response.PrecioVenta
+                $CantidadActual.value = response.Cantidad
+                $CantidadAgregar.setAttribute("max", response.Cantidad)
+            });
+    };
+    const solicitarInfoTransporte = async (data) => {
+        return await fetch("/solicitar-info-transporte", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                let options = '<option value="0">--Seleccione la zona de entrega--</option>'
+                console.log(response)
+                for(i=0; i<response.length; i++){
+                    let option = `<option value="${response[i].Ciudad}">${response[i].Ciudad}</option>`
+                    options += option
+                }
+                $Zona.innerHTML = options
+            });
+    };
+    const solicitarInfoCliente = async (data) => {
+        return await fetch("/solicitar-info-cliente-facturacion", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                $Vendedor.value = `${response.Nombres} ${response.Apellidos}`
+            });
+    };
+
+ 
+    $Cliente.onchange = () => {
+        if($Cliente.value != 0){
+            let data = {
+                _idCliente: $Cliente.value
+            }
+            solicitarInfoCliente(data)
+        }
+    }
+    $Transporte.onchange = () => {
+        if($Transporte.value != 0){
+            let data={
+                _id : $Transporte.value
+            }
+            solicitarInfoTransporte(data)
+        }
+    }
+    $Producto.onchange = () => {
+        if($Producto.value != 0){
+            let data= {
+                Codigo: $Producto.value
+            }
+            solicitarInfoProducto(data)
+        }
+    }
+
+    d.addEventListener("click", e=> {
+        if(e.target == $btnAgregar){
+            if(+$CantidadAgregar.value <= +$CantidadActual.value){
+                let validacion = codgiosAgregados.find((data) => data == $Producto.value) 
+                if(validacion){
+                    $insertarErrores.innerHTML = `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El producto a agregar ya se encuentra en la lista. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+
+                }else{
+                    if(!$CantidadAgregar.value || $CantidadAgregar.value == 0 ){
+                    $insertarErrores.innerHTML = `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        La cantidad a agregar debe ser mayor a cero.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+
+                    }else{
+
+                        codgiosAgregados.push($Producto.value)
+                        let totalProducto = +$PrecioVenta.value * +$CantidadAgregar.value
+                        let tr = `
+                            <tr>
+                                <td class="text-center">${$Producto.value}</td>
+                                <td class="text-center">${$PrecioVenta.value}</td>
+                                <td class="text-center">${$CantidadAgregar.value}</td>
+                                <td class="text-center">${totalProducto}</td>
+                                <td class="text-center"><button class="btn btn-danger" style="font-size:10px">-</button></td>
+                            </tr>
+                        `
+                        CantidadTotalAgregada += +$CantidadAgregar.value
+                        PrecioTotalAgregado += +totalProducto
+                        $CantidadTotalAgregada.textContent = CantidadTotalAgregada
+                        $PrecioTotalAgregado.textContent = PrecioTotalAgregado
+
+                        $tBody.innerHTML += tr
+                        $PrecioVenta.value = ""
+                        $CantidadAgregar.value = ""
+                        $CantidadActual.value = ""
+                        $("#Producto").select2("val", "0");
+                    }
+                }
+
+            }else{
+                $insertarErrores.innerHTML = `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        La cantidad a agregar debe ser menor o igual a la cantidad actual.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+            }
+
+        }
+        if(e.target.textContent == "-"){
+            let fila = e.target.parentElement.parentElement
+            CantidadTotalAgregada -= +fila.children[2].textContent
+            PrecioTotalAgregado -= +fila.children[3].textContent
+            $CantidadTotalAgregada.textContent = CantidadTotalAgregada
+            $PrecioTotalAgregado.textContent = PrecioTotalAgregado
+            codgiosAgregados = codgiosAgregados.filter((data) => data != fila.children[0].textContent)
+            $tBody.removeChild(fila)
+        }
+        if(e.target == $btnGenerar){
+            let validacion = 0
+            if(!$Fecha.value || $Fecha.value == 0 || $Fecha.value == ""){
+                  $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Fecha" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$CambioBolivares.value || $CambioBolivares.value == 0 || $CambioBolivares.value == ""){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Cambio bolívares" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Numero.value || $Numero.value == 0 || $Numero.value == ""){
+                   $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Número de nota" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Cliente.value || $Cliente.value == 0 || $Cliente.value == ""){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Cliente" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Vendedor.value || $Vendedor.value == 0 || $Vendedor.value == ""){
+                  $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Vendedor" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Porcentaje.value || $Porcentaje.value == ""){
+                 $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Porcentaje" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+
+            }
+            if(!$Transporte.value || $Transporte.value == 0 || $Transporte.value == ""){
+                 $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Transporte" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Vencimiento.value || $Vencimiento.value == ""){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Días de credito" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Zona.value || $Zona.value == 0 || $Zona.value == ""){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El campo "Zona" no puede estar vacío.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if($tBody.children.length == 0){
+                $insertarErrores.innerHTML += `
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe agregar mas de un producto a la lista para poder generar la factura.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(validacion == 0){
+                let Productos = []
+                for(i=0; i< $tBody.children.length; i++){
+                    let data = {
+                        Codigo:  $tBody.children[i].children[0].textContent,
+                        PrecioUnidad: $tBody.children[i].children[1].textContent,
+                        Cantidad: $tBody.children[i].children[2].textContent, 
+                        PrecioTotal: $tBody.children[i].children[3].textContent,
+                        PrecioTotal2: $tBody.children[i].children[3].textContent
+                    }
+                    Productos.push(data)
+                }
+                let data = {
+                    Fecha:$Fecha.value ,  
+                    Numero: $Numero.value , 
+                    CambioBolivares: $CambioBolivares.value, 
+                    Cliente: $Cliente.value, 
+                    Vendedor: $Vendedor.value, 
+                    Transporte: $Transporte.value, 
+                    Zona: $Zona.value, 
+                    Productos: Productos, 
+                    PrecioTotal: $PrecioTotalAgregado.textContent,
+                    CantidadTotalFactura: $CantidadTotalAgregada.textContent,
+                    Porcentaje: $Porcentaje.value,
+                    Vencimiento: $Vencimiento.value
+
+                }
+               enviarFactura(data)
+            }
+        }
+    })
+</script>

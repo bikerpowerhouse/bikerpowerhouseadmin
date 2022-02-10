@@ -1,0 +1,140 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Solicitudes de pagos</h2>
+        </div>
+        <div class="col-sm-6 text-right mt-2">
+            <h3 class=""> <img src="/images/pote.png" alt="" class="img-fluid" width="30px"> <span class="text-danger">{{vendedor.SaldoEnPosesion}}</span></h3>
+        </div>
+        <div class="col-sm-12">
+            {{>errors}}
+            {{>success}}
+        </div>
+        <div class="col-sm-12 text-right">
+            <a href="/reportar-ingreso-vendedor" class="btn btn-success ml-2">Reportar ingreso</a>
+            <a href="/reportar-egreso-vendedor" class="btn btn-danger">Reportar egreso</a>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="row my-3">
+        <div class="col-sm-8">
+            <label>Tipo de solicitud</label>
+            <select class="form-control js-exam" id="tipoSolicitud">
+                <option value="0">--Seleccione un tipo de solicitud--</option>
+                <option value="Ingreso">Ingreso</option>
+                <option value="Egreso">Egreso</option>
+            </select>
+        </div>
+        <div class="col-sm-4 mt-4">
+            <button class="btn btn-success mt-2" id="Buscar" disabled>Buscar</button>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table  class="table table-bordered table-striped">
+                <thead id="thead">
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $tipoSolicitud = d.getElementById("tipoSolicitud"),
+    $btnBuscar = d.getElementById("Buscar"),
+    $thead = d.getElementById("thead"),
+    $tbody = d.getElementById("tbody");
+
+         const solicitarSolicitudesPagos = async (data) => {
+        return await fetch(`/solicitar-solicitudes-pago`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            console.log(response)
+            if(response.length > 0){
+                if(response[0].TipoSolicitud == "Ingreso"){
+                    $thead.innerHTML = `
+                        <tr>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Cliente</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Modalidad</th>
+                            <th class="text-center">Monto</th>
+                        </tr>
+                    `
+                    let tr = ""
+                    for(i=0; i< response.length; i++){
+                        let linea = `
+                            <tr>
+                                <td class="text-center">${response[i].Fecha}</td>
+                                <td class="text-center">${response[i].Cliente}</td>
+                                <td class="text-center">${response[i].Estado}</td>
+                                <td class="text-center">${response[i].Modalidad}</td>
+                                <td class="text-center">${response[i].Monto}</td>
+                            </tr>
+                        `
+                        tr += linea
+                    }
+                    $tbody.innerHTML = tr
+                }else{
+                    $thead.innerHTML = `
+                        <tr>
+                            <th class="text-center">Fecha</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Monto</th>
+                        </tr>
+                    `
+                    let tr = ""
+                    for(i=0; i< response.length; i++){
+                        let linea = `
+                            <tr>
+                                <td class="text-center">${response[i].Fecha}</td>
+                                <td class="text-center">${response[i].Estado}</td>
+                                <td class="text-center">${response[i].MontoTotal}</td>
+                            </tr>
+                        `
+                        tr += linea
+                    }
+                    $tbody.innerHTML = tr
+                }
+            }
+
+            d.querySelector(".table").setAttribute("id","example1")
+            $(function () {
+                $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "ordering": false,
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            });
+        });
+    }
+
+
+    $tipoSolicitud.onchange = () => {
+        if($tipoSolicitud.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }else{
+            $btnBuscar.setAttribute("disabled","")
+        }
+    }
+
+    d.addEventListener("click", e => {
+        if(e.target == $btnBuscar){
+            let data = {
+                tipoSolicitud : $tipoSolicitud.value
+            }
+            solicitarSolicitudesPagos(data)
+        }
+    })
+
+</script>

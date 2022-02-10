@@ -1,0 +1,219 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Estado de ordenes</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12" id="insertErrores">
+        {{>errors}}
+        {{>success}}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-8 ml-2">
+        <label for="">Selecciona el número de orden. <span class="text-muted">(Solo se visualizan ordenes en estados "Producción" y "Transito")</span> </label>
+        <select id="NumeroOrden" class="form-control js-exam ">
+            <option value="0">--Seleccione una orden--</option>
+            {{#each ordenes}}
+            <option value="{{Numero}}">{{Numero}}</option>
+            {{/each}}
+        </select>
+    </div>
+</div>
+<div class="card ml-1 mt-2">
+    <div class="card-header">
+        <h4>Productos</h4>
+    </div>
+    <div class="row ml-1 mr-1">
+        <div class="col-sm-3">
+            <label for="">Cantidad total:</label>
+            <p id="CantidadTotal"></p>
+        </div>
+        <div class="col-sm-3">
+            <label for="">Precio total:</label>
+            <p id="PrecioTotal" ></p>
+        </div>
+        <div class="col-sm-3">
+            <label for="">Metros cubicos total:</label>
+            <p id="MetrosCubicos"></p>
+        </div>
+        <div class="col-sm-3">
+            <label for="">Peso total:</label>
+            <p id="PesoTotal"></p>
+        </div>
+        <div class="col-sm-5">
+            <label>Estado actual</label>
+            <input type="text" readonly class="form-control" id="EstadoActual">
+        </div>
+        <div class="col-sm-5">
+            <label>Estado nuevo</label>
+            <select id="EstadoNuevo" class="form-control js-exam">
+                <option value="0">--Seleccione el estado--</option>
+            </select>
+        </div>
+        <div class="col-sm-2 mt-4">
+            <button id="btnGuardar" class="btn btn-success mt-2 w-100" disabled>Guardar cambios</button>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Tipo producto</th>
+                        <th>Precio FOB unitario</th>
+                        <th>Precio FOB total</th>
+                        <th>Cantidad</th>
+                        <th>Eliminar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const d = document,
+    $NumeroOrden = d.getElementById("NumeroOrden"),
+    $tbody = d.getElementById("tbody"),
+    $CantidadTotal = d.getElementById("CantidadTotal"),
+    $PrecioTotal = d.getElementById("PrecioTotal"),
+    $MetrosCubicos = d.getElementById("MetrosCubicos"),
+    $PesoTotal = d.getElementById("PesoTotal"),
+    $EstadoActual = d.getElementById("EstadoActual"),
+    $insertErrores = d.getElementById("insertErrores"),
+    $EstadoNuevo = d.getElementById("EstadoNuevo"),
+    $btnGuardar = d.getElementById("btnGuardar");
+
+     const enviarCambios = async (data) => {
+        return await fetch(`/guardar-cambios-estado-orden`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            location.reload()
+        });
+    }
+     const solicitarOrdenProveedor = async (data) => {
+        return await fetch(`/solicitar-orden-proveedor`, {
+            body: JSON.stringify(data),
+            method: "POST",
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            let tr = ""
+            $EstadoActual.value = response.Estado
+            let options
+            if(response.Estado == "Transito"){
+                options = `
+                    <option value="Transito">Transito</option>
+                    <option value="Inventario">Inventario</option>
+                `
+            }else{
+                options = `
+                    <option value="Produccion">Producción</option>
+                    <option value="Transito">Transito</option>
+                `
+            }
+            $EstadoNuevo.innerHTML += options
+
+
+            for(i=0; i< response.Productos.length; i++){
+                let linea = `
+                    <tr>
+                        <td>${response.Productos[i].Codigo}</td>
+                        <td>${response.Productos[i].TipoProducto}</td>
+                        <td>${response.Productos[i].PrecioFOBUnitario}</td>
+                        <td>${response.Productos[i].PrecioFOBTotal}</td>
+                        <td>
+                            <input class="form-control" data-cantidadAnterior="${response.Productos[i].Cantidad}" value="${response.Productos[i].Cantidad}">    
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-danger">-</button>
+                        </td>
+                    </tr>
+                `
+                tr += linea
+            }
+            $CantidadTotal.textContent = response.CantidadTotal
+            $PrecioTotal.textContent = response.PrecioTotal
+            $MetrosCubicos.textContent = response.MetrosCubicos
+            $PesoTotal.textContent = response.Peso
+
+            d.querySelector(".card-body").firstElementChild.setAttribute("id","example1")
+            $(function () {
+                $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "ordering": false,
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            });
+            $tbody.innerHTML += tr
+        });
+    }
+
+    $NumeroOrden.onchange = () => {
+        if($NumeroOrden.value != 0){
+            let data = {
+                Numero : $NumeroOrden.value
+            }
+             d.querySelector(".card-body").firstElementChild.removeAttribute("id")
+            $tbody.innerHTML = ""
+            $EstadoNuevo.innerHTML = `
+                <option value="0">--Seleccione el estado--</option>
+            `
+            btnGuardar.removeAttribute("disabled")
+            solicitarOrdenProveedor(data)
+        }
+    }
+    d.addEventListener("click", e=> {
+        if(e.target == $btnGuardar){
+            if($EstadoNuevo.value == 0){
+                $insertErrores.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un estado nuevo para poder guardar los cambios.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+            }else{
+                let productos = []
+                for(i=0; i< $tbody.children.length; i++){
+                    let data = {
+                        Codigo: $tbody.children[i].children[0].textContent,
+                        Cantidad: $tbody.children[i].children[4].firstElementChild.value,
+                    }
+                    productos.push(data)
+                }
+                let data = {
+                    Productos: productos,
+                    Numero: $NumeroOrden.value, 
+                    Estado: $EstadoNuevo.value
+                }
+                enviarCambios(data)
+            }
+        }
+        if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            $tbody.removeChild(linea)
+        }
+    })
+    
+</script>

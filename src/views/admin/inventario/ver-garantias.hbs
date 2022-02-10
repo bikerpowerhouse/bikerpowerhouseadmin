@@ -1,0 +1,184 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Garantías</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a href="/registrar-nueva-garantia" class="btn btn-info">Nueva garantía</a>
+            </div>
+            <div class="col-sm-12 mt-2">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt-2">
+    <section class="content">
+        <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-12">
+                                <h5 class="card-title">Directorio de garantías</h5>
+                        </div>
+                        <div class="col-sm-8">
+                            <label>Filtro de estado</label>
+                            <select class="form-control js-exam" id="Estado">
+                                <option value="0">--Todos los estados--</option>
+                                <option value="Pendiente">Aplicadas</option>
+                                <option value="Procesada">Procesada</option>
+                                <option value="Rechazada">Rechazadas</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4 mt-4">
+                            <button class="btn btn-success mt-2" id="btnBuscar">Buscar</button>
+                        </div>     
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Cliente</th>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Tipo producto</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Valor</th>
+                        <th class="text-center">Rechazar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tBody">
+                        {{#each garantias}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>
+                            <td class="text-center">{{Estado}}</td>
+                            <td class="text-center">{{Cliente}}</td>
+                            <td class="text-center">{{Codigo}}</td>
+                            <td class="text-center">{{TipoProducto}}</td>
+                            <td class="text-center">{{Cantidad}}</td>
+                            <td class="text-center">{{Valor}}</td>
+                            <td class="text-center">
+                                <a href="#" data-toggle="modal" data-target="#exampleModal" class="text-danger btnRechazar" data-estado="{{Estado}}" data-id="{{_id}}">
+                                    <i class="fas fa-ban btnRechazar" data-id="{{_id}}" data-estado="{{Estado}}" style="font-size: 20px;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Rechazar garantía</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" id="formRechazar">
+                                <div class="row">
+                                    <div class="col-sm-12 text-right">
+                                        <p class="text-center" id="insertarTexto">¿Estas seguro/a que quieres rechazar la garantía?</p>
+                                    </div>
+                                    <div class="col-sm-12 text-right" id="insertarBtn">
+                                        <button type="submit" class="btn btn-danger">Rechazar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+</div>
+<script>
+    const d = document,
+    $formRechazar = d.getElementById("formRechazar"),
+    $Estado = d.getElementById("Estado"),
+    $btnBuscar = d.getElementById("btnBuscar"),
+    $insertarTexto = d.getElementById("insertarTexto"),
+    $insertarBtn = d.getElementById("insertarBtn"),
+    $tBody = d.getElementById("tBody"); 
+
+    const solicitarGarantias = async (data) => {
+        return await fetch("/solicitar-garantia-por-filtro", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                let tr = ""
+                for(i=0; i< response.length; i++){
+                    let linea = `
+                        <tr>
+                            <td class="text-center">${response[i].Fecha}</td>
+                            <td class="text-center">${response[i].Estado}</td>
+                            <td class="text-center">${response[i].Cliente}</td>
+                            <td class="text-center">${response[i].Codigo}</td>
+                            <td class="text-center">${response[i].TipoProducto}</td>
+                            <td class="text-center">${response[i].Cantidad}</td>
+                            <td class="text-center">${response[i].Valor}</td>
+                            <td class="text-center">
+                                <a href="#" data-toggle="modal" data-target="#exampleModal" class="text-danger btnRechazar" data-estado="${response[i].Estado} data-id="${response[i].Valor}">
+                                    <i class="fas fa-ban btnRechazar" data-id="${response[i].Valor}" data-estado="${response[i].Estado}" style="font-size: 20px;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    `
+                    tr += linea
+                }
+
+                $tBody.innerHTML = tr
+                $(function () {
+                    $("#example1").DataTable({
+                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                    "ordering": false,
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                });
+
+        });
+    };
+
+
+    d.addEventListener("click", e => {
+        if(e.target.classList.contains("btnRechazar")){
+            let estado = e.target.getAttribute("data-estado")
+            console.log(estado == "Por aplicar")
+            if(estado == "Por aplicar"){
+                let _id = e.target.getAttribute("data-id")
+                $formRechazar.setAttribute('action',`/rechazar-garantia/${_id}`)
+                $insertarTexto.textContent = '¿Estas seguro/a que quieres rechazar la garantía?'
+                $insertarBtn.innerHTML = `<button type="submit" class="btn btn-danger">Rechazar</button>`
+            }else{
+                $insertarTexto.textContent = 'La orden no puede ser rechazada porque el estado de la misma es diferente a "Por aplicar"'
+                $insertarBtn.innerHTML = ``
+                
+            }
+        }
+        if(e.target == $btnBuscar){
+            if($Estado == 0){
+                location.reload()
+            }else{
+                let data = {
+                    Estado : $Estado.value
+                }
+                solicitarGarantias(data)
+            }
+        }
+    })
+
+
+
+</script>

@@ -1,0 +1,55 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Reporte compras por clientes</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h4>Filtros</h4>
+        </div>
+        <div class="card-body">
+            <form action="/generar-reporte-clientes" method="POST">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label for="">Clientes</label>
+                        <select id="Cliente" name="Cliente" class="form-control js-exam">
+                            <option value="0">--Todos los clientes--</option>
+                            {{#each clientes}}
+                            <option value="{{Empresa}}">{{Empresa}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="">Fecha desde</label>
+                        <input type="date" name="Desde" class="form-control" id="Desde"> 
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="">Fecha hasta</label>
+                        <input type="date" name="Hasta" class="form-control" id="Hasta">
+                    </div>
+                    <div class="col-sm-2 mt-4">
+                        <button class="btn btn-success mt-1 w-100" type="submit" id="btnGenerar">Generar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document;
+    const $Hasta = d.getElementById("Hasta"),
+    const $Desde = d.getElementById("Desde");
+
+    $Hasta.onchange = () => {
+        $Desde.setAttribute("required", "")
+    }
+
+    $Desde.onchange = () => {
+        $Hasta.setAttribute("required", "")
+    }
+</script>

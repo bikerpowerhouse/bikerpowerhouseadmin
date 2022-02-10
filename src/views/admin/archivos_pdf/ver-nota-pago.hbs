@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{Titulo}}</title>
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
+    <link href="/css/select.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/btnClose.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+</head>
+<body>
+    {{#if notaPago.Anulada}}
+    <style>
+        body{
+            background-image: url("/images/anulada.png") !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;.
+            background-attachment: fixed !important;
+            background-size: 780px 220px !important;
+        }
+    </style>
+    {{/if }}
+   <div class="container-fluid mt-2 mx-auto ">
+        <div class="container-fluid">
+            <div class="row bg-light">
+                <div class="col-sm text-center">
+                    <h4 class="text-dark">RECIBO DE PAGO #{{notaPago.Recibo}}</h2>
+                </div>
+            </div>
+     
+            <div class="row bg-light">
+                <div class="col-sm">
+                    <p class="text-dark text-end h6 ">Fecha: {{notaPago.Fecha}} <strong id="date"></strong></p>
+                    <p class="h6 text-dark">Nombre o razón social: {{notaPago.Cliente}} <span id="cliente" class="h6"></span></p>
+                    <p class="h6 text-dark">RIF/C.I.: {{notaPago.Documento}} <span id="documento" class="h6"></span></p>
+                    <p class="h6 text-dark">Celular/Teléfono: {{notaPago.Celular}} <span id="celular" class="h6"></span></p>
+                    <p class="h6 text-dark">Direccion: {{notaPago.Direccion}} <span id="direccion" class="h6"></span></p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead class="border">
+                            <tr>
+                                <th class="h6 text-center border border-dark">Nota de entrega</th>
+                                <th class="h6 text-center border border-dark">Tipo de pago</th>
+                                <th class="h6 text-center border border-dark">Modalidad</th>
+                                <th class="h6 text-center border border-dark">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contenido-table">
+                            {{#each notaPago.Facturas}}
+                            <tr>
+                                <td class="h6 text-center">{{NotaEntrega}}</td>
+                                <td class="h6 text-center">{{Comentario}}</td>
+                                <td class="h6 text-center">{{Modalidad}}</td>
+                                <td class="h6 text-center">{{Monto}}</td>
+                            </tr>
+                            {{/each}}
+                            <tr>    
+                                <td colspan="3" class="h5 text-danger text-right">Total:</td>
+                                <td class="text-dark h6 text-center">{{notaPago.Monto}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                <div class="row mt-5 fixed-bottom mb-5">
+                    <div class="col-sm-6 mt-5">
+                        <p class="h5 text-start text-dark ml-2">{{notaPago.Comentario}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-5" id="footer">
+                <div class="row">
+                  
+                </div>
+            </div>
+    </div>
+</body>
+<script>
+    window.print()
+</script>
+</html>

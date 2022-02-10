@@ -1,0 +1,316 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Nueva factura manual</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div id="insertarErrores"></div>
+    <div class="card">
+        <div class="card-header">
+            <h5>Filtros</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label>Fecha</label>
+                    <input type="date" class="form-control" id="Fecha">
+                </div>
+                <div class="col-sm-3">
+                    <label>Clientes</label>
+                    <select class="form-control js-exam" id="Cliente">
+                        <option value="0">--Seleccione un cliente--</option>
+                        {{#each clientes}}
+                        <option value="{{Empresa}}">{{Empresa}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Nota de entrega a facturar</label>
+                    <select class="form-control js-exam" id="notaEntrega">
+                        <option value="0">--Seleccione una nota de entrega--</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Número de control</label>
+                    <input type="text" class="form-control" id="NumeroControl" placeholder="Introduzca número de control">
+                </div>
+                <div class="col-sm-4">
+                    <label>Código</label>
+                    <select class="form-control js-exam" id="Codigo">
+                        <option value="0">--Seleccione un codigo--</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Cantidad vendida</label>
+                    <input type="number" class="form-control" readonly id="CantidadVendida">
+                </div>
+                <div class="col-sm-3">
+                    <label>Cantidad a agregar</label>
+                    <input type="number" class="form-control" id="CantidadAgregar" placeholder="Por favor, introduzca la cantidad a agregar">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-1 w-100" id="btnAgregar">Agregar a la lista</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead> 
+                    <tr>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Precio unitario</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Precio total</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-danger text-right" colspan="2">Total</td>
+                        <td class="text-center" id="TotalCantidadAgregada">0</td>
+                        <td class="text-center" id="TotalMontoAgregado">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="text-right">
+        <button class="btn btn-success" id="btnGenerar">Generar factura</button>
+    </div>
+</section>
+<script>
+    const d = document,
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $CantidadAgregar = d.getElementById("CantidadAgregar"),
+    $CantidadVendida = d.getElementById("CantidadVendida"),
+    $Codigo = d.getElementById("Codigo"),
+    $notaEntrega = d.getElementById("notaEntrega"),
+    $tbody = d.getElementById("tbody"),
+    $btnGenerar = d.getElementById("btnGenerar"),
+    $insertarErrores = d.getElementById("insertarErrores"),
+    $TotalCantidadAgregada = d.getElementById("TotalCantidadAgregada"),
+    $Fecha = d.getElementById("Fecha"),
+    $NumeroControl = d.getElementById("NumeroControl"),
+    $TotalMontoAgregado = d.getElementById("TotalMontoAgregado"),
+    $Cliente = d.getElementById("Cliente")
+    let precioUnitario
+    let codigos = []
+    let datosCodigo 
+
+      const enviarNuevaFactura = async (data) => {
+        return await fetch("/generar-nueva-factura-manual", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then(async (response) => {
+                 await window.open(`/ver-factura/${response.Numero}`, `Proforma ${response.Numero} ${response.Cliente}`, "width=612, heigh=792");
+                location.reload()
+            });
+    };
+
+
+      const solicitarNotas = async (data) => {
+        return await fetch("/solicitar-notas-cliente-facturacion-manual", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+            return response.json();
+            })
+            .then((response) => {
+                datosCodigo = response.codigos 
+                let options = '<option value="0">--Seleccione una nota de entrega--</option>'
+                for(i=0; i< response.notas.length; i++){
+                    let linea = `<option value="${response.notas[i].Numero}">${response.notas[i].Numero}</option>`
+                    options += linea
+                }
+                $notaEntrega.innerHTML = options
+                let optionsCodigo = `<option value="0">--Seleccione un codigo--</option>`
+                for(i=0; i< response.codigos.length; i++){
+                    let linea = `<option value="${response.codigos[i].Codigo}">${response.codigos[i].Codigo}</option>`
+                    optionsCodigo += linea 
+                }
+                $Codigo.innerHTML = optionsCodigo
+            });
+    };
+
+    $Codigo.onchange = () => {
+        if($Codigo.value != 0){
+            let existente = datosCodigo.find((data) => data.Codigo == $Codigo.value) 
+            $CantidadVendida.value = existente.Cantidad 
+            precioUnitario = existente.PrecioUnitario
+        }
+    }
+
+    $Cliente.onchange = () => {
+        if($Cliente.value != 0){
+            let data = {
+                Cliente: $Cliente.value
+            }
+            solicitarNotas(data)
+        }
+    }
+    d.addEventListener("click", e=> {
+        if(e.target == $btnAgregar){
+            let validacion = 0
+            if($NumeroControl.value == 0 || !$NumeroControl.value){
+                    $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe Introducir un número de control para poder agregar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+            }
+            if($Fecha.value == 0 || !$Fecha.value){
+                    $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una fecha para poder agregar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+
+            }
+            if($Cliente.value == 0 || !$Cliente.value){
+                    $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una cliente para poder agregar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+
+            }
+            if($notaEntrega.value == 0 || !$notaEntrega.value){
+                    $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una nota de entrega para poder agregar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+
+            }
+            if($Codigo.value == 0 || !$Codigo.value){
+                    $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una código para poder agregar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+
+            }
+            if($CantidadAgregar.value == 0 || !$CantidadAgregar.value || $CantidadAgregar.value == ""){
+                    $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe introducir una cantidad a agregar. Por favor, valide e intente de nuevo
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+
+            }
+            if(+$CantidadAgregar.value > +$CantidadVendida.value){
+                    $insertarErrores.innerHTML += `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        La cantidad a agregar no puede ser mayor a la cantidad vendida. Por favor, valide e intete de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                validacion++
+
+            }
+            if(validacion == 0){
+                let validacionExistente = codigos.find((data) => data == $Codigo.value)
+                if(validacionExistente){
+                    $insertarErrores.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            El código ya se encuentra en la lista. Por favor, valide e intente de nuevo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                }else{
+                    $Cliente.setAttribute("disabled","")
+                    $notaEntrega.setAttribute("disabled","")
+                    $NumeroControl.setAttribute("readonly","")
+                    let precioTotal = (+precioUnitario * +$CantidadAgregar.value).toFixed(2)
+                    let tr = `
+                        <tr>
+                            <td class="text-center">${$Codigo.value}</td>
+                            <td class="text-center">${precioUnitario}</td>
+                            <td class="text-center">${$CantidadAgregar.value}</td>
+                            <td class="text-center">${precioTotal}</td>
+                            <td class="text-center"><button class="btn btn-danger">-</button></td>
+                        </tr>
+                    `
+                    codigos.push($Codigo.value)
+                    $tbody.innerHTML += tr
+                    $TotalCantidadAgregada.textContent = +$TotalCantidadAgregada.textContent + +$CantidadAgregar.value 
+                    $TotalMontoAgregado.textContent = +$TotalMontoAgregado.textContent + +precioTotal 
+                }
+            }
+        }
+        if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            codigos = codigos.filter((data) => data != linea.children[0].textContent)
+            $TotalCantidadAgregada.textContent = +$TotalCantidadAgregada.textContent - +linea.children[2].textContent
+            $TotalMontoAgregado.textContent = +$TotalMontoAgregado.textContent - +linea.children[3].textContent
+            $tbody.removeChild(linea)
+        }
+        if(e.target == $btnGenerar){
+            if($tbody.children.length == 0){
+                $insertarErrores.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe agregar productos a lista para poder generar la factura. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+            }else{
+                let Productos = []
+                for(i=0; i< $tbody.children.length; i++){
+                    let subdata = {
+                        Codigo: $tbody.children[i].children[0].textContent, 
+                        PrecioUnidadUSD: $tbody.children[i].children[1].textContent, 
+                        Cantidad: $tbody.children[i].children[2].textContent, 
+                        PrecioTotalUSD: $tbody.children[i].children[3].textContent, 
+                    }
+                    Productos.push(subdata)
+                }
+
+                let data = {
+                    Cliente: $Cliente.value,
+                    NumeroControl: $NumeroControl.value,
+                    NotaEntrega: $notaEntrega.value,
+                    Fecha : $Fecha.value,
+                    CantidadTotal : $TotalCantidadAgregada.textContent,
+                    PrecioTotal: $TotalMontoAgregado.textContent,
+                    Productos: Productos,
+                }
+                enviarNuevaFactura(data)
+
+            }
+        }
+    })
+
+
+</script>

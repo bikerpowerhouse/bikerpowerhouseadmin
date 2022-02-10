@@ -1,0 +1,45 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Historial de movimientos</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{Codigo}}</h3>
+        </div>
+        <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Tipo de movimiento</th>
+                        <th class="text-center">Cantidad anterior</th>
+                        <th class="text-center">Cantidad movida</th>
+                        <th class="text-center">Cantidad nueva</th>
+                        <th class="text-center">Comentario</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each historialMovimiento}}
+                    <tr>
+                        <td class="text-center">{{FechaMovimiento}}</td>
+                        <td class="text-center">{{TipoMovimiento}}</td>
+                        <td class="text-center">{{CantidadAnterior}}</td>
+                        <td class="text-center">{{CantidadMovida}}</td>
+                        <td class="text-center">{{CantidadNueva}}</td>
+                        <td class="text-center">{{Comentario}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

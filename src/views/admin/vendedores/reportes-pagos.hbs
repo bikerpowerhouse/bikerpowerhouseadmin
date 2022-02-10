@@ -1,0 +1,106 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Reporte de pagos</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <label for="">Vendedor</label>
+                        <select  id="vendedor" class="form-control js-exam">
+                            <option value="0">--Seleccione un vendedor--</option>
+                            {{#each vendedores}}
+                                <option value="{{this}}">{{this}}</option>
+                            {{/each}}                            
+                        </select>
+                    </div>
+                    <div class="col-sm-2 mt-4">
+                        <button class="mt-2 btn btn-success" id="btnBuscar" disabled>Buscar</button>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Cliente</th>
+                            <th>Comentario</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBody">  
+                    </tbody>
+                </table>
+            </div>
+            </div>
+</section>
+<script>
+    const d= document,
+    $vendedor = d.getElementById("vendedor"),
+    $tBody = d.getElementById("tBody"),
+    $btnBuscar = d.getElementById("btnBuscar")
+
+    $vendedor.onchange = () => {
+        if($vendedor.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }else{
+            $btnBuscar.setAttribute("disabled","")
+        }
+    }
+    const solicitarReportes = async (data) => {
+        return await fetch("/solicitar-info-reportes-pagos-vendedores-e-i", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((response) => {
+                let tr = "" 
+                for(i=0; i< response.length; i++){
+                    let linea = `
+                        <tr>
+                            <td>${response[i].Fecha}</td>
+                            <td>${response[i].Tipo}</td>
+                            <td>${response[i].Cliente}</td>
+                            <td>${response[i].Comentario}</td>
+                            <td>${new Intl.NumberFormat("en-US", {  style: "currency",  currency: "USD",}).format(+response[i].Monto)}</td>
+                        </tr>
+                    `
+                    tr += linea
+                }
+                $tBody.innerHTML = tr
+                 $(function () {
+                    $("#example1").DataTable({
+                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                    "ordering": false,
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                });
+            });
+    };
+
+
+
+    d.addEventListener("click", e => {
+        if(e.target == $btnBuscar){
+            let data = {
+                Vendedor :$vendedor.value
+            }
+            solicitarReportes(data)
+        }
+    })
+
+
+</script>

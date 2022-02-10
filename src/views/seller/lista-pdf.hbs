@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de vendedores</title>
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
+    <link href="/css/select.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/btnClose.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+</head>
+<body class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 mt-3">
+            <h2 class="text-center">{{titulo}}</h2>
+        </div>
+    </div>
+    {{#if validacionProductosAmortiguadores}}
+     <div class="table-responsive mt-4">
+             <table class="table table-hover table-sm">
+                 <thead class="">
+                     <tr>
+                         <th colspan="7" class="text-center"><h4><strong>Amortiguadores</strong></h4></th>
+                     </tr>
+                     <tr>
+                         <th class="h6 text-dark"><strong>Codigo</strong></th>
+                         <th class="h6 text-dark"><strong>Tipo Vehiculo</strong></th>
+                         <th class="h6 text-dark"><strong>Descripción</strong></th>
+                         <th class="h6 text-dark"><strong>Marca producto</strong></th>
+                         <th class="h6 text-dark"><strong>Modelo producto</strong></th>
+                         <th class="h6 text-dark"><strong>Posición</strong></th>
+                         <th class="h6 text-dark"><strong>Precio de venta</strong></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     {{#each productosAmortiguadores}}
+                     <tr>
+                         <td class="h6 {{clase}}">{{Codigo}}</td>
+                         <td class="h6 {{clase}}">{{TipoVehiculo}}</td>
+                         <td class="h6 {{clase}}">{{Descripcion}}</td>
+                         <td class="h6 {{clase}}">{{MarcaProducto}}</td>
+                         <td class="h6 {{clase}}">{{ModeloProducto}}</td>
+                         <td class="h6 {{clase}}">{{Posicion}}</td>
+                         <td class="h6 {{clase}}">{{PrecioVenta}}</td>
+                     </tr>
+                     {{/each}}
+                 </tbody>
+             </table>
+     </div>
+    {{/if}}
+    {{#if validacionProductosBases}}
+     <div class="table-responsive mt-4">
+             <table class="table table-hover table-sm">
+                 <thead class="">
+                     <tr>
+                         <th colspan="7" class="text-center"><h4><strong>Bases de amortiguador</strong></h4></th>
+                     </tr>
+                     <tr>
+                         <th class="h6 text-dark"><strong>Codigo</strong></th>
+                         <th class="h6 text-dark"><strong>Tipo Vehiculo</strong></th>
+                         <th class="h6 text-dark"><strong>Descripción</strong></th>
+                         <th class="h6 text-dark"><strong>Marca producto</strong></th>
+                         <th class="h6 text-dark"><strong>Posición</strong></th>
+                         <th class="h6 text-dark"><strong>Precio de venta</strong></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     {{#each productosBases}}
+                     <tr>
+                         <td class="h6 {{clase}}">{{Codigo}}</td>
+                         <td class="h6 {{clase}}">{{TipoVehiculo}}</td>
+                         <td class="h6 {{clase}}">{{Descripcion}}</td>
+                         <td class="h6 {{clase}}">{{MarcaProducto}}</td>
+                         <td class="h6 {{clase}}">{{Posicion}}</td>
+                         <td class="h6 {{clase}}">{{PrecioVenta}}</td>
+                     </tr>
+                     {{/each}}
+                 </tbody>
+             </table>
+     </div>
+    {{/if}}
+    {{#if validacionProductosBaterias}}
+     <div class="table-responsive mt-4">
+             <table class="table table-hover table-sm">
+                 <thead class="">
+                     <tr>
+                         <th colspan="7" class="text-center"><h4><strong>Baterías</strong></h4></th>
+                     </tr>
+                     <tr>
+                         <th class="h6 text-dark"><strong>Código</strong></th>
+                         <th class="h6 text-dark"><strong>Tipo de vehiculo</strong></th>
+                         <th class="h6 text-dark"><strong>Descripción</strong></th>
+                         <th class="h6 text-dark"><strong>Voltaje</strong></th>
+                         <th class="h6 text-dark"><strong>Carga</strong></th>
+                         <th class="h6 text-dark"><strong>Polaridad</strong></th>
+                         <th class="h6 text-dark"><strong>Precio de venta</strong></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     {{#each productosBaterias}}
+                     <tr>
+                         <td class="h6 {{clase}}">{{Codigo}}</td>
+                         <td class="h6 {{clase}}">{{TipoVehiculo}}</td>
+                         <td class="h6 {{clase}}">{{Descripcion}}</td>
+                         <td class="h6 {{clase}}">{{Voltaje}}</td>
+                         <td class="h6 {{clase}}">{{Carga}}</td>
+                         <td class="h6 {{clase}}">{{Polaridad}}</td>
+                         <td class="h6 {{clase}}">{{PrecioVenta}}</td>
+                     </tr>
+                     {{/each}}
+                 </tbody>
+             </table>
+     </div>
+    {{/if}}
+    {{#if validacionProductosBombas}}
+     <div class="table-responsive mt-4">
+             <table class="table table-hover table-sm">
+                 <thead class="">
+                     <tr>
+                         <th colspan="7" class="text-center"><h4><strong>Bombas</strong></h4></th>
+                     </tr>
+                     <tr>
+                         <th class="h6 text-dark"><strong>Código</strong></th>
+                         <th class="h6 text-dark"><strong>Tipo de vehiculo</strong></th>
+                         <th class="h6 text-dark"><strong>Descripción</strong></th>
+                         <th class="h6 text-dark"><strong>Precio de venta</strong></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     {{#each productosBombas}}
+                     <tr>
+                         <td class="h6 {{clase}}">{{Codigo}}</td>
+                         <td class="h6 {{clase}}">{{TipoVehiculo}}</td>
+                         <td class="h6 {{clase}}">{{Descripcion}}</td>
+                         <td class="h6 {{clase}}">{{PrecioVenta}}</td>
+                     </tr>
+                     {{/each}}
+                 </tbody>
+             </table>
+     </div>
+    {{/if}}
+    {{#if validacionProductosBujia}}
+     <div class="table-responsive mt-4">
+             <table class="table table-hover table-sm">
+                 <thead class="">
+                     <tr>
+                         <th colspan="8" class="text-center"><h4><strong>Bujías</strong></h4></th>
+                     </tr>
+                     <tr>
+                         <th class="h6 text-dark"><strong>Código</strong></th>
+                         <th class="h6 text-dark"><strong>Codigo stock</strong></th>
+                         <th class="h6 text-dark"><strong>Referencia 1</strong></th>
+                         <th class="h6 text-dark"><strong>Referencia 2</strong></th>
+                         <th class="h6 text-dark"><strong>Serie</strong></th>
+                         <th class="h6 text-dark"><strong>Tipo de vehiculo</strong></th>
+                         <th class="h6 text-dark"><strong>Descripción</strong></th>
+                         <th class="h6 text-dark"><strong>Precio de venta</strong></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     {{#each productosBujias}}
+                     <tr>
+                         <td class="h6 {{clase}}">{{Codigo}}</td>
+                         <td class="h6 {{clase}}">{{CodigoStock}}</td>
+                         <td class="h6 {{clase}}">{{Referencia1}}</td>
+                         <td class="h6 {{clase}}">{{Referencia2}}</td>
+                         <td class="h6 {{clase}}">{{Serie}}</td>
+                         <td class="h6 {{clase}}">{{TipoVehiculo}}</td>
+                         <td class="h6 {{clase}}">{{Descripcion}}</td>
+                         <td class="h6 {{clase}}">{{PrecioVenta}}</td>
+                     </tr>
+                     {{/each}}
+                 </tbody>
+             </table>
+     </div>
+    {{/if}}
+    {{#if validacionProductosGuardapolvos}}
+     <div class="table-responsive mt-4">
+             <table class="table table-hover table-sm">
+                 <thead class="">
+                     <tr>
+                         <th colspan="7" class="text-center"><h4><strong>Guardapolvos</strong></h4></th>
+                     </tr>
+                     <tr>
+                         <th class="h6 text-dark"><strong>Código</strong></th>
+                         <th class="h6 text-dark"><strong>Tipo de vehiculo</strong></th>
+                         <th class="h6 text-dark"><strong>Descripción</strong></th>
+                         <th class="h6 text-dark"><strong>Precio de venta</strong></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     {{#each productosGuardapolvos}}
+                     <tr>
+                         <td class="h6 {{clase}}">{{Codigo}}</td>
+                         <td class="h6 {{clase}}">{{TipoVehiculo}}</td>
+                         <td class="h6 {{clase}}">{{Descripcion}}</td>
+                         <td class="h6 {{clase}}">{{PrecioVenta}}</td>
+                     </tr>
+                     {{/each}}
+                 </tbody>
+             </table>
+     </div>
+    {{/if}}
+    {{#if validacionProductosValvulas}}
+     <div class="table-responsive mt-4">
+             <table class="table table-hover table-sm">
+                 <thead class="">
+                     <tr>
+                         <th colspan="7" class="text-center"><h4><strong>Valvulas</strong></h4></th>
+                     </tr>
+                     <tr>
+                         <th class="h6 text-dark"><strong>Código</strong></th>
+                         <th class="h6 text-dark"><strong>Tipo de vehiculo</strong></th>
+                         <th class="h6 text-dark"><strong>Descripción</strong></th>
+                         <th class="h6 text-dark"><strong>Precio de venta</strong></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                     {{#each productosValvulas}}
+                     <tr>
+                         <td class="h6 {{clase}}">{{Codigo}}</td>
+                         <td class="h6 {{clase}}">{{TipoVehiculo}}</td>
+                         <td class="h6 {{clase}}">{{Descripcion}}</td>
+                         <td class="h6 {{clase}}">{{PrecioVenta}}</td>
+                     </tr>
+                     {{/each}}
+                 </tbody>
+             </table>
+     </div>
+    {{/if}}
+</body>
+<script>
+    window.print()
+</script>
+</html>

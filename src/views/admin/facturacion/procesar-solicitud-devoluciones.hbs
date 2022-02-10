@@ -1,0 +1,273 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0" id="title" data-id="{{solicitudesDevolucion._id}}">Procesamiento de solicitudes</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-5">
+                    <label>Estado actual</label>
+                    <input class="form-control" id="EstadoActual" readonly type="text" value="{{solicitudesDevolucion.Estado}}">
+                </div>
+                <div class="col-sm-5">
+                    <label>Estado nuevo</label>
+                    <select class="form-control js-exam" id="estadoNuevo">
+                        <option value="0">--Seleccione un estado--</option>
+                        {{#each Estados}}
+                        <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button id="btnGuardar" disabled class="btn btn-success mt-2 w-100">Guardar cambios</button>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h6>Agregar código</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-5">
+                    <label>Código</label>
+                    <select class="form-control js-exam" id="codigo">
+                        <option value="">--Seleccione un código--</option>
+                        {{#each productos}}
+                        <option value="{{Codigo}}">{{Codigo}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <label>Cantidad</label>
+                    <input type="number" class="form-control" id="cantidadAgregar" min="0" placeholder="Introduzca cantidad a agregar">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-outline-info mt-2 w-100" id="btnAgregar" disabled>Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-hove">
+                <thead>
+                    <tr>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Tipo producto</th>
+                        <th class="text-center">Descripcion</th>
+                        <th class="text-center">Precio unidad</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Precio total</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each solicitudesDevolucion.Productos}}
+                    <tr>
+                        <td class="text-center">{{Codigo}}</td>
+                        <td class="text-center">{{TipoProducto}}</td>
+                        <td class="text-center">{{Descripcion}}</td>
+                        <td class="text-center">{{PrecioUnidad}}</td>
+                        <td class="text-center"><input value="{{Cantidad}}" min="0" class="form-control cantidad"></td>
+                        <td class="text-center">{{PrecioTotal}}</td>
+                        <td class="text-center"><button class="btn btn-danger">-</button></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $EstadoActual = d.getElementById("EstadoActual"),
+    $btnGuardar = d.getElementById("btnGuardar"),
+    $btnAgregar = d.getElementById("btnAgregar"),
+    $codigo = d.getElementById("codigo"),
+    $cantidadAgregar = d.getElementById("cantidadAgregar"),
+    $tbody = d.getElementById("tbody"),
+    $cantidadTotal = d.getElementById("cantidadTotal"),
+    $precioTotal = d.getElementById("precioTotal"),
+    $insertarError = d.getElementById("insertarError"),
+    $title = d.getElementById("title"),
+    $estadoNuevo = d.getElementById("estadoNuevo");
+
+    const guardarCambios = async (data) => {
+        return await fetch(`/guardar-cambios-solicitud-devolucion`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then(async (response) => {
+            if(response.length <= 2){
+                location.href = "/redireccion-confirmada-solicitudes-devolucion"
+            }else{
+                //abrimps recibo de devolucion
+                await window.open(`/ver-recibo-devolucion/${response}`, `Recibo de devolución ${response}`, "width=612, heigh=792");
+                location.href = "/redireccion-confirmada-solicitudes-devolucion"
+            }
+        });
+    };
+
+    const solicitarInfoCodigo = async (data) => {
+        return await fetch(`/solicitar-info-codigo-procesar-devolucion`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            let precioTotal = (+response.Cantidad * +response.producto.PrecioVenta).toFixed(2)
+            let tr = `
+                <tr>
+                    <td class="text-center">${response.producto.Codigo}</td>
+                    <td class="text-center">${response.producto.TipoProducto}</td>
+                    <td class="text-center">${response.producto.Descripcion}</td>
+                    <td class="text-center">${response.producto.PrecioVenta}</td>
+                    <td class="text-center"><input value="${response.Cantidad}" min="0" class="form-control cantidad"></td>
+                    <td class="text-center">${precioTotal}</td>
+                    <td class="text-center"><button class="btn btn-danger">-</button></td>
+                </tr>
+            `
+            $tbody.innerHTML += tr
+            $tbody.removeAttribute("id")
+            $tbody.setAttribute("id","example1")
+              $(function () {
+                $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "ordering": false,
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            });
+        });
+    };
+
+    $estadoNuevo.onchange = () => {
+        if($estadoNuevo.value != 0){
+            $btnGuardar.removeAttribute("disabled")
+        }else{
+            $btnGuardar.setAttribute("disabled","")
+        }
+    }
+    $cantidadAgregar.onchange = () => {
+        if($cantidadAgregar.value && $codigo.value != 0 ){
+            $btnAgregar.removeAttribute("disabled")
+        }else{
+            $btnAgregar.setAttribute("disabled","")
+        }
+    }
+    $codigo.onchange = () => {
+        if($codigo.value != 0 && $cantidadAgregar.value){
+            $btnAgregar.removeAttribute("disabled")
+        }else{
+            $btnAgregar.setAttribute("disabled","")
+        }
+    }
+    d.addEventListener("click", e=> {
+        if(e.target == $btnAgregar){
+            let data ={
+                Codigo: $codigo.value,
+                Cantidad: $cantidadAgregar.value
+            }
+            let tbody = $tbody.children
+            let codigos = []
+            for(i=0; i< tbody.length; i++){
+                codigos.push(tbody[i].children[0].textContent)
+            }
+            let validacion = codigos.find((doc) => doc == data.Codigo)
+            if(!validacion){
+                solicitarInfoCodigo(data)
+            }else{
+                $insertarError.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    El código ya se encuentra agregado a la lista. Por favor, valide e intente de nuevo.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                `
+                window.scrollTo(0,0)
+
+            }
+        }
+        if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            $tbody.removeChild(linea)
+              $(function () {
+                $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "ordering": false,
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            });
+        }
+        if(e.target == $btnGuardar){    
+            if($tbody.children.length == 0){
+                let _id = $title.getAttribute("data-id")
+                $insertarError.innerHTML = `
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    La lista de productos se encuentra vacía, por lo tanto la solicitud será rechazada. ¿Desea proceder? 
+                    <a class="text-info" href="/rechazar-solicitud-devolucion/${_id}">Proceder</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                `
+                window.scrollTo(0,0)
+
+            }else{
+                let Productos = []
+                let CantidadTotal = 0
+                let PrecioTotal = 0
+                let _id = $title.getAttribute("data-id")
+                for(i=0; i< $tbody.children.length; i++){
+                    CantidadTotal += +$tbody.children[i].children[4].firstElementChild.value
+                    PrecioTotal += +$tbody.children[i].children[5].textContent
+                    let subdata ={
+                        Codigo: $tbody.children[i].children[0].textContent,
+                        TipoProducto: $tbody.children[i].children[1].textContent,
+                        Descripcion: $tbody.children[i].children[2].textContent,
+                        Cantidad: $tbody.children[i].children[4].firstElementChild.value,
+                        PrecioUnidad: $tbody.children[i].children[3].textContent,
+                        PrecioTotal: $tbody.children[i].children[5].textContent,
+                    }
+                    Productos.push(subdata)
+                }
+                let data = {
+                    _id, 
+                    CantidadTotal,
+                    PrecioTotal,
+                    Productos,
+                    Estado: $estadoNuevo.value 
+                }
+                guardarCambios(data)
+
+            }
+        }
+    })
+
+    d.addEventListener("change", e=>{
+        if(e.target.classList.contains("cantidad")){
+            let linea = e.target.parentElement.parentElement
+            let precio = (+e.target.value * linea.children[3].textContent).toFixed(2)
+            linea.children[5].textContent = precio
+        }
+    })
+
+</script>

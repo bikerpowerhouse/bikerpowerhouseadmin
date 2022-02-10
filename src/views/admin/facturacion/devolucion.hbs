@@ -1,0 +1,141 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Solicitudes de devolución</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a href="/realizar-devolucion" class="btn btn-info">Realizar devolución</a>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4>Solicitudes de devolución</h4>
+                </div>
+                <div class="col-sm-8">
+                    <label>Estado solicitudes</label>
+                    <select class="form-control js-exam" id="Estado">
+                        <option value="0">Todas</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Aceptado en proceso">Aceptado en proceso</option>
+                        <option value="Procesada">Procesada</option>
+                        <option value="Rechazada">Rechazada</option>
+                    </select>
+                </div>
+                <div class="col-sm-12">
+                    <span class="text-muted">Solo podran ser procedas las solcitudes que se encuentren en estados "Enviada" o "En proceso".</span>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table  id="tabla" class="table table-bordered table-hover ">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Cliente</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Vendedor</th>
+                                <th class="text-center">Cantidad total</th>
+                                <th class="text-center">Precio total</th>
+                                <th class="text-center">Procesar</th>
+                                <th class="text-center">Ver detalles</th>
+                            </tr>
+                            <td colspan="8">
+                                <input id="buscar" type="text" class="form-control" placeholder="Escriba su busqueda para filtrar" />
+                            </td>
+                        </thead>
+                        <tbody id="tbody">
+                            {{#each solitudesDevolucion}}
+                            <tr>
+                                <td class="text-center">{{Fecha}}</td>
+                                <td class="text-center">{{Cliente}}</td>
+                                <td class="text-center">{{Estado}}</td>
+                                <td class="text-center">{{Vendedor}}</td>
+                                <td class="text-center">{{CantidadTotal}}</td>
+                                <td class="text-center">{{PrecioTotal}}</td>
+                                <td class="text-center"><a href="/procesar-devolucion/{{_id}}" class="text-info"><i class="fas fa-desktop"  style="font-size: 22px;"></i></a></td>
+                                <td class="text-center"><a class="text-success" target="_blank" href="/ver-detalles-solicitud-devolucion/{{_id}}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Estado = d.getElementById("Estado"),
+    $tbody = d.getElementById("tbody");
+    const table = d.getElementById("tabla").tBodies[0];
+    buscaTabla = function () {
+            texto =  d.getElementById('buscar').value.toLowerCase();
+            let r = 0;
+            while (row = table.rows[r++]) {
+                if (row.innerText.toLowerCase().indexOf(texto) !== -1)
+                    row.style.display = null;
+                else
+                    row.style.display = 'none';
+            }
+        }
+    d.getElementById('buscar').addEventListener("keydown", e => {
+        if(e.keyCode == 13){
+            e.preventDefault()
+        }
+    })
+    d.getElementById('buscar').addEventListener('keyup', buscaTabla);
+
+      const solicitarSolicitudes = async (data) => {
+    return await fetch(`/solicitar-solicitudes-por-estado`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+        "Content-type": "application/json; charset=utf-8",
+        },
+    })
+        .then((response) => {
+        return response.json();
+        })
+        .then((response) => {
+            let tr = ""
+            for(i=0; i< response.length;i++){
+                let linea = `
+                    <tr>
+                        <td class="text-center">${response[i].Fecha}</td>
+                        <td class="text-center">${response[i].Cliente}</td>
+                        <td class="text-center">${response[i].Estado}</td>
+                        <td class="text-center">${response[i].Vendedor}</td>
+                        <td class="text-center">${response[i].CantidadTotal}</td>
+                        <td class="text-center">${response[i].PrecioTotal}</td>
+                        <td class="text-center"><a href="/procesar-devolucion/${response[i]._id}" class="text-info"><i class="fas fa-desktop"  style="font-size: 22px;"></i></a></td>
+                        <td class="text-center"><a class="text-success" target="_blank" href="/ver-detalles-solicitud-devolucion/${response[i]._id}"><i class="fas fa-file-alt" style="font-size: 22px;"></i></a></td>
+                    </tr>
+                `
+                tr += linea
+            }
+            $tbody.innerHTML = tr
+        });
+    };
+
+    $Estado.onchange = () => {
+        if($Estado.value != 0){
+            let data ={
+                Estado: $Estado.value
+            }
+            solicitarSolicitudes(data)
+        }
+    }
+
+</script>

@@ -1,0 +1,45 @@
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h2 class="my-2">Solicitudes de pagos</h2>
+        </div>
+        <div class="col-sm-6 text-right mt-2">
+            <h3 class="">Saldo a favor: <span class="text-danger">{{SaldoFavor}}</span></h3>
+        </div>
+        <div class="col-sm-12">
+            {{>errors}}
+            {{>success}}
+        </div>
+        <div class="col-sm-12 text-right">
+            <a href="/reportar-ingreso-cliente" class="btn btn-success ml-2">Reportar pago</a>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead id="thead">
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Modalidad</th>
+                        <th class="text-center">Comentario</th>
+                        <th class="text-center">Monto</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    {{#each solicitudesPago}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>
+                            <td class="text-center">{{Estado}}</td>
+                            <td class="text-center">{{Modalidad}}</td>
+                            <td class="text-center">{{Comentario}}</td>
+                            <td class="text-center">{{Monto}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

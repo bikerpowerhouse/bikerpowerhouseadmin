@@ -1,0 +1,159 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Reporte de compras al proveedor</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-8 ml-2">
+        <label for="">Proveedores</label>
+        <select id="Proveedor" class="form-control js-exam ">
+            <option value="0">--Seleccione un proveedor--</option>
+            {{#each Proveedores}}
+            <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        </select>
+    </div>
+</div>
+<section class="content mt-2">
+     <div class="row">
+        <div class="col-sm-12" id="insertErrores">
+            {{>errors}}
+            {{>success}}
+        </div>
+          <div class="col-sm-12" id="insertarCanvas">
+         
+        </div>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">
+            <h5>Ordenes</h5>
+        </div>
+        <div class="card-body">
+            <diV class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Número</th>
+                        <th class="text-center">Peso</th>
+                        <th class="text-center">Metros cubicos</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Precio</th>
+                        <th class="text-center">Descargar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+            </diV>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $insertarCanvas = d.getElementById("insertarCanvas"),
+    $Proveedor = d.getElementById("Proveedor"),
+    $tbody = d.getElementById("tbody");
+    const solicitarInfoGraficas = async (data) => {
+    return await fetch(`/solicitar-info-grafica-ordenes-proveedor`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+        "Content-type": "application/json; charset=utf-8",
+        },
+    })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            let tr = ""
+            for(i=0; i< response.ordenes.length; i++){
+                let linea =`
+                    <tr>
+                        <td class="text-center">${response.ordenes[i].Fecha}</td>
+                        <td class="text-center">${response.ordenes[i].Numero}</td>
+                        <td class="text-center">${response.ordenes[i].Peso}</td>
+                        <td class="text-center">${response.ordenes[i].MetrosCubicos}</td>
+                        <td class="text-center">${response.ordenes[i].CantidadTotal}</td>
+                        <td class="text-center">${response.ordenes[i].PrecioTotal}</td>
+                        <td class="text-center"><a href="/descargar-excel-orden-compra-proveedor/${response.ordenes[i]._id}" class="text-success"><i class="fas fa-download" style="font-size: 22px"></i></a></td>
+                    </tr>
+                `
+                tr += linea
+            }
+            d.querySelector(".card-body").firstElementChild.setAttribute("id","example1")
+            $tbody.innerHTML += tr
+              $(function () {
+                    $("#example1").DataTable({
+                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                    "ordering": true,
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                });
+
+            $insertarCanvas.innerHTML= `
+                <div class="card border-0 shadow p-3 rounded">
+                    <div>
+                        <canvas id="myChart" height="300"></canvas>
+                    </div>
+                </div>
+            `
+            const ctx = document.getElementById("myChart")
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: response.Fechas,
+                    datasets: [{
+                        label: 'Precio',
+                        data: response.Precios,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Valor facturado por mes'
+                        }
+                    }
+                }
+            });
+        });
+    };
+    $Proveedor.onchange = () => {
+        if($Proveedor.value !=0){
+            let data = {
+                Proveedor: $Proveedor.value
+            }
+            d.querySelector(".card-body").firstElementChild.removeAttribute("id")
+            $tbody.innerHTML = ""
+            $insertarCanvas.innerHTML = ""
+            solicitarInfoGraficas(data)
+        }
+    }
+</script>

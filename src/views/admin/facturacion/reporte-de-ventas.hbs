@@ -1,0 +1,96 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Cuentas por cobrar</h1>
+            </div>
+            <div class="col-sm-12">
+                {{>errors}}
+                {{>success}}
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3>Filtros</h3>
+        </div>
+        <div class="card-body">
+            <form  method="post" action="/generar-repoorte-de-ventas">
+            <div class="row">
+                <div class="col-sm-6">
+                    <label>Tipo de usuario</label>
+                    <select class="form-control js-exam" name="TipoUsuario" id="TipoUsuario" required>
+                        <option value="0">--Seleccionar tipo de usuario--</option>
+                        <option value="Cliente">Cliente</option>
+                        <option value="Vendedor">Vendedor</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label>Vendedor / Cliente</label>
+                    <select class="form-control js-exam" name="Usuario" id="Usuario" required>
+                        <option value="0">--Seleccione vendedor o cliente--</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label>Tipo de fecha</label>
+                    <select class="form-control js-exam" name="TipoFecha" required> 
+                        <option value="0">--Seleccione tipo de fecha--</option>
+                        <option value="Registro">Registro</option>
+                        <option value="Vencimiento">Vencimiento</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Desde</label>
+                    <input type="date" class="form-control" name="Desde">
+                </div>
+                <div class="col-sm-3">
+                    <label>Hasta</label>
+                    <input type="date" class="form-control" name="Hasta">
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-2 w-100" type="submit">Generar reporte</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script> 
+    const d = document,
+    $TipoUsuario = d.getElementById("TipoUsuario"),
+    $Usuario = d.getElementById("Usuario");
+
+     const solicitarTipoUsuario = async (data) => {
+        return await fetch(`/solicitar-tipo-usuario-reporte-ventas`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            let options = `<option value="0">--Seleccione vendedor o cliente--</option>`
+            for(i=0; i< response.length; i++){
+                let option = `<option value="${response[i]._id}">${response[i].Nombre}</option>`
+                options += option
+            }
+            $Usuario.innerHTML = options
+        });
+    };
+
+
+    $TipoUsuario.onchange = () => {
+        if($TipoUsuario.value != 0){
+            let data = {
+                TipoUsuario : $TipoUsuario.value
+            }
+            solicitarTipoUsuario(data)
+        }
+    }
+
+</script>

@@ -1,0 +1,118 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Recibos de comisión</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a class="btn btn-success" href="/generar-nueva-recibo-comision">Nuevo recibo de comisión</a>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 class="text-dark">Todos los recibos de comisión</h4>
+                </div>
+                <div class="col-sm-5">
+                    <label>Vendedor</label>
+                    <select class="form-control js-exam" id="Vendedor">
+                        <option value="0">--Seleccione un vendedor--</option>
+                        {{#each vendedores}}
+                        <option value="{{_id}}">{{Nombres}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-2 mt-4">
+                    <button class="btn btn-success mt-2 w-100" id="btnBuscar" disabled>Buscar</button>
+                </div>
+            </div> 
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center">Fecha</th>
+                        <th scope="col" class="text-center">Número</th>
+                        <th scope="col" class="text-center">Vendedor</th>
+                        <th scope="col" class="text-center">Cantidad de documentos</th>
+                        <th scope="col" class="text-center">Monto</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody">
+                    {{#each notasComisiones}}
+                        <tr>
+                            <td class="text-center">{{Fecha}}</td>       
+                            <td class="text-center"><a class="text-info" target="_blank" href="/ver-recibo-pago-comision/{{Numero}}">{{Numero}}</a></td>       
+                            <td class="text-center">{{Vendedor}}</td>       
+                            <td class="text-center">{{CantidadTotalDocumentos}}</td>       
+                            <td class="text-center">{{Monto}}</td>       
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Vendedor = d.getElementById("Vendedor"),
+    $tBody = d.getElementById("tBody"),
+    $btnBuscar = d.getElementById("btnBuscar");
+
+    const solicitarRecibosDeComision = async (data) => {
+            return await fetch(`/solicitar-recibos-pago-comision`, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                "Content-type": "application/json; charset=utf-8",
+                },
+            })
+            .then((response) => {
+                return response.json();
+            })
+            .then((response) => {
+                let tr = ""
+                for(i=0; i< response.length; i++){
+                    linea = `
+                      <tr>
+                            <td class="text-center">${response[i].Fecha}</td>       
+                            <td class="text-center"><a class="text-info" target="_blank" href="/ver-recibo-pago-comision/${response[i].Numero}">${response[i].Numero}</a></td>       
+                            <td class="text-center">${response[i].Vendedor}</td>       
+                            <td class="text-center">${response[i].CantidadTotalDocumentos}</td>       
+                            <td class="text-center">${response[i].Monto}</td>       
+                        </tr>
+                    `
+                    tr += linea
+                }
+                $tBody.innerHTML = tr
+                d.querySelector(".table").setAttribute("id","example1")
+                $(function () {
+                    $("#example1").DataTable({
+                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                    "ordering": false,
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                });
+            });
+        };
+
+    $Vendedor.onchange = () => {
+        if($Vendedor.value != 0){
+            $btnBuscar.removeAttribute("disabled")
+        }else{
+            $btnBuscar.setAttribute("disabled","")
+        }
+    }
+     d.addEventListener("click", e => {
+         if(e.target == $btnBuscar){
+             let data = {
+                 Vendedor: $Vendedor.value
+             }
+             solicitarRecibosDeComision(data)
+         }
+     })
+
+</script>

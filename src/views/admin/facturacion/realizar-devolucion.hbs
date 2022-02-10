@@ -1,0 +1,335 @@
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                 <h1 class="m-0">Realizar devolución</h1>
+            </div>
+            <div class="col-sm-12 mt-2" id="insertarError">
+                {{>success}}
+                {{>errors}}
+            </div>    
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h5>Formulario de datos</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>Cliente</label>
+                    <select class="form-control js-exam" id="Cliente">
+                        <option value="0">--Seleccione un cliente--</option>
+                        {{#each clientes}}
+                            <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label>Nota de entrega</label>
+                    <select class="form-control js-exam" id="NotaEntrega">
+                        <option value="0">--Seleccione una nota--</option>
+
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label>Pendiente</label>
+                    <input type="number" id="Pendiente" class="form-control" readonly>
+                </div>
+                <div class="col-sm-3">
+                    <label>Código</label>
+                    <select class="form-control js-exam" id="Codigo">
+                        <option value="0">--Seleccione un código--</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label>Cantidad en nota</label>
+                    <input class="form-control" type="number" id="CantidadEnNota"  min="0" readonly>
+                </div> 
+                <div class="col-sm-3">
+                    <label>Cantidad</label>
+                    <input class="form-control" type="number" id="Cantidad" min="0" placeholder="Introduzca cantidad a devolver">
+                    <span class="text-muted">La cantidad a devolver debe ser menor o igual a la cantidad en nota.</span>
+                </div>  
+                <div class="col-sm-3 mt-4">
+                    <button class="btn btn-outline-info mt-2 w-100" id="btnRegistrar">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table  class="table table-bordered table-hove">
+                <thead>
+                    <tr>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Tipo producto</th>
+                        <th class="text-center">Descripcion</th>
+                        <th class="text-center">Precio unidad</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Precio total</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+  
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-danger text-right">Total</td>
+                        <td class="text-center" id="CantidadTotal"></td>
+                        <td class="text-center" id="PrecioTotal"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="text-right my-2">
+        <button class="btn btn-success" id="generarDevolucion">Generar devolución</button>
+    </div>
+</section>
+<script>
+    const d = document,
+    $Cliente = d.getElementById("Cliente"),
+    $NotaEntrega = d.getElementById("NotaEntrega"),
+    $Pendiente = d.getElementById("Pendiente"),
+    $Codigo = d.getElementById("Codigo"),
+    $Cantidad = d.getElementById("Cantidad"),
+    $insertarError = d.getElementById("insertarError"),
+    $CantidadEnNota = d.getElementById("CantidadEnNota"),
+    $btnRegistrar = d.getElementById("btnRegistrar"),
+    $CantidadTotal = d.getElementById("CantidadTotal"),
+    $PrecioTotal = d.getElementById("PrecioTotal"),
+    $generarDevolucion = d.getElementById("generarDevolucion"),
+    $tbody = d.getElementById("tbody");
+    let codigos
+    let PrecioTotal = 0
+    let CantidadTotal = 0
+    let codigosEnLista = []
+
+
+    const generarDevolucion = async (data) => {
+        return await fetch(`/generar-devolucion-manual`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then(async(response) => {
+            await window.open(`/ver-recibo-devolucion/${response}`, `Recibo de devolución ${response}`, "width=612, heigh=792");
+            location.reload()
+        });
+    };
+    const solicitarCodigosNota = async (data) => {
+        return await fetch(`/solicitar-codigos-nota-devolucion`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            let options = `<option value="0">--Seleccione un código--</option>`
+            $Pendiente.value = response.Saldo
+            codigos = response.Productos
+            for(i=0; i< response.Productos.length; i++){
+                console.log(response.Productos[i].Codigo)
+                let option = `<option value="${response.Productos[i].Codigo}">${response.Productos[i].Codigo}</option>`
+                options += option
+            }
+            $Codigo.innerHTML = options
+        });
+    };
+
+    const solicitarNota = async (data) => {
+        return await fetch(`/solicitar-notas-cliente-devolucion`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+            "Content-type": "application/json; charset=utf-8",
+            },
+        })
+        .then((response) => {
+            return response.json();
+            })
+        .then((response) => {
+            let opts = `<option value="0">--Seleccione una nota--</option>`
+            for(i=0; i< response.length; i++){
+                let opt = `<option value="${response[i].Numero}">${response[i].Numero}</option>`
+                opts += opt
+            }
+            $NotaEntrega.innerHTML = opts
+        });
+    };
+
+    d.addEventListener("click", e=>{
+        if(e.target == $btnRegistrar){
+            let validacion = 0
+            if(!$Cliente.value || $Cliente.value == 0){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar un cliente para poder registrar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+            }
+            if(!$NotaEntrega.value || $NotaEntrega.value == 0){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una nota de entrega para poder registrar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Codigo.value || $Codigo.value == 0){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe seleccionar una código para poder registrarlo. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(!$Cantidad.value || $Cantidad.value == 0){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Debe introducir una cantidad a devolver para poder registrar el código. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+                validacion++
+
+            }
+            if(+$Cantidad.value > +$CantidadEnNota.value){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        La cantidad a devolver no puede ser mayor a la cantidad en nota. Por favor, valide a intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                window.scrollTo(0,0)
+
+                validacion++
+
+            }
+            if(validacion == 0){
+                let validacionExistente = codigosEnLista.find((data) => data == $Codigo.value)
+                if(validacionExistente){
+                $insertarError.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        El código ya se encuentra en la lista. Por favor, valide e intente de nuevo.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+                 window.scrollTo(0,0)
+
+                }else{
+                    $Cliente.setAttribute("disabled","")
+                    $NotaEntrega.setAttribute("disabled","")
+                    codigosEnLista.push($Codigo.value)
+                    let datosCodigo = codigos.find((data) => data.Codigo == $Codigo.value)
+                    let precioTotal = (+datosCodigo.PrecioUnidad * +$Cantidad.value).toFixed(2)
+                    PrecioTotal += +precioTotal
+                    CantidadTotal += +$Cantidad.value
+                    $PrecioTotal.textContent = PrecioTotal
+                    $CantidadTotal.textContent = CantidadTotal
+                    let tr = `
+                        <tr>
+                            <td class="text-center">${$Codigo.value}</td>
+                            <td class="text-center">${datosCodigo.Producto}</td>
+                            <td class="text-center">${datosCodigo.Descripcion}</td>
+                            <td class="text-center">${datosCodigo.PrecioUnidad}</td>
+                            <td class="text-center">${$Cantidad.value}</td>
+                            <td class="text-center">${precioTotal}</td>
+                            <td class="text-center"><button class="btn btn-danger">-</button></td>
+                        </tr>
+                    `
+                    $tbody.innerHTML += tr
+                }
+            }
+        }
+        if(e.target.textContent == "-"){
+            let linea = e.target.parentElement.parentElement
+            codigosEnLista = codigosEnLista.filter((data) => data != linea.children[0].textContent)
+            PrecioTotal = (+PrecioTotal - +linea.children[5].textContent)
+            CantidadTotal -= +linea.children[4].textContent
+            $PrecioTotal.textContent = PrecioTotal
+            $CantidadTotal.textContent = CantidadTotal
+            $tbody.removeChild(linea)
+        }
+        if(e.target == $generarDevolucion){
+            if($tbody.children.length == 0){
+                $insertarError.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    Debe agregar al menos un código a la lista para poder generar la devolución. Por favor, valide e intente de nuevo
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                `
+                window.scrollTo(0,0)
+            }else{
+                let Productos = []
+                for(i=0; i < $tbody.children.length; i++){
+                    let subdata = {
+                        Codigo: $tbody.children[i].children[0].textContent,
+                        TipoProducto: $tbody.children[i].children[1].textContent,
+                        Descripcion: $tbody.children[i].children[2].textContent,
+                        Cantidad: $tbody.children[i].children[4].textContent,
+                        PrecioUnidad: $tbody.children[i].children[3].textContent,
+                        PrecioTotal: $tbody.children[i].children[5].textContent,
+                    }
+                    Productos.push(subdata)
+                }
+                let data = {
+                    Cliente: $Cliente.value, 
+                    Nota: $NotaEntrega.value, 
+                    PrecioTotal: PrecioTotal, 
+                    CantidadTotal: CantidadTotal, 
+                    Productos: Productos, 
+                }
+                generarDevolucion(data)
+            }
+        }
+    })
+
+    $NotaEntrega.onchange = () => {
+        if($NotaEntrega.value != 0){
+            let data = {
+                Numero : $NotaEntrega.value
+            }
+            solicitarCodigosNota(data)
+        }
+    }
+
+    $Cliente.onchange = () => {
+        if($Cliente.value != 0){
+            let data = {
+                Cliente: $Cliente.value
+            }
+            solicitarNota(data)
+        }
+    }
+    $Codigo.onchange = () => {
+        if($Codigo.value != 0){
+            let cantidad = codigos.find((data) => data.Codigo == $Codigo.value)
+            $CantidadEnNota.value = cantidad.Cantidad
+        }
+    }
+
+</script>
